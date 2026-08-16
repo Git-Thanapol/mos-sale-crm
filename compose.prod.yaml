@@ -33,7 +33,7 @@ services:
       - static:/app/staticfiles:ro
       - media:/app/media:ro
     ports:
-      - "80:80"
+      - "8000:80"
     restart: always
 
 volumes:

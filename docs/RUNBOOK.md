@@ -35,7 +35,9 @@ scripts/deploy.sh
 
 Backs up the remote DB, `git pull --ff-only` on remote, `docker compose -f
 compose.yaml -f compose.prod.yaml build && up -d`, then health-checks
-container status + `curl http://localhost/` on the remote. Migrations and
+container status + `curl http://localhost:8000/` on the remote (nginx maps
+host 8000 -> container 80, since 80 is already taken on the deploy target).
+Migrations and
 `collectstatic` run automatically inside `docker/entrypoint.sh` on the `web`
 container's boot (`RUN_MIGRATIONS=1`) — the script doesn't call them
 separately. Refuses to run if the local branch has unpushed commits, since
