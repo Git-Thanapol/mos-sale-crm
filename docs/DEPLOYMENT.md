@@ -9,9 +9,9 @@ server setup is manual (once); every deploy after that is `scripts/deploy.sh`.
 - Git
 - An SSH key with access to the git remote (for `git pull` on the server)
   and to the server itself (for this script to connect)
-- Port 8000 (and 443 if you put TLS in front) reachable from wherever users
-  connect — nginx listens on 80 inside the container, mapped to host 8000
-  since 80 is already taken on the deploy target
+- Port 8001 (and 443 if you put TLS in front) reachable from wherever users
+  connect — nginx listens on 80 inside the container, mapped to host 8001
+  since 80 and 8000 are already taken on the deploy target
 
 ## 1. First-time server setup (once)
 
@@ -73,7 +73,7 @@ scripts/deploy.sh
 4. **Up** — `... up -d`. Migrations and `collectstatic` run automatically
    inside `web`'s entrypoint on boot — not a separate step.
 5. **Health check** — confirms every container is `running`/`healthy`, then
-   `curl http://localhost:8000/` on the remote and expects `200` or `302`.
+   `curl http://localhost:8001/` on the remote and expects `200` or `302`.
 
 The script refuses to run if your **local** branch has commits not yet
 pushed upstream, since the remote server only ever deploys what's on the git

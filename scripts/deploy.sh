@@ -68,7 +68,7 @@ if echo "$STATUS" | grep -vE "running|healthy" | grep -q .; then
   exit 1
 fi
 
-HTTP_CODE="$(remote "curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:8000/" || echo "000")"
+HTTP_CODE="$(remote "curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:8001/" || echo "000")"
 if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "302" ]; then
   echo "App did not respond as expected (HTTP $HTTP_CODE) — check 'docker compose logs web' on remote." >&2
   exit 1
