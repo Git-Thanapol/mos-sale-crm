@@ -4,15 +4,24 @@ CLI and the /orders/import web view share one implementation instead of
 drifting like the legacy ui/manual_order_ui.py / pages/followup.py
 near-duplicates did).
 
-Expected header row (first row of the first sheet, exact Thai labels match
-the legacy import template so docs/parity/thai_strings.json stays the
-source of truth for what a real workbook looks like):
+Two header shapes are auto-detected from the first row of the first sheet
+(see crm.imports.services.is_wide_format) — column-mapping UI is
+deliberately not offered for either:
+
+1. Classic, one row per order line (exact Thai labels match the legacy
+   import template so docs/parity/thai_strings.json stays the source of
+   truth for what a real workbook looks like):
 
     เลขคำสั่งซื้อ | ชื่อลูกค้า | เบอร์โทร | เบอร์สำรอง | SKU | ชื่อสินค้า |
     จำนวน | ราคา | วันที่สั่งซื้อ | ประเภทการขาย | จังหวัด | อำเภอ |
     รหัสไปรษณีย์ | ที่อยู่ | ผู้ดูแล | รหัสพนักงาน | เลขพัสดุ | ขนส่ง | สถานะ
 
-Required: ชื่อลูกค้า, and at least one of เบอร์โทร/เบอร์สำรอง.
+   Required: ชื่อลูกค้า, and at least one of เบอร์โทร/เบอร์สำรอง.
+
+2. Wide, one row per order with up to 6 SKU/qty/price column-sets
+   (detected by an "SKU (1)" column) — see
+   crm.imports.services.iter_wide_records for the full header list and
+   reshaping rules.
 """
 
 from __future__ import annotations

@@ -22,6 +22,7 @@ class Customer(models.Model):
 
     province = models.CharField(max_length=128, blank=True)
     city = models.CharField(max_length=128, blank=True)
+    subdistrict = models.CharField(max_length=128, blank=True)
     postal_code = models.CharField(max_length=16, blank=True)
     address = models.TextField(blank=True)
     url = models.TextField(blank=True)

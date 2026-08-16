@@ -2,8 +2,9 @@
 (see docs/DECISIONS.md and the plan's schema section). All 34 columns of the
 legacy crm_data_imports table. Never read by list pages; read only by the
 importer itself, import history, and customer export (which needs raw
-Excel headers like ที่อยู่จัดส่ง/ตำบล/ช่องทางขาย that were never promoted
-to normalized columns).
+Excel headers like ที่อยู่จัดส่ง/ช่องทางขาย that were never promoted to
+normalized columns — ตำบล was one of these until it got its own
+Customer.subdistrict/StagingImportRow.subdistrict column).
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ class StagingImportRow(models.Model):
     order_date = models.DateField(null=True, blank=True)
     province = models.CharField(max_length=128, blank=True)
     city = models.CharField(max_length=128, blank=True)
+    subdistrict = models.CharField(max_length=128, blank=True)
     postal_code = models.CharField(max_length=16, blank=True)
     address = models.TextField(blank=True)
     tracking_no = models.CharField(max_length=64, blank=True)

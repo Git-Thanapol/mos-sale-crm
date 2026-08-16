@@ -3,10 +3,11 @@ crm_streamlit/pages/customers.py build_customer_export_xlsx /
 customer_export_row. One row per order line (legacy was one row per
 order-shaped source record; our normalized schema's closest equivalent is
 one row per OrderLine). Columns that have no normalized column
-(ช่องทางขาย, วิธีการชำระ, ตำบล, พนักงานเปิดบิล, พนักงานอัพเซลล์) fall back
-to the source StagingImportRow.raw_data — the exact reason that table was
-kept alongside the normalized core (see docs/DECISIONS.md / plan schema
-section).
+(ช่องทางขาย, วิธีการชำระ, พนักงานเปิดบิล, พนักงานอัพเซลล์) fall back to the
+source StagingImportRow.raw_data — the exact reason that table was kept
+alongside the normalized core (see docs/DECISIONS.md / plan schema
+section). ตำบล is normalized (Customer.subdistrict), so it reads straight
+from the customer instead.
 """
 
 from __future__ import annotations
@@ -48,7 +49,7 @@ def export_row(order, line) -> list:
         customer.phone1,
         customer.phone2,
         customer.address,
-        _raw(order, "ตำบล"),
+        customer.subdistrict,
         customer.city,
         customer.province,
         customer.postal_code,

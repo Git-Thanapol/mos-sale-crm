@@ -26,6 +26,25 @@ def _make_xlsx(rows: list[list]) -> bytes:
     return buf.getvalue()
 
 
+def _make_wide_xlsx(rows: list[list]) -> bytes:
+    wb = Workbook()
+    ws = wb.active
+    ws.append([
+        "วันที่", "เดือน", "ปี", "เลขคำสั่งซื้อ", "ช่องทางขาย",
+        "SKU (1)", "สินค้า (1)", "จำนวน (1)", "ราคา (1)",
+        "SKU (2)", "สินค้า (2)", "จำนวน (2)", "ราคา (2)",
+        "กลุ่มสินค้า", "ยอดขายรวม", "สถานะคำสั่งซื้อ", "วิธีการชำระเงิน", "สถานะจัดส่ง",
+        "ขนส่ง", "หมายเลขพัสดุ", "URL", "ลูกค้า", "เบอร์โทร (1)", "เบอร์โทร (2)",
+        "ที่อยู่จัดส่ง", "ตำบล", "อำเภอ", "จังหวัด", "รหัสไปรษณีย์",
+        "พนักงานขาย", "พนักงานอัพเซลล์", "พนักงานดูแล", "หมายเหตุ",
+    ])
+    for row in rows:
+        ws.append(row)
+    buf = BytesIO()
+    wb.save(buf)
+    return buf.getvalue()
+
+
 @pytest.fixture
 def editor(client):
     user = User.objects.create_user(email="editor@example.com", password="x", role="EDITOR")
@@ -98,3 +117,76 @@ def test_import_merges_same_sku_and_name_across_rows(client, editor):
     order = customer.orders.get(order_no="ORDMERGE")
     line = order.lines.get(sku="SP003", product_name="Same")
     assert line.quantity == 5  # 2 + 3
+
+
+def test_import_wide_format_row_creates_customer_order_and_lines(client, editor):
+    content = _make_wide_xlsx([
+        [
+            15, 1, 2026, "ORDWIDE1", "Facebook",
+            "SKU-A", "สินค้า A", 2, 500,
+            "SKU-B", "สินค้า B", 1, 300,
+            "กลุ่ม1", 800, "สำเร็จ", "COD", "สำเร็จ",
+            "Kerry", "TRACK123", "", "ทดสอบไวด์", "0899500010", "",
+            "123 ถนนทดสอบ", "บางรัก", "บางรัก", "กรุงเทพ", 10500,
+            "สมชาย", "", "สมหญิง", "",
+        ],
+    ])
+    upload = SimpleUploadedFile("wide.xlsx", content)
+    resp = client.post(reverse("imports:upload"), {"file": upload}, follow=True)
+    assert resp.status_code == 200
+    assert "นำเข้าสำเร็จ" in resp.content.decode("utf-8")
+
+    customer = Customer.objects.get(phone1="0899500010")
+    assert customer.subdistrict == "บางรัก"
+    assert customer.city == "บางรัก"
+    assert customer.province == "กรุงเทพ"
+    assert customer.owner_display == "สมหญิง"  # พนักงานดูแล wins over พนักงานขาย
+
+    order = customer.orders.get(order_no="ORDWIDE1")
+    assert order.order_date.isoformat() == "2026-01-15"
+    line_a = order.lines.get(sku="SKU-A")
+    assert line_a.quantity == 2
+    assert line_a.amount == 500
+    line_b = order.lines.get(sku="SKU-B")
+    assert line_b.quantity == 1
+    assert line_b.amount == 300
+
+
+def test_import_wide_format_amount_falls_back_to_order_total(client, editor):
+    content = _make_wide_xlsx([
+        [
+            15, 1, 2026, "ORDWIDE2", "Facebook",
+            "SKU-A", "สินค้า A", 2, "",
+            "SKU-B", "สินค้า B", 1, "",
+            "กลุ่ม1", 800, "สำเร็จ", "COD", "สำเร็จ",
+            "Kerry", "", "", "ทดสอบไวด์2", "0899500011", "",
+            "", "", "", "", "",
+            "สมชาย", "", "", "",
+        ],
+    ])
+    upload = SimpleUploadedFile("wide.xlsx", content)
+    client.post(reverse("imports:upload"), {"file": upload}, follow=True)
+
+    order = Customer.objects.get(phone1="0899500011").orders.get(order_no="ORDWIDE2")
+    line_a = order.lines.get(sku="SKU-A")
+    line_b = order.lines.get(sku="SKU-B")
+    assert line_a.amount == 800  # gets the order-level ยอดขายรวม total
+    assert line_b.amount is None
+
+
+def test_import_wide_format_skips_row_with_blank_order_id(client, editor):
+    content = _make_wide_xlsx([
+        [
+            15, 1, 2026, "", "Facebook",
+            "SKU-A", "สินค้า A", 1, 100,
+            "", "", "", "",
+            "", 100, "", "", "",
+            "", "", "", "ไม่มีเลขคำสั่งซื้อ", "0899500012", "",
+            "", "", "", "", "",
+            "", "", "", "",
+        ],
+    ])
+    upload = SimpleUploadedFile("wide.xlsx", content)
+    client.post(reverse("imports:upload"), {"file": upload}, follow=True)
+
+    assert not Customer.objects.filter(phone1="0899500012").exists()
