@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}ไม่มีสิทธิ์เข้าถึง · Sales CRM{% endblock %}
+{% block content %}
+<div class="crm-card" style="max-width:480px;">
+  <b>ไม่มีสิทธิ์เข้าถึง</b>
+  <p class="crm-muted">{{ exception|default:"ไม่มีสิทธิ์เข้าถึง" }}</p>
+  <a class="crm-btn crm-btn--secondary" href="{% url 'core:home' %}">กลับหน้าแรก</a>
+</div>
+{% endblock %}
+{% block auth_content %}
+<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="crm-card" style="max-width:480px;">
+    <b>ไม่มีสิทธิ์เข้าถึง</b>
+    <p class="crm-muted">{{ exception|default:"ไม่มีสิทธิ์เข้าถึง" }}</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% load crm_format %}
+{% if not page.items %}
+  <div class="crm-card">ไม่พบข้อมูลตามเงื่อนไขที่ค้นหา</div>
+{% else %}
+<div class="crm-table" style="--crm-grid-cols: 0.7fr 1.3fr 1fr 1.3fr 1fr 1fr 0.8fr;">
+  <div class="crm-table__header">
+    <div class="crm-table__cell">ประวัติ</div>
+    <div class="crm-table__cell">ชื่อลูกค้า</div>
+    <div class="crm-table__cell">เบอร์โทร</div>
+    <div class="crm-table__cell">สินค้า</div>
+    <div class="crm-table__cell">ผู้ดูแล</div>
+    <div class="crm-table__cell">ติดตาม</div>
+    <div class="crm-table__cell">URL</div>
+  </div>
+  {% for c in page.items %}
+    {% with line=c.last_order.lines.all.0 %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">
+        <a class="crm-btn crm-btn--secondary" href="?{{ base_qs }}&page={{ page.page }}&customer_id={{ c.id }}#detail-{{ c.id }}">ดูประวัติ</a>
+      </div>
+      <div class="crm-table__cell">{{ c.customer_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ c.phone1|default:c.phone2|default:"-" }}</div>
+      <div class="crm-table__cell">{{ line.product_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ c.owner_display|default:"-" }}</div>
+      <div class="crm-table__cell">{{ c.followup.status|followup_status_label|default:"-" }}</div>
+      <div class="crm-table__cell">
+        {% if c.url %}<a class="crm-link" href="{{ c.url }}" target="_blank">เปิดลิงก์</a>{% else %}-{% endif %}
+      </div>
+    </div>
+    {% endwith %}
+  {% endfor %}
+</div>
+
+{% if detail %}
+<div id="detail-{{ detail.customer.id }}" class="crm-card" style="margin-top:16px;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <h3 style="margin:0 0 4px;">{{ detail.customer.customer_name|default:"-" }}</h3>
+      <p class="crm-muted" style="margin:0;">
+        เบอร์โทร: {{ detail.customer.phone1|default:"-" }} / เบอร์สำรอง: {{ detail.customer.phone2|default:"-" }}
+      </p>
+    </div>
+    <a href="{% url 'customers:detail' detail.customer.id %}" class="crm-btn crm-btn--secondary">เปิด Customer 360</a>
+  </div>
+
+  <div class="crm-kpi-row" style="margin-top:12px;">
+    {% include "components/_kpi_card.html" with label="สินค้า" value=detail.customer.last_order.lines.all.0.product_name|default:"-" %}
+    {% include "components/_kpi_card.html" with label="SKU" value=detail.customer.last_order.lines.all.0.sku|default:"-" %}
+    {% include "components/_kpi_card.html" with label="ผู้ดูแล" value=detail.customer.owner_display|default:"-" %}
+  </div>
+
+  {% if not detail.can_edit and not detail.can_assign_owner %}
+    <p class="crm-muted">ไม่มีสิทธิ์แก้ไขรายการนี้</p>
+  {% else %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:12px 0;">
+      {% if detail.can_edit %}
+      <form method="post" action="{% url 'customers:follow_marker' detail.customer.id %}" style="display:flex;gap:8px;align-items:end;">
+        {% csrf_token %}
+        <div class="crm-form-group" style="flex:1;margin-bottom:0;">
+          <label class="crm-label">ติดตาม</label>
+          <select name="status" class="crm-select">
+            {% for key, label in detail.followup_status_options %}
+              <option value="{{ key }}" {% if detail.current_status == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="crm-btn crm-btn--primary">บันทึกติดตาม</button>
+      </form>
+      {% endif %}
+
+      {% if detail.can_assign_owner and detail.owner_options %}
+      <form method="post" action="{% url 'customers:assign_owner' detail.customer.id %}" style="display:flex;gap:8px;align-items:end;">
+        {% csrf_token %}
+        <div class="crm-form-group" style="flex:1;margin-bottom:0;">
+          <label class="crm-label">มอบหมายผู้ดูแล</label>
+          <select name="staff_code" class="crm-select" onchange="this.form.owner_display.value=this.options[this.selectedIndex].dataset.name">
+            {% for name, code in detail.owner_options %}
+              <option value="{{ code }}" data-name="{{ name }}" {% if detail.customer.staff_code == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+          <input type="hidden" name="owner_display" value="{{ detail.customer.owner_display }}">
+        </div>
+        <button type="submit" class="crm-btn crm-btn--primary">บันทึกผู้ดูแล</button>
+      </form>
+      {% endif %}
+
+      {% if detail.can_assign_owner %}
+      <form method="post" action="{% url 'customers:assign_url' detail.customer.id %}" style="display:flex;gap:8px;align-items:end;">
+        {% csrf_token %}
+        <div class="crm-form-group" style="flex:1;margin-bottom:0;">
+          <label class="crm-label">อัพเดต URL</label>
+          <input class="crm-input" type="text" name="url" value="{{ detail.customer.url }}">
+        </div>
+        <button type="submit" class="crm-btn crm-btn--primary">บันทึก URL</button>
+      </form>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="crm-section-title">ประวัติสั่งซื้อเก่า</div>
+  {% include "customers/_order_history.html" with orders=detail.orders customer=detail.customer %}
+</div>
+{% endif %}
+
+{% include "components/_pager.html" with page=page base_qs=base_qs %}
+{% endif %}

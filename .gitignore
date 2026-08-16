@@ -1,0 +1,16 @@
+.venv/
+.venv_check/
+__pycache__/
+*.pyc
+.env
+*.sqlite3
+staticfiles/
+media/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dumps/
+backups/
+seed/*.csv
+!seed/users.csv
+scripts/deploy.env

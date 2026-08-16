@@ -1,0 +1,16 @@
+.crm-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.crm-kpi {
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4) var(--space-5);
+}
+
+.crm-kpi__label { color: var(--c-ink-2); font-size: 13px; margin-bottom: var(--space-2); }
+.crm-kpi__value { font-size: var(--fs-metric); font-weight: 700; }

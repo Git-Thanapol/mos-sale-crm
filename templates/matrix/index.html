@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load crm_format %}
+{% block title %}ตารางยอดขายรายวัน · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="📅 ตารางยอดขายรายวัน" subtitle="ยอดขายรายวันต่อคน แยกทีม UPSELL และทีมยา อาหารเสริม CRM พร้อมไฮไลต์ตามเป้า" %}
+
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div class="crm-form-group">
+    <label class="crm-label">เดือนที่ต้องการดู</label>
+    <div style="display:flex;gap:8px;max-width:420px;">
+      <select name="month" class="crm-select" onchange="this.form.submit()">
+        {% for m in month_options %}
+          <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ month_labels|get_item:m }}</option>
+        {% endfor %}
+      </select>
+      <select name="year" class="crm-select" onchange="this.form.submit()">
+        {% for y in year_options %}
+          <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|add:543 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</form>
+
+{% if matrix.unassigned_banner_amount %}
+<div class="crm-card" style="margin-bottom:16px;border-color:var(--c-accent);">
+  มียอดขาย {{ matrix.unassigned_banner_amount|thai_amount }} บาท จาก staff_code ที่ยังไม่ถูกจัดทีม
+  (<a class="crm-link" href="{% url 'teams:list' %}">ตั้งค่าทีมได้ที่หน้า ยอดขายทีม</a>)
+</div>
+{% endif %}
+
+<div class="crm-matrix-legend">
+  <span><span class="crm-matrix-chip crm-matrix-chip--yellow"></span>UPSELL รายบุคคล เกิน {{ matrix.thresholds.upsell_yellow|thai_int }} บาท</span>
+  <span><span class="crm-matrix-chip crm-matrix-chip--green"></span>UPSELL รายบุคคล เกิน {{ matrix.thresholds.upsell_green|thai_int }} บาท</span>
+  <span><span class="crm-matrix-chip crm-matrix-chip--green"></span>CRM รายบุคคล เกิน {{ matrix.thresholds.crm_green|thai_int }} บาท</span>
+  <span><span class="crm-matrix-chip crm-matrix-chip--pink"></span>วันหยุด / วันลา (ทุกคน หรือ รายคน)</span>
+</div>
+
+<div class="crm-matrix-wrap">
+  <table class="crm-matrix-table">
+    <thead>
+      <tr>
+        <th rowspan="2">วันที่</th>
+        <th colspan="{{ matrix.upsell_members|length|add:1 }}">ยอดขาย ทีมเสนอขาย UPSELL</th>
+        <th colspan="{{ matrix.crm_members|length|add:1 }}">ยอดขายยา อาหารเสริม CRM</th>
+        {% if matrix.unassigned_members %}
+          <th colspan="{{ matrix.unassigned_members|length|add:1 }}">ไม่มีทีม</th>
+        {% endif %}
+        <th rowspan="2">ยอดรวมทั้งหมด</th>
+      </tr>
+      <tr>
+        {% for m in matrix.upsell_members %}<th>{{ m.nickname }}</th>{% endfor %}
+        <th>ยอดรวมทีม</th>
+        {% for m in matrix.crm_members %}<th>{{ m.nickname }}</th>{% endfor %}
+        <th>ยอดรวมทีม</th>
+        {% for m in matrix.unassigned_members %}<th>{{ m.nickname }}</th>{% endfor %}
+        {% if matrix.unassigned_members %}<th>ยอดรวม</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in matrix.rows %}
+        <tr class="{% if row.is_holiday %}crm-matrix-row--holiday{% endif %}">
+          <td>{{ row.label }}{% if row.is_holiday %} ({{ row.holiday_label }}){% endif %}</td>
+          {% for m in matrix.upsell_members %}
+            {% with cell=row.upsell_cells|get_item:m.user_id %}
+              <td class="{% if cell.leave %}crm-matrix-cell--leave{% elif cell.highlight %}crm-matrix-cell--{{ cell.highlight }}{% endif %}">
+                {% if cell.leave %}ลา{% else %}{{ cell.amount|thai_amount }}{% endif %}
+              </td>
+            {% endwith %}
+          {% endfor %}
+          <td><b>{{ row.upsell_total|thai_amount }}</b></td>
+          {% for m in matrix.crm_members %}
+            {% with cell=row.crm_cells|get_item:m.user_id %}
+              <td class="{% if cell.leave %}crm-matrix-cell--leave{% elif cell.highlight %}crm-matrix-cell--{{ cell.highlight }}{% endif %}">
+                {% if cell.leave %}ลา{% else %}{{ cell.amount|thai_amount }}{% endif %}
+              </td>
+            {% endwith %}
+          {% endfor %}
+          <td><b>{{ row.crm_total|thai_amount }}</b></td>
+          {% for m in matrix.unassigned_members %}
+            {% with cell=row.unassigned_cells|get_item:m.key %}
+              <td>{{ cell.amount|thai_amount }}</td>
+            {% endwith %}
+          {% endfor %}
+          {% if matrix.unassigned_members %}<td><b>{{ row.unassigned_total|thai_amount }}</b></td>{% endif %}
+          <td><b>{{ row.grand_total|thai_amount }}</b></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<details class="crm-card" style="margin-top:24px;">
+  <summary style="cursor:pointer;font-weight:800;">จัดการวันหยุด / วันลา (EDITOR)</summary>
+  <div style="margin-top:16px;">
+    <form method="post" action="{% url 'matrix:save_holiday' %}" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end;">
+      {% csrf_token %}
+      <input type="hidden" name="base_qs" value="{{ base_qs }}">
+      <div class="crm-form-group">
+        <label class="crm-label">เลือกวันที่</label>
+        <input class="crm-input" type="date" name="date" required>
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">ขอบเขต</label>
+        <select class="crm-select" name="scope">
+          {% for value, label in scope_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">สถานะ</label>
+        <select class="crm-select" name="status">
+          {% for value, label in status_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">เลือกพนักงาน (ใช้เฉพาะขอบเขต 'รายคน')</label>
+        <select class="crm-select" name="user_id">
+          <option value="">-- ไม่ระบุ --</option>
+          {% for u in leave_users %}<option value="{{ u.id }}">{{ u.staff_name|default:u.email }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="crm-form-group" style="grid-column:span 2;">
+        <label class="crm-label">หมายเหตุ (ถ้ามี)</label>
+        <input class="crm-input" type="text" name="note">
+      </div>
+      <button type="submit" class="crm-btn crm-btn--primary">บันทึก</button>
+    </form>
+
+    <div class="crm-section-title" style="margin-top:20px;">วันที่ตั้งค่าแล้วในเดือนนี้</div>
+    {% if not holidays %}
+      <div class="crm-muted">ยังไม่มีการตั้งค่า</div>
+    {% else %}
+      {% for h in holidays %}
+        <div class="crm-card" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span>
+            {{ h.date|date:"D d/m/y" }} — {{ h.get_scope_display }}
+            {% if h.user %}({{ h.user.staff_name|default:h.user.email }}){% endif %}
+            — {{ h.get_status_display }}
+            {% if h.note %} — {{ h.note }}{% endif %}
+          </span>
+          <form method="post" action="{% url 'matrix:delete_holiday' h.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="base_qs" value="{{ base_qs }}">
+            <button type="submit" class="crm-btn crm-btn--secondary">ยกเลิก</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</details>
+{% endblock %}

@@ -1,0 +1,168 @@
+{
+  "note": "Load-bearing Thai/mixed UI strings extracted from source (crm_streamlit) during exploration. These must render byte-identical in the Django rewrite unless explicitly changed in DECISIONS.md. Not exhaustive of every string in the app — covers headers, vocab, and every permission-denial message found.",
+
+  "brand": {
+    "sidebar_title": "Sales CRM",
+    "sidebar_subtitle": "Telesales workspace",
+    "eyebrow": "CRM Core"
+  },
+
+  "nav_groups": ["ภาพรวม", "ลูกค้า", "ข้อมูล", "ระบบ"],
+  "nav_items": {
+    "Dashboard": "Dashboard",
+    "team_sales": "ยอดขายทีม",
+    "customers": "ค้นหาลูกค้า",
+    "followup": "ติดตามลูกค้า",
+    "add_order": "เพิ่มคำสั่งซื้อ",
+    "products": "สินค้า",
+    "sync_status": "Sync / System Status",
+    "users": "User / Role",
+    "settings": "Settings"
+  },
+
+  "page_headers": {
+    "dashboard_title": "Dashboard",
+    "dashboard_subtitle": "ภาพรวมงาน CRM รายวันสำหรับทีม Telesales",
+    "followup_title": "ติดตามลูกค้า",
+    "followup_subtitle": "จัดการ Lead และ Follow-up จาก Neon เท่านั้น",
+    "system_status_title": "Sync / System Status",
+    "system_status_subtitle": "สถานะระบบ CRM หลังย้ายข้อมูลหลักไป Neon",
+    "settings_title": "Settings",
+    "settings_subtitle": "พื้นที่ตั้งค่าระบบ CRM",
+    "customer_360_title_missing_id": "Customer 360",
+    "customer_360_subtitle_missing_id": "ไม่พบ customer_id ใน URL",
+    "customer_360_subtitle_not_found": "ไม่พบข้อมูล customer_id: {id}",
+    "customer_360_subtitle_denied": "ไม่มีสิทธิ์เข้าถึง"
+  },
+
+  "dashboard_kpi_labels": [
+    "ลูกค้าทั้งหมด", "ต้องติดตามวันนี้", "ค้างติดตาม", "Lead สนใจ", "ปิดการขายแล้ว", "อัปเดตล่าสุด"
+  ],
+  "dashboard_misc": {
+    "auto_refresh_toggle": "เปิดอัปเดตอัตโนมัติ",
+    "auto_refresh_off_caption": "ปิดไว้เพื่อลดโหลดอัตโนมัติ เปิดเมื่อต้องการติดตามยอดแบบสด",
+    "refresh_button": "รีเฟรชข้อมูลตอนนี้",
+    "status_card_title": "สถานะระบบ",
+    "status_card_body": "ข้อมูล CRM หลักอ่าน/เขียนจาก Neon PostgreSQL และ Supabase ใช้เฉพาะ Login/Auth เท่านั้น",
+    "sales_report_title": "รายงานยอดขาย",
+    "date_range_label": "ช่วงเวลา",
+    "owner_filter_label": "ผู้ดูแล",
+    "new_order_section": "NEW ORDER",
+    "sales_table_title": "ตารางรายการขาย",
+    "rows_shown_label": "จำนวนแถวที่แสดง"
+  },
+
+  "priority_options_canonical": ["Super VIP", "VIP", "Premium", "Economy", "NEW", "Dismiss"],
+  "priority_legacy_aliases": {
+    "urgent": "Super VIP", "ด่วนมาก": "Super VIP",
+    "high": "VIP", "สูง": "VIP",
+    "normal": "NEW", "ปกติ": "NEW",
+    "low": "Economy", "ต่ำ": "Economy"
+  },
+
+  "followup_filters": {
+    "lead_status_label": "สถานะลูกค้า",
+    "followup_status_label": "สถานะติดตาม",
+    "priority_label": "ความสำคัญ",
+    "product_sku_label": "สินค้า / SKU",
+    "owner_label": "ผู้ดูแล",
+    "due_date_label": "วันที่นัด",
+    "search_label": "ค้นหา",
+    "search_placeholder": "เบอร์โทร / ชื่อลูกค้า / เลขคำสั่งซื้อ",
+    "search_button": "ค้นหา",
+    "refresh_reset_button": "รีเฟรช / ล้างตัวกรอง",
+    "all_option": "ทั้งหมด",
+    "page_size_label": "จำนวนแถวต่อหน้า",
+    "pager_caption_format": "หน้า {page} / {total_pages} · ทั้งหมด {total_rows} รายการ"
+  },
+
+  "followup_dialog": {
+    "title": "ติดตามลูกค้า",
+    "width": "large"
+  },
+  "order_dialog": {
+    "title": "เพิ่มคำสั่งซื้อ",
+    "width": "large"
+  },
+
+  "customer_360_labels": {
+    "phone_primary": "เบอร์โทรหลัก",
+    "customer": "ลูกค้า",
+    "phone_secondary": "เบอร์สำรอง",
+    "province": "จังหวัด",
+    "postcode": "รหัสไปรษณีย์",
+    "latest_order_section": "Latest Order",
+    "no_order_history": "ยังไม่มีประวัติคำสั่งซื้อจากเบอร์โทรนี้",
+    "order_no": "เลขคำสั่งซื้อ",
+    "date": "วันที่",
+    "sale_type": "ประเภทการขาย",
+    "sales_amount": "ยอดขาย",
+    "sku": "SKU",
+    "product": "สินค้า",
+    "qty": "จำนวน",
+    "shipping": "ขนส่ง",
+    "tracking_no": "เลขพัสดุ",
+    "url_owner_section": "URL / Owner",
+    "assigned_staff": "ผู้ดูแล",
+    "url_label": "URL",
+    "open_link": "เปิดลิงก์",
+    "followup_detail_section": "รายละเอียด Follow-up",
+    "followup_status_select": "สถานะติดตาม",
+    "clear_date_checkbox": "ล้างวันที่",
+    "followup_note_label": "โน้ตติดตาม",
+    "save_followup_button": "บันทึก Follow-up",
+    "save_followup_toast": "บันทึก Follow-up แล้ว",
+    "order_history_section": "Order History ล่าสุด 20 รายการ",
+    "no_order_history_20": "ยังไม่มีเลขออเดอร์สำหรับแสดงประวัติสั่งซื้อเก่า",
+    "products_bought_section": "Products Bought",
+    "no_products_bought": "ยังไม่มีรายการสินค้าที่เคยซื้อ",
+    "purchase_count": "จำนวนครั้ง",
+    "latest_purchase": "ซื้อล่าสุด"
+  },
+  "followup_save_toast_on_followup_page": "บันทึกสำเร็จแล้ว",
+
+  "phone_validation": {
+    "rule_message": "ต้องเป็นตัวเลข 10 หลัก ขึ้นต้นด้วย 0 และห้ามมีสัญลักษณ์",
+    "require_one_message": "กรุณากรอกเบอร์โทรหรือเบอร์สำรอง",
+    "phone1_label": "เบอร์โทร",
+    "phone2_label": "เบอร์สำรอง"
+  },
+
+  "role_literals": {
+    "ADMIN": "ADMIN",
+    "EDITOR": "EDITOR",
+    "STAFF_TELESELL": "พนักงาน",
+    "VIEWER": "ทั่วไป",
+    "role_dropdown_options": ["EDITOR", "ADMIN", "พนักงาน", "TELESELL", "STAFF", "USER", "ทั่วไป"],
+    "unassigned_owner_display": "ยังไม่มอบหมาย"
+  },
+
+  "permission_denial_messages": {
+    "followup_page_blocked": "หน้านี้ใช้ได้เฉพาะ EDITOR และพนักงานที่ดูแลลูกค้า",
+    "order_popup_no_owner": "รายการนี้ยังไม่มีผู้ดูแล จึงยังเพิ่มคำสั่งซื้อจาก popup นี้ไม่ได้",
+    "order_owner_conflict": "มีผู้ดูแลแล้ว: {conflict_owner}",
+    "import_page_blocked": "หน้านี้ใช้ได้เฉพาะ EDITOR และพนักงานที่มีสิทธิเพิ่มคำสั่งซื้อ",
+    "import_editor_only_notice": "บัญชีพนักงานเพิ่มคำสั่งซื้อได้ แต่ไม่มีสิทธินำเข้า Excel หรือจัดการ import history",
+    "dashboard_own_data_only": "รายงานนี้แสดงเฉพาะข้อมูลของคุณ",
+    "customer_row_no_edit_right": "ไม่มีสิทธิ์แก้ไขรายการนี้",
+    "customer_owner_assign_denied": "ไม่มีสิทธิ์มอบหมายผู้ดูแล",
+    "customer_url_update_denied": "ไม่มีสิทธิ์อัปเดต URL",
+    "products_view_only_notice": "บัญชีนี้ดูรายการสินค้าได้ แต่เพิ่ม/แก้ไข/ปิดใช้งานได้เฉพาะ EDITOR",
+    "users_view_only_notice": "หน้านี้ดูได้อย่างเดียว เฉพาะ ADMIN/EDITOR เท่านั้นที่แก้ User / Role ได้",
+    "team_sales_blocked": "คุณไม่มีสิทธิ์เข้าดูหน้ายอดขายทีม",
+    "system_page_blocked": "หน้านี้เป็นระบบหลังบ้าน เฉพาะ EDITOR เท่านั้น",
+    "legacy_dashboard_blocked": "หน้านี้เป็น dashboard หลังบ้าน เฉพาะ CEO/EDITOR เท่านั้น",
+    "customer_detail_access_denied": "ไม่มีสิทธิ์เข้าถึงข้อมูลนี้",
+    "customer_detail_not_found_generic": "ไม่พบข้อมูลลูกค้าใน Neon",
+    "customer_detail_missing_id": "กรุณาเปิดหน้านี้จากปุ่มติดตามหรือดูประวัติในระบบ CRM"
+  },
+
+  "misc": {
+    "fork_button": "Fork",
+    "hosted_with_streamlit": "Hosted with Streamlit",
+    "logout_button": "ออกจากระบบ"
+  },
+  "_unverified": {
+    "logout_button": "Not confirmed against legacy source — the exploration reports did not capture an explicit logout control's label. Verify against crm_streamlit/auth_utils.py logout() call sites before treating as a parity requirement."
+  }
+}

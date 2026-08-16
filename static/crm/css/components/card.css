@@ -1,0 +1,12 @@
+.crm-card {
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-5);
+}
+
+.crm-section-title {
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  margin: var(--space-6) 0 var(--space-3);
+}

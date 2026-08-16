@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}ลูกค้า · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="ลูกค้า" subtitle="ค้นหาและดูข้อมูลลูกค้าแบบ server-side" %}
+
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">ผู้ดูแล</label>
+      <select name="staff" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for o in options.owners %}
+          <option value="{{ o }}" {% if filters.staff == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ค้นหา</label>
+      <input class="crm-input" type="text" name="keyword" value="{{ filters.keyword }}"
+             placeholder="ชื่อ / เบอร์ / รหัสไปรษณีย์ / เลขคำสั่งซื้อ">
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;margin-top:12px;">
+    <button type="submit" class="crm-btn crm-btn--primary" style="flex:1;">ค้นหา</button>
+  </div>
+</form>
+
+{% include "customers/_table.html" %}
+{% endblock %}

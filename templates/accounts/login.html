@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}เข้าสู่ระบบ · Sales CRM{% endblock %}
+{% block auth_content %}
+<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <form method="post" class="crm-card" style="width:360px;">
+    {% csrf_token %}
+    <p class="crm-eyebrow">Sales CRM</p>
+    <h1 class="crm-h1" style="font-size:20px;">เข้าสู่ระบบ</h1>
+
+    {% if form.non_field_errors %}
+      <div class="crm-error">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+
+    <div class="crm-form-group">
+      <label class="crm-label" for="{{ form.username.id_for_label }}">อีเมล</label>
+      {{ form.username }}
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label" for="{{ form.password.id_for_label }}">รหัสผ่าน</label>
+      {{ form.password }}
+    </div>
+
+    <button type="submit" class="crm-btn crm-btn--primary" style="width:100%;">เข้าสู่ระบบ</button>
+  </form>
+</div>
+{% endblock %}

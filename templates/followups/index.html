@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}ติดตามลูกค้า · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="ติดตามลูกค้า" subtitle="จัดการ Lead และ Follow-up" %}
+
+<h4 style="margin:0 0 8px;">ความสำคัญ</h4>
+<div class="crm-pill-tabs">
+  {% for p in priority_tabs %}
+    <a class="crm-pill{% if filters.priority == p %} crm-pill--active{% endif %}"
+       href="?{{ base_qs_no_priority }}&priority={{ p }}">{{ p }}</a>
+  {% endfor %}
+</div>
+
+{% include "followups/_filters.html" %}
+{% include "followups/_table.html" %}
+{% endblock %}

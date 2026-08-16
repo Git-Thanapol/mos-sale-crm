@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}นำเข้า Excel · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="นำเข้า Excel" subtitle="อัปโหลดไฟล์ .xlsx ตามเทมเพลตที่กำหนด" %}
+
+<div class="crm-card" style="margin-bottom:16px;">
+  <b>คอลัมน์ที่ต้องมีในแถวหัวตาราง (แถวแรก):</b>
+  <p class="crm-muted" style="margin-top:8px;">
+    เลขคำสั่งซื้อ · ชื่อลูกค้า (จำเป็น) · เบอร์โทร / เบอร์สำรอง (อย่างน้อย 1 ช่อง, จำเป็น) · SKU · ชื่อสินค้า ·
+    จำนวน · ราคา · วันที่สั่งซื้อ · ประเภทการขาย · จังหวัด · อำเภอ · รหัสไปรษณีย์ · ที่อยู่ ·
+    ผู้ดูแล · รหัสพนักงาน · เลขพัสดุ · ขนส่ง · สถานะ
+  </p>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="crm-card">
+  {% csrf_token %}
+  <div class="crm-form-group">
+    <label class="crm-label">{{ form.file.label }}</label>
+    {{ form.file }}
+    {% for e in form.file.errors %}<div class="crm-error">{{ e }}</div>{% endfor %}
+  </div>
+  <button type="submit" class="crm-btn crm-btn--primary">นำเข้าข้อมูล</button>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{# usage: include with orders (iterable of crm.orders.Order, .lines prefetched) #}
+{% load crm_format %}
+{% if not orders %}
+  <div class="crm-card crm-muted">ยังไม่มีเลขออเดอร์สำหรับแสดงประวัติสั่งซื้อเก่า</div>
+{% else %}
+<div class="crm-table" style="--crm-grid-cols: 1fr 1fr 1.4fr .8fr 1fr 1fr 1fr .8fr;">
+  <div class="crm-table__header">
+    <div class="crm-table__cell">เลขออเดอร์</div>
+    <div class="crm-table__cell">วันที่</div>
+    <div class="crm-table__cell">สินค้า</div>
+    <div class="crm-table__cell">จำนวน</div>
+    <div class="crm-table__cell">ยอดขาย</div>
+    <div class="crm-table__cell">ขนส่ง</div>
+    <div class="crm-table__cell">เลขพัสดุ</div>
+    <div class="crm-table__cell">URL</div>
+  </div>
+  {% for order in orders %}
+    {% with line=order.lines.all.0 %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">{{ order.order_no|default:"-" }}</div>
+      <div class="crm-table__cell">{{ order.order_date|default:"-" }}</div>
+      <div class="crm-table__cell">{{ line.product_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ line.quantity|default:"-"|thai_int }}</div>
+      <div class="crm-table__cell">
+        {% if order.sale_type == "FOLLOW" %}-{% else %}{{ order.total_amount|default:"-"|thai_amount }}{% endif %}
+      </div>
+      <div class="crm-table__cell">{{ order.carrier|default:"-" }}</div>
+      <div class="crm-table__cell">{{ order.tracking_no|default:"-" }}</div>
+      <div class="crm-table__cell">
+        {% if customer.url %}<a class="crm-link" href="{{ customer.url }}" target="_blank">เปิดลิงก์</a>{% else %}-{% endif %}
+      </div>
+    </div>
+    {% endwith %}
+  {% endfor %}
+</div>
+{% endif %}

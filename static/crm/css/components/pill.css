@@ -1,0 +1,42 @@
+/* Priority tabs on /followup — 6 outlined pills, one active. Built here in
+   Phase 1 so the design system is complete before any page uses it. */
+.crm-pill-tabs {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.crm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.crm-pill--active {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+  background: var(--c-accent-weak);
+}
+
+.crm-pill__count { color: var(--c-ink-2); font-weight: 400; }
+
+.crm-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 600;
+}
+.crm-badge--red { background: #FEE2E2; color: #B91C1C; }
+.crm-badge--orange { background: var(--c-accent-weak); color: #C2410C; }
+.crm-badge--blue { background: #DBEAFE; color: #1D4ED8; }
+.crm-badge--yellow { background: #FEF9C3; color: #A16207; }
+.crm-badge--gray { background: #F3F4F6; color: #4B5563; }

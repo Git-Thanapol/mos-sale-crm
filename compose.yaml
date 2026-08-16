@@ -1,0 +1,62 @@
+name: crm
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-crm}
+      POSTGRES_USER: ${POSTGRES_USER:-crm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+    command: >
+      postgres
+      -c shared_buffers=512MB
+      -c work_mem=32MB
+      -c random_page_cost=1.1
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-crm} -d ${POSTGRES_DB:-crm}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--appendonly", "no"]
+
+  web:
+    build:
+      context: .
+      args:
+        INSTALL_DEV: "true"
+    env_file: .env
+    environment:
+      RUN_MIGRATIONS: "1"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - static:/app/staticfiles
+      - media:/app/media
+
+  worker:
+    build:
+      context: .
+      args:
+        INSTALL_DEV: "true"
+    env_file: .env
+    command: ["python", "manage.py", "rqworker", "crm-default"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - media:/app/media
+
+volumes:
+  pgdata:
+  static:
+  media:

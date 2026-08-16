@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load crm_format %}
+{% block title %}User / Role · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="User / Role" subtitle="จัดการสิทธิ์และ staff mapping" %}
+
+{% if not can_manage %}
+  <div class="crm-card crm-muted" style="margin-bottom:16px;">
+    หน้านี้ดูได้อย่างเดียว เฉพาะ ADMIN/EDITOR เท่านั้นที่แก้ User / Role ได้
+  </div>
+{% endif %}
+
+<div class="crm-section-title">ทดสอบ mapping</div>
+<form method="get" class="crm-card" style="margin-bottom:16px;display:flex;gap:12px;align-items:end;">
+  <div class="crm-form-group" style="flex:1;">
+    <label class="crm-label">เลือก user เพื่อดูจำนวนลูกค้าที่จะเห็น</label>
+    <select name="test_email" class="crm-select">
+      <option value="">-</option>
+      {% for email in all_emails %}
+        <option value="{{ email }}" {% if tester_email == email %}selected{% endif %}>{{ email }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="crm-btn crm-btn--primary">ทดสอบ mapping</button>
+</form>
+
+{% if tester_result %}
+  <div class="crm-card" style="margin-bottom:16px;">
+    {% if tester_result.total > 0 %}
+      <p>{{ tester_result.email }} จะเห็นข้อมูลลูกค้า {{ tester_result.total|thai_int }} รายการ</p>
+    {% else %}
+      <p class="crm-muted">mapping นี้ยังไม่เห็นข้อมูลลูกค้า</p>
+    {% endif %}
+    <p class="crm-muted">
+      role={{ tester_result.role|default:"-" }} | staff_code={{ tester_result.staff_code|default:"-" }} |
+      staff_name={{ tester_result.staff_name|default:"-" }} | owner_alias={{ tester_result.owner_alias|default:"-" }}
+    </p>
+    {% if tester_result.samples %}
+      <div class="crm-table" style="--crm-grid-cols: minmax(160px,2fr) 120px 120px minmax(120px,1fr) 100px;margin-top:12px;">
+        <div class="crm-table__header">
+          <div class="crm-table__cell">ลูกค้า</div>
+          <div class="crm-table__cell">เบอร์โทร</div>
+          <div class="crm-table__cell">เบอร์สำรอง</div>
+          <div class="crm-table__cell">ผู้ดูแล</div>
+          <div class="crm-table__cell">รหัสพนักงาน</div>
+        </div>
+        {% for row in tester_result.samples %}
+          <div class="crm-table__row">
+            <div class="crm-table__cell">{{ row.customer_name }}</div>
+            <div class="crm-table__cell">{{ row.phone1|default:"-" }}</div>
+            <div class="crm-table__cell">{{ row.phone2|default:"-" }}</div>
+            <div class="crm-table__cell">{{ row.owner_display|default:"-" }}</div>
+            <div class="crm-table__cell">{{ row.staff_code|default:"-" }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% if can_manage %}
+<div class="crm-section-title">เพิ่ม user ใหม่</div>
+<form method="post" action="{% url 'accounts:create_user' %}" class="crm-card" style="margin-bottom:16px;">
+  {% csrf_token %}
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">Email</label>
+      <input class="crm-input" type="email" name="email">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">Role</label>
+      <select name="role" class="crm-select">
+        {% for value, label in create_form.role.field.choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">Staff code</label>
+      <input class="crm-input" type="text" name="staff_code">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">Staff name</label>
+      <input class="crm-input" type="text" name="staff_name">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">Owner mapping</label>
+      <select name="owner_alias" class="crm-select">
+        {% for value, label in create_form.owner_alias.choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">Active</label>
+      <input type="checkbox" name="is_active" checked>
+    </div>
+  </div>
+  <button type="submit" class="crm-btn crm-btn--primary">เพิ่ม / อัปเดต user</button>
+</form>
+{% endif %}
+
+<div class="crm-section-title">รายชื่อ User</div>
+{% for u in users %}
+  <details class="crm-card" style="margin-bottom:8px;">
+    <summary>{{ u.email }} | {{ u.role|default:"-" }} | {% if u.is_active %}active{% else %}inactive{% endif %}</summary>
+    {% if can_manage %}
+      <form method="post" action="{% url 'accounts:save_user' u.id %}" style="margin-top:12px;">
+        {% csrf_token %}
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+          <div class="crm-form-group">
+            <label class="crm-label">Email</label>
+            <input class="crm-input" type="email" name="email" value="{{ u.email }}">
+          </div>
+          <div class="crm-form-group">
+            <label class="crm-label">Role</label>
+            <select name="role" class="crm-select">
+              {% for value, label in create_form.role.field.choices %}
+                <option value="{{ value }}" {% if u.role == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="crm-form-group">
+            <label class="crm-label">Staff code</label>
+            <input class="crm-input" type="text" name="staff_code" value="{{ u.staff_code }}">
+          </div>
+          <div class="crm-form-group">
+            <label class="crm-label">Staff name</label>
+            <input class="crm-input" type="text" name="staff_name" value="{{ u.staff_name }}">
+          </div>
+          <div class="crm-form-group">
+            <label class="crm-label">Owner mapping</label>
+            <select name="owner_alias" class="crm-select">
+              {% for value, label in create_form.owner_alias.choices %}
+                <option value="{{ value }}" {% if u.owner_alias == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="crm-form-group">
+            <label class="crm-label">Active</label>
+            <input type="checkbox" name="is_active" {% if u.is_active %}checked{% endif %}>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button type="submit" class="crm-btn crm-btn--primary">บันทึก</button>
+          {% if u.is_active %}
+            <button type="submit" formaction="{% url 'accounts:deactivate_user' u.id %}" class="crm-btn crm-btn--secondary">ปิดใช้งาน user นี้</button>
+          {% endif %}
+          <button type="submit" formaction="{% url 'accounts:reset_password' u.id %}" class="crm-btn crm-btn--secondary"
+                  onclick="return confirm('ออกรหัสผ่านใหม่ให้ {{ u.email }}? รหัสผ่านเดิมจะใช้ไม่ได้ทันที');">ออกรหัสผ่านใหม่</button>
+        </div>
+      </form>
+    {% else %}
+      <p class="crm-muted" style="margin-top:8px;">
+        Staff code: {{ u.staff_code|default:"-" }} · Staff name: {{ u.staff_name|default:"-" }} ·
+        Owner mapping: {{ u.owner_alias|default:"-" }}
+      </p>
+    {% endif %}
+  </details>
+{% endfor %}
+{% endblock %}

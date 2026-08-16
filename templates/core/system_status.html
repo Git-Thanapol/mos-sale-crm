@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Sync / System Status · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="Sync / System Status" subtitle="สถานะระบบ CRM หลังย้ายข้อมูลหลักไป Neon" %}
+
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="Database" value="PostgreSQL (self-hosted)" %}
+  {% include "components/_kpi_card.html" with label="Cache" value="Redis" %}
+  {% include "components/_kpi_card.html" with label="Auto Refresh" value="Manual" %}
+</div>
+
+<div class="crm-card">
+  <b>สถานะปัจจุบัน</b><br>
+  ข้อมูล CRM ทั้งหมดอยู่บน PostgreSQL ที่รันในคอนเทนเนอร์ของระบบเอง ไม่ใช้บริการฐานข้อมูลออนไลน์ใด ๆ
+</div>
+{% endblock %}

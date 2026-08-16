@@ -1,0 +1,11 @@
+#modal-root dialog {
+  border: none;
+  border-radius: var(--r-card);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  width: min(720px, 92vw);
+}
+
+#modal-root dialog::backdrop {
+  background: rgba(31, 41, 55, .35);
+}

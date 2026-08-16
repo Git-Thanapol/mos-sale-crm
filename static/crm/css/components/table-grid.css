@@ -1,0 +1,29 @@
+/* Hand-built CSS-grid table, replacing the legacy per-row st.markdown
+   fragments (which never actually parented into one real <table>). Each
+   page sets --crm-grid-cols via an inline style on .crm-table. */
+.crm-table {
+  display: grid;
+  grid-template-columns: var(--crm-grid-cols, 1fr);
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  overflow-x: auto;
+}
+
+.crm-table__header, .crm-table__row {
+  display: contents;
+}
+
+.crm-table__cell {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--c-border);
+  font-size: 13px;
+}
+
+.crm-table__header .crm-table__cell {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+}

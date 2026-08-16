@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load crm_format %}
+{% block title %}สินค้า · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="สินค้า" subtitle="จัดการรายการสินค้า สถานะการใช้งาน และการเก็บถาวร" %}
+
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">สถานะสินค้า</label>
+      <select name="status" class="crm-select" onchange="this.form.submit()">
+        {% for opt in status_options %}
+          <option value="{{ opt }}" {% if status_label == opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">เรียงตาม</label>
+      <select name="sort" class="crm-select" onchange="this.form.submit()">
+        {% for opt in sort_options %}
+          <option value="{{ opt }}" {% if sort_label == opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ค้นหา SKU หรือชื่อสินค้า</label>
+      <input class="crm-input" type="text" name="search" value="{{ search }}">
+    </div>
+  </div>
+  <button type="submit" class="crm-btn crm-btn--primary">ค้นหา</button>
+</form>
+
+{% if not is_editor %}
+  <div class="crm-card crm-muted" style="margin-bottom:16px;">
+    บัญชีนี้ดูรายการสินค้าได้ แต่เพิ่ม/แก้ไข/ปิดใช้งานได้เฉพาะ EDITOR
+  </div>
+{% endif %}
+
+{% if is_editor %}
+<div class="crm-section-title">เพิ่มสินค้าใหม่</div>
+<form method="post" action="{% url 'catalog:create' %}" class="crm-card" style="margin-bottom:16px;">
+  {% csrf_token %}
+  <div style="display:grid;grid-template-columns:0.7fr 1.8fr 1.2fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">SKU</label>
+      <input class="crm-input" type="text" name="sku" value="{{ create_form.sku.value|default:'' }}">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ชื่อสินค้า</label>
+      <input class="crm-input" type="text" name="product_name" value="{{ create_form.product_name.value|default:'' }}">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">กลุ่มสินค้า</label>
+      <input class="crm-input" type="text" name="product_group" value="{{ create_form.product_group.value|default:'ทั่วไป' }}">
+    </div>
+  </div>
+  <button type="submit" class="crm-btn crm-btn--primary">เพิ่มสินค้า</button>
+</form>
+
+<div class="crm-section-title">นำเข้าสินค้าจาก Excel</div>
+<p class="crm-muted">รองรับไฟล์ .xlsx โดยใช้คอลัมน์ A=SKU, B=ชื่อสินค้า, C=กลุ่มสินค้า</p>
+<form method="post" action="{% url 'catalog:import' %}" enctype="multipart/form-data" class="crm-card" style="margin-bottom:16px;">
+  {% csrf_token %}
+  <div class="crm-form-group">
+    <label class="crm-label">อัปโหลดไฟล์สินค้า .xlsx</label>
+    <input class="crm-input" type="file" name="file" accept=".xlsx">
+  </div>
+  <button type="submit" class="crm-btn crm-btn--secondary">นำเข้าสินค้าใหม่</button>
+</form>
+{% endif %}
+
+{% if readiness_report %}
+<div class="crm-section-title">ผลตรวจสอบความพร้อมในการลบ</div>
+<div class="crm-card crm-muted" style="margin-bottom:8px;">
+  เพื่อความปลอดภัย ระบบยังไม่เปิดลบถาวร จนกว่าจะมี stable product reference/FK หรือ usage audit ครบถ้วน
+</div>
+<div class="crm-table" style="--crm-grid-cols: 60px 90px minmax(160px,1.5fr) minmax(200px,2fr) 100px minmax(140px,1.5fr);">
+  <div class="crm-table__header">
+    <div class="crm-table__cell">ID</div>
+    <div class="crm-table__cell">SKU</div>
+    <div class="crm-table__cell">สินค้า</div>
+    <div class="crm-table__cell">สถานะ</div>
+    <div class="crm-table__cell">จำนวนการใช้งาน</div>
+    <div class="crm-table__cell">เหตุผล</div>
+  </div>
+  {% for row in readiness_report %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">{{ row.product_id }}</div>
+      <div class="crm-table__cell">{{ row.sku|default:"-" }}</div>
+      <div class="crm-table__cell">{{ row.product_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ row.status_label }}</div>
+      <div class="crm-table__cell">{{ row.usage_count|thai_int }}</div>
+      <div class="crm-table__cell">{{ row.reason_label }}</div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="crm-section-title">รายการสินค้า</div>
+{% if not page.items %}
+  <div class="crm-card crm-muted">ยังไม่มีรายการสินค้า</div>
+{% else %}
+  <div class="crm-table" style="--crm-grid-cols: {% if is_editor %}40px {% endif %}90px minmax(200px,2fr) 130px 70px 70px 100px;">
+    <div class="crm-table__header">
+      {% if is_editor %}<div class="crm-table__cell">เลือก</div>{% endif %}
+      <div class="crm-table__cell">SKU</div>
+      <div class="crm-table__cell">ชื่อสินค้า</div>
+      <div class="crm-table__cell">กลุ่มสินค้า</div>
+      <div class="crm-table__cell">Active</div>
+      <div class="crm-table__cell">บันทึก</div>
+      <div class="crm-table__cell">ปิดใช้งาน</div>
+    </div>
+    {% for row in page.items %}
+      {% if is_editor and not row.archived_at %}
+        <form method="post" action="{% url 'catalog:save_row' row.id %}" class="crm-table__row">
+          {% csrf_token %}
+          <div class="crm-table__cell">
+            <input type="checkbox" name="product_id" value="{{ row.id }}" form="product-bulk-form">
+          </div>
+          <div class="crm-table__cell"><input class="crm-input" type="text" name="sku" value="{{ row.sku }}"></div>
+          <div class="crm-table__cell"><input class="crm-input" type="text" name="product_name" value="{{ row.product_name }}"></div>
+          <div class="crm-table__cell"><input class="crm-input" type="text" name="product_group" value="{{ row.product_group }}"></div>
+          <div class="crm-table__cell"><input type="checkbox" name="is_active" {% if row.is_active %}checked{% endif %}></div>
+          <div class="crm-table__cell"><button type="submit" class="crm-btn crm-btn--secondary">บันทึก</button></div>
+          <div class="crm-table__cell">
+            <button type="submit" formaction="{% url 'catalog:deactivate' row.id %}" class="crm-btn crm-btn--secondary" {% if not row.is_active %}disabled{% endif %}>ปิดใช้งาน</button>
+          </div>
+        </form>
+      {% else %}
+        <div class="crm-table__row">
+          {% if is_editor %}
+            <div class="crm-table__cell">
+              <input type="checkbox" name="product_id" value="{{ row.id }}" form="product-bulk-form">
+            </div>
+          {% endif %}
+          <div class="crm-table__cell">{{ row.sku|default:"-" }}</div>
+          <div class="crm-table__cell">{{ row.product_name }}</div>
+          <div class="crm-table__cell">{{ row.product_group }}</div>
+          <div class="crm-table__cell">
+            {% if row.archived_at %}เก็บถาวร{% elif row.is_active %}เปิด{% else %}ปิด{% endif %}
+          </div>
+          <div class="crm-table__cell">-</div>
+          <div class="crm-table__cell">-</div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% include "components/_pager.html" %}
+{% endif %}
+
+{% if is_editor %}
+<form id="product-bulk-form" method="post" action="{% url 'catalog:bulk_action' %}" class="crm-card" style="margin-top:16px;">
+  {% csrf_token %}
+  <input type="hidden" name="base_qs" value="{{ base_qs }}">
+  <div class="crm-section-title">จัดการสินค้าที่เลือก</div>
+  {% if status_label == "สินค้าที่เก็บถาวร" %}
+    <p class="crm-muted">สินค้าที่ Restore จะกลับมาเป็นปิดใช้งานก่อนเสมอ และจะยังไม่กลับไปอยู่ใน dropdown ขายจนกว่าจะเปิดใช้งานอีกครั้ง</p>
+  {% else %}
+    <p class="crm-muted">สินค้าที่ปิดใช้งานจะไม่แสดงใน dropdown เพิ่มคำสั่งซื้อ / Follow-up popup · สินค้าที่เก็บถาวรจะถูกปิดใช้งานและซ่อนจากรายการหลัก แต่ข้อมูลประวัติจะยังอยู่</p>
+  {% endif %}
+  <div class="crm-form-group">
+    <label class="crm-label">เหตุผลที่เก็บถาวร (ใช้เฉพาะปุ่มเก็บถาวรรายการที่เลือก)</label>
+    <input class="crm-input" type="text" name="reason" placeholder="Archived from Product Master">
+  </div>
+  <label>
+    <input type="checkbox" name="confirm"> ยืนยันการดำเนินการกับรายการที่เลือก
+  </label>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+    {% if status_label == "สินค้าที่เก็บถาวร" %}
+      <button type="submit" name="action" value="restore" class="crm-btn crm-btn--primary">Restore รายการที่เลือก</button>
+    {% else %}
+      <button type="submit" name="action" value="activate" class="crm-btn crm-btn--secondary">เปิดใช้งานรายการที่เลือก</button>
+      <button type="submit" name="action" value="deactivate" class="crm-btn crm-btn--secondary">ปิดใช้งานรายการที่เลือก</button>
+      <button type="submit" name="action" value="archive" class="crm-btn crm-btn--secondary">เก็บถาวรรายการที่เลือก</button>
+    {% endif %}
+    <button type="submit" name="action" value="check_readiness" class="crm-btn crm-btn--secondary">ตรวจสอบความพร้อมในการลบ</button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}

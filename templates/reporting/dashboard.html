@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load crm_format %}
+{% block title %}Dashboard · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="Dashboard" subtitle="ภาพรวมงาน CRM รายวันสำหรับทีม Telesales" %}
+
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="ลูกค้าทั้งหมด" value=kpis.total_customers|thai_int %}
+  {% include "components/_kpi_card.html" with label="ต้องติดตามในช่วงนี้" value=kpis.due_today|thai_int %}
+  {% include "components/_kpi_card.html" with label="ค้างติดตาม" value=kpis.overdue|thai_int %}
+  {% include "components/_kpi_card.html" with label="Lead สนใจ" value=kpis.interested|thai_int %}
+  {% include "components/_kpi_card.html" with label="ปิดการขายแล้ว" value=kpis.won|thai_int %}
+  {% include "components/_kpi_card.html" with label="อัปเดตล่าสุด" value=kpis.latest_update %}
+</div>
+
+{% comment %} <div class="crm-section-title">สถานะระบบ</div> {% endcomment %}
+{% comment %} <div class="crm-card">ข้อมูล CRM หลักอ่าน/เขียนจาก PostgreSQL ที่รันในคอนเทนเนอร์ของระบบเอง</div> {% endcomment %}
+
+<div class="crm-section-title">📊 รายงานยอดขาย</div>
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">ช่วงเวลา</label>
+      <select name="range" class="crm-select" onchange="this.form.submit()">
+        {% for r in range_options %}
+          <option value="{{ r }}" {% if range_label == r %}selected{% endif %}>{{ r }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if is_manager %}
+    <div class="crm-form-group">
+      <label class="crm-label">ผู้ดูแล</label>
+      <select name="owner" class="crm-select" onchange="this.form.submit()">
+        <option value="ทั้งหมด" {% if owner_filter == "ทั้งหมด" %}selected{% endif %}>ทั้งหมด</option>
+        {% for o in owner_options %}
+          <option value="{{ o }}" {% if owner_filter == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% else %}
+    <p class="crm-muted" style="align-self:end;margin-bottom:8px;">รายงานนี้แสดงเฉพาะข้อมูลของคุณ</p>
+    {% endif %}
+  </div>
+  {% if range_label == "เลือกวันเดียว" %}
+    <div class="crm-form-group">
+      <label class="crm-label">เลือกวันที่</label>
+      <input class="crm-input" type="date" name="single_date" value="{{ start_date|date:'Y-m-d' }}">
+    </div>
+  {% elif range_label == "เลือกช่วงวันที่" %}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="crm-form-group">
+        <label class="crm-label">ตั้งแต่วันที่</label>
+        <input class="crm-input" type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">ถึงวันที่</label>
+        <input class="crm-input" type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+    </div>
+  {% endif %}
+  <button type="submit" class="crm-btn crm-btn--primary">แสดงรายงาน</button>
+</form>
+
+<h5>NEW ORDER</h5>
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="ยอดขาย NEW ORDER" value=summary.NEW_ORDER.sales_amount|thai_amount %}
+  {% include "components/_kpi_card.html" with label="จำนวนออเดอร์ NEW ORDER" value=summary.NEW_ORDER.order_count|thai_int %}
+  {% include "components/_kpi_card.html" with label="ค่าเฉลี่ยต่อออเดอร์" value=summary.NEW_ORDER.aov|thai_amount %}
+</div>
+<h5>UPSELL</h5>
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="ยอดขาย UPSELL" value=summary.UPSELL.sales_amount|thai_amount %}
+  {% include "components/_kpi_card.html" with label="จำนวนออเดอร์ UPSELL" value=summary.UPSELL.order_count|thai_int %}
+  {% include "components/_kpi_card.html" with label="ค่าเฉลี่ยต่อออเดอร์" value=summary.UPSELL.aov|thai_amount %}
+</div>
+<h5>รวม</h5>
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="ยอดขายรวม" value=summary.TOTAL.sales_amount|thai_amount %}
+  {% include "components/_kpi_card.html" with label="จำนวนออเดอร์รวม" value=summary.TOTAL.order_count|thai_int %}
+  {% include "components/_kpi_card.html" with label="AOV" value=summary.TOTAL.aov|thai_amount %}
+</div>
+
+<div class="crm-section-title">ตารางรายการขาย</div>
+{% if not rows %}
+  <div class="crm-card crm-muted">ยังไม่มีรายการ NEW_ORDER / UPSELL ในช่วงเวลานี้</div>
+{% else %}
+<form method="post" action="{% url 'reporting:delete_sales' %}">
+  {% csrf_token %}
+  <input type="hidden" name="base_qs" value="{{ base_qs }}">
+  <div class="crm-table" style="--crm-grid-cols: 52px 84px 132px 120px minmax(240px,2fr) 96px 112px minmax(140px,1fr){% if can_delete %} 60px{% endif %};">
+    <div class="crm-table__header">
+      <div class="crm-table__cell">ลำดับ</div>
+      <div class="crm-table__cell">เวลา</div>
+      <div class="crm-table__cell">ประเภทคำสั่งซื้อ</div>
+      <div class="crm-table__cell">เลขคำสั่งซื้อ</div>
+      <div class="crm-table__cell">ชื่อสินค้า</div>
+      <div class="crm-table__cell">จำนวนชิ้น</div>
+      <div class="crm-table__cell">ราคาอัพ</div>
+      <div class="crm-table__cell">พนักงานที่สร้าง</div>
+      {% if can_delete %}<div class="crm-table__cell">ลบ</div>{% endif %}
+    </div>
+    {% for row in rows %}
+      <div class="crm-table__row">
+        <div class="crm-table__cell">{{ forloop.counter }}</div>
+        <div class="crm-table__cell">{{ row.sale_time }} น.</div>
+        <div class="crm-table__cell">{{ row.sale_type }}</div>
+        <div class="crm-table__cell">{{ row.order_id }}</div>
+        <div class="crm-table__cell">{{ row.sku }} {{ row.product_name }}</div>
+        <div class="crm-table__cell">{{ row.quantity|thai_int }}</div>
+        <div class="crm-table__cell">{{ row.amount|thai_amount }}</div>
+        <div class="crm-table__cell">{{ row.created_staff|default:"-" }}</div>
+        {% if can_delete %}
+        <div class="crm-table__cell">
+          {% if row.can_delete %}<input type="checkbox" name="line_id" value="{{ row.line_id }}">{% endif %}
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% if can_delete %}
+    <button type="submit" class="crm-btn crm-btn--secondary" style="margin-top:12px;"
+            onclick="return confirm('ยืนยันว่าต้องการลบคำสั่งซื้อที่เลือกแบบถาวร?');">ลบคำสั่งซื้อที่เลือก</button>
+  {% endif %}
+</form>
+
+<div class="crm-card" style="max-width:460px;margin-top:16px;">
+  <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--c-border);">
+    <b>จำนวนออเดอร์</b><span>{{ summary.TOTAL.order_count|thai_int }}</span>
+  </div>
+  <div style="display:flex;justify-content:space-between;padding:8px 0;">
+    <b>ยอดขายทั้งหมด</b><span>{{ summary.TOTAL.sales_amount|thai_amount }}</span>
+  </div>
+</div>
+{% endif %}
+
+{% if chart %}
+<div class="crm-section-title">ยอดขายรายวัน</div>
+<div class="crm-card" style="display:flex;gap:12px;align-items:flex-end;height:180px;overflow-x:auto;">
+  {% for point in chart %}
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:48px;">
+      <div style="display:flex;gap:2px;align-items:flex-end;height:140px;">
+        <div title="NEW_ORDER: {{ point.values.NEW_ORDER|thai_amount }}"
+             style="width:16px;background:var(--c-accent);height:{% widthratio point.values.NEW_ORDER max_amount 140 %}px;"></div>
+        <div title="UPSELL: {{ point.values.UPSELL|thai_amount }}"
+             style="width:16px;background:var(--c-accent-weak);border:1px solid var(--c-accent);height:{% widthratio point.values.UPSELL max_amount 140 %}px;"></div>
+      </div>
+      <span class="crm-muted" style="font-size:11px;">{{ point.day|date:"d/m" }}</span>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

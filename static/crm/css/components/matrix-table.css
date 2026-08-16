@@ -1,0 +1,82 @@
+/* Daily sell matrix: a real <table> (not the div-grid .crm-table used
+   elsewhere) because it needs a genuine two-level colspan/rowspan header —
+   member-per-team columns grouped under one team header row. */
+.crm-matrix-wrap {
+  overflow-x: auto;
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+}
+
+.crm-matrix-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.crm-matrix-table th, .crm-matrix-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--c-border);
+  text-align: right;
+}
+
+.crm-matrix-table th:first-child, .crm-matrix-table td:first-child {
+  text-align: left;
+}
+
+.crm-matrix-table thead th {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+}
+
+.crm-matrix-table thead tr:first-child th {
+  border-bottom: 1px solid rgba(255, 255, 255, .3);
+}
+
+.crm-matrix-row--holiday {
+  background: #FDE4E4;
+}
+
+.crm-matrix-row--holiday td {
+  color: #B91C1C;
+}
+
+.crm-matrix-cell--yellow {
+  background: #FFF3CC;
+}
+
+.crm-matrix-cell--green {
+  background: #E9F8EF;
+}
+
+.crm-matrix-cell--leave {
+  background: #F3F4F6;
+  color: var(--c-ink-2);
+}
+
+.crm-matrix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--c-ink-2);
+}
+
+.crm-matrix-chip {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.crm-matrix-chip--yellow { background: #FFF3CC; }
+.crm-matrix-chip--green { background: #E9F8EF; border: 1px solid #16A34A; }
+.crm-matrix-chip--pink { background: #FDE4E4; }

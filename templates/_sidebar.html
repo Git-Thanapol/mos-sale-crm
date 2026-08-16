@@ -1,0 +1,44 @@
+<aside class="crm-sidebar">
+  <p class="crm-sidebar__brand-title">Sales CRM</p>
+  <p class="crm-sidebar__brand-subtitle">Telesales workspace</p>
+
+  {% for group in nav_groups %}
+    <div class="crm-sidebar__group-label">{{ group.label }}</div>
+    {% for item in group.items %}
+      {% if item.allowed %}
+        <a class="crm-sidebar__item{% if request.resolver_match.view_name == item.url_name %} crm-sidebar__item--active{% endif %}"
+           href="{% url item.url_name %}">{{ item.label }}</a>
+      {% else %}
+        <span class="crm-sidebar__item crm-sidebar__item--disabled">{{ item.label }}</span>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  <div class="crm-sidebar__group-label">&nbsp;</div>
+  <button type="button" id="crm-theme-toggle" class="crm-sidebar__item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">🌙 โหมดมืด</button>
+  <form method="post" action="{% url 'accounts:logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="crm-sidebar__item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">ออกจากระบบ</button>
+  </form>
+</aside>
+<script>
+  (function () {
+    var btn = document.getElementById("crm-theme-toggle");
+    function label() {
+      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      btn.textContent = isDark ? "☀️ โหมดสว่าง" : "🌙 โหมดมืด";
+    }
+    label();
+    btn.addEventListener("click", function () {
+      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("crm-theme", "light");
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("crm-theme", "dark");
+      }
+      label();
+    });
+  })();
+</script>

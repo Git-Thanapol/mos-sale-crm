@@ -1,0 +1,16 @@
+{% load crm_format %}
+{# usage: include with page (a crm.core.pagination.Page instance) and base_qs (current querystring, "page" param stripped) #}
+<div class="crm-pager">
+  <span class="crm-pager__caption">
+    หน้า {{ page.page|thai_int }} / {{ page.total_pages|thai_int }} · ทั้งหมด {{ page.total_rows|thai_int }} รายการ
+  </span>
+  {% for p in page.window %}
+    {% if p == None %}
+      <span class="crm-pager__ellipsis">…</span>
+    {% elif p == page.page %}
+      <span class="crm-pager__link crm-pager__link--active">{{ p }}</span>
+    {% else %}
+      <a class="crm-pager__link" href="?{{ base_qs }}&page={{ p }}">{{ p }}</a>
+    {% endif %}
+  {% endfor %}
+</div>

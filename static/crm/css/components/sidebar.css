@@ -1,0 +1,39 @@
+.crm-sidebar {
+  background: var(--c-surface);
+  border-right: 1px solid var(--c-border);
+  padding: var(--space-6) var(--space-4);
+}
+
+.crm-sidebar__brand-title { font-weight: 700; font-size: 18px; margin: 0; }
+.crm-sidebar__brand-subtitle { color: var(--c-ink-2); font-size: 12px; margin: 0 0 var(--space-6); }
+
+.crm-sidebar__group-label {
+  color: var(--c-ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+.crm-sidebar__item {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--r-pill);
+  text-decoration: none;
+  color: var(--c-ink);
+  margin-bottom: 2px;
+}
+
+.crm-sidebar__item:hover { background: var(--c-accent-weak); }
+
+.crm-sidebar__item--active {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-weight: 600;
+}
+
+.crm-sidebar__item--disabled {
+  color: var(--c-ink-2);
+  opacity: .5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

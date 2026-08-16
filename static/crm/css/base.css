@@ -1,0 +1,84 @@
+/* TODO(Phase 1 follow-up): vendor NotoSansThai-{Regular,SemiBold,Bold}.woff2
+   into static/crm/fonts/ before Phase 7 cutover — self-hosted only, no
+   Google Fonts (the no-online-services rule applies to the browser too).
+   Until then the font-family stack below falls back to the OS's Thai-capable
+   system font, which is why "Noto Sans Thai" is listed first but not @font-face'd
+   yet: no broken network request, just an early fallback. */
+@font-face {
+  font-family: "Noto Sans Thai";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("../fonts/NotoSansThai-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("../fonts/NotoSansThai-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Noto Sans Thai";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("../fonts/NotoSansThai-Bold.woff2") format("woff2");
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: "Noto Sans Thai", "Leelawadee UI", "Tahoma", system-ui, sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.65; /* Thai needs more leading than Latin */
+  color: var(--c-ink);
+  background: linear-gradient(180deg, var(--c-bg-grad-a), var(--c-bg-grad-b));
+  min-height: 100vh;
+}
+
+a { color: inherit; }
+
+.crm-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.crm-main {
+  padding: var(--space-6) var(--space-8);
+  max-width: 1400px;
+  overflow-x: auto;
+}
+
+.crm-eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  color: var(--c-accent);
+  text-transform: uppercase; /* ASCII eyebrow only, e.g. "CRM Core" — never on Thai text */
+  letter-spacing: .04em;
+  margin: 0 0 var(--space-2);
+}
+
+.crm-h1 {
+  font-size: var(--fs-h1);
+  font-weight: 700;
+  margin: 0 0 var(--space-1);
+}
+
+.crm-subtitle {
+  color: var(--c-ink-2);
+  margin: 0 0 var(--space-6);
+}
+
+.crm-muted { color: var(--c-ink-2); }
+
+@media (max-width: 900px) {
+  .crm-layout { grid-template-columns: 1fr; }
+}

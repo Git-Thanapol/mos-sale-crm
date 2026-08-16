@@ -1,0 +1,32 @@
+{
+  "captured_at": "2026-07-25",
+  "source": "https://sales-dashboard-ngzg5jx9lwqosnpnplbuk2.streamlit.app",
+  "method": "manual browser observation (Phase 0, pre-tooling); scripts/bench_pages.py to be built in Phase 1 and re-run against this same URL before it is decommissioned (Phase 7) for a scripted p50/p95 table",
+  "note": "Only /followup was actually timed/observed in this pass. Do not treat other rows as measured — they are unmeasured placeholders and must not be quoted to the customer as facts until scripts/bench_pages.py produces real numbers.",
+  "routes": [
+    {
+      "route": "/followup",
+      "role_tested": "logged-in user seen in the shared demo account",
+      "observed": "Filter panel, 6 priority tabs, and pager (\"หน้า 1 / 1,990 · ทั้งหมด 19,891 รายการ\") render immediately. The 11-column result table below the pager never renders any rows: the page does not scroll past the pager after a 20s+ wait, i.e. the row payload never arrives client-side.",
+      "p50_ms": null,
+      "p95_ms": null,
+      "status": "FAILS_TO_RENDER",
+      "confirms_report": "data-layer-report.md §7.3 — row_number() OVER (PARTITION BY phone_key) computed over the full valid table before scope/filters are applied"
+    },
+    { "route": "/", "status": "not_measured" },
+    { "route": "/dashboard", "status": "not_measured" },
+    { "route": "/customers", "status": "not_measured" },
+    { "route": "/customers/<id>", "status": "not_measured" },
+    { "route": "/orders/new", "status": "not_measured" },
+    { "route": "/products", "status": "not_measured" },
+    { "route": "/users", "status": "not_measured" },
+    { "route": "/team-sales", "status": "not_measured" },
+    { "route": "/system-status", "status": "not_measured" },
+    { "route": "/settings", "status": "not_measured" }
+  ],
+  "target_promise": {
+    "/followup page 1, staff user": "< 150 ms p95 (today: fails to render)",
+    "/customers list + search": "< 200 ms p95",
+    "/dashboard KPIs": "< 250 ms p95"
+  }
+}

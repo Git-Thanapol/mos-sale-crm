@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load crm_format %}
+{% block title %}{{ customer.customer_name|default:"Customer 360" }} · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title=customer.customer_name|default:"Customer 360" subtitle="ข้อมูลลูกค้า, ออเดอร์ล่าสุด, Follow-up, ประวัติสั่งซื้อ และสินค้าที่เคยซื้อ" %}
+
+<div class="crm-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div>
+      <div class="crm-muted">เบอร์โทรหลัก</div>
+      <div style="font-size:20px;font-weight:800;">{{ customer.phone1|default:customer.phone2|default:"-" }}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      {% include "components/_badge.html" with label=customer.followup.lead_status|lead_label|default:"ลูกค้าใหม่" tone="blue" %}
+      {% include "components/_badge.html" with label=customer.followup.status|followup_status_label|default:"ยังไม่ตั้งติดตาม" tone="gray" %}
+      {% include "components/_badge.html" with label=customer.followup.priority|default:"NEW" tone=customer.followup.priority|priority_tone %}
+    </div>
+  </div>
+</div>
+
+<div class="crm-kpi-row" style="margin-top:16px;">
+  {% include "components/_kpi_card.html" with label="ลูกค้า" value=customer.customer_name|default:"-" %}
+  {% include "components/_kpi_card.html" with label="เบอร์สำรอง" value=customer.phone2|default:"-" %}
+  {% include "components/_kpi_card.html" with label="จังหวัด" value=customer.province|default:"-" %}
+  {% include "components/_kpi_card.html" with label="รหัสไปรษณีย์" value=customer.postal_code|default:"-" %}
+</div>
+
+<div class="crm-section-title">Latest Order</div>
+{% with last=customer.last_order line=customer.last_order.lines.all.0 %}
+{% if not last %}
+  <div class="crm-card crm-muted">ยังไม่มีประวัติคำสั่งซื้อจากเบอร์โทรนี้</div>
+{% else %}
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="เลขคำสั่งซื้อ" value=last.order_no|default:"-" %}
+  {% include "components/_kpi_card.html" with label="วันที่" value=last.order_date|default:"-" %}
+  {% include "components/_kpi_card.html" with label="ประเภทการขาย" value=last.sale_type %}
+  {% include "components/_kpi_card.html" with label="ยอดขาย" value=last.total_amount|default:"-"|thai_amount %}
+</div>
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="SKU" value=line.sku|default:"-" %}
+  {% include "components/_kpi_card.html" with label="สินค้า" value=line.product_name|default:"-" %}
+  {% include "components/_kpi_card.html" with label="จำนวน" value=line.quantity|default:"-"|thai_int %}
+  {% include "components/_kpi_card.html" with label="ขนส่ง" value=last.carrier|default:"-" %}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="crm-section-title">URL / Owner</div>
+<div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;">
+  {% include "components/_kpi_card.html" with label="ผู้ดูแล" value=customer.owner_display|default:"-" %}
+  <div class="crm-card">
+    <div class="crm-muted">URL</div>
+    {% if customer.url %}<a class="crm-link" href="{{ customer.url }}" target="_blank">เปิดลิงก์</a>{% else %}-{% endif %}
+  </div>
+</div>
+
+<div class="crm-section-title">รายละเอียด Follow-up</div>
+<div class="crm-card crm-muted">อ่านอย่างเดียว — แก้ไขได้ใน Phase 4</div>
+
+<div class="crm-section-title">Order History ล่าสุด 20 รายการ</div>
+{% include "customers/_order_history.html" with orders=orders|slice:":20" customer=customer %}
+
+<div class="crm-section-title">Products Bought</div>
+{% if not products_bought %}
+  <div class="crm-card crm-muted">ยังไม่มีรายการสินค้าที่เคยซื้อ</div>
+{% else %}
+<div class="crm-table" style="--crm-grid-cols: 1fr 2fr 1fr 1fr;">
+  <div class="crm-table__header">
+    <div class="crm-table__cell">SKU</div>
+    <div class="crm-table__cell">สินค้า</div>
+    <div class="crm-table__cell">จำนวนครั้ง</div>
+    <div class="crm-table__cell">ซื้อล่าสุด</div>
+  </div>
+  {% for p in products_bought %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">{{ p.sku|default:"-" }}</div>
+      <div class="crm-table__cell">{{ p.product_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ p.count|thai_int }}</div>
+      <div class="crm-table__cell">{{ p.latest|default:"-" }}</div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

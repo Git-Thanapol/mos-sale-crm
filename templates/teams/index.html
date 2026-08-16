@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load crm_format %}
+{% block title %}ยอดขายทีม · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="ยอดขายทีม" subtitle="แสดงยอดรวมคำสั่งซื้อที่เพิ่ม แยกตามทีม" %}
+
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">วันที่เริ่มต้น</label>
+      <input class="crm-input" type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">วันที่สิ้นสุด</label>
+      <input class="crm-input" type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ประเภทออเดอร์</label>
+      <select name="sale_type" class="crm-select">
+        {% for opt in sale_type_options %}
+          <option value="{{ opt }}" {% if sale_type_label == opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ทีม</label>
+      <select name="team" class="crm-select">
+        {% for opt in team_options %}
+          <option value="{{ opt }}" {% if team_label == opt %}selected{% endif %}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <button type="submit" class="crm-btn crm-btn--primary">แสดงรายงาน</button>
+</form>
+
+{% if error %}
+  <div class="crm-card" style="border-color:var(--c-accent);">{{ error }}</div>
+{% else %}
+
+<div class="crm-section-title">ยอดรวมระดับทีม</div>
+{% for team in summary.teams %}
+  <div class="crm-card" style="margin-bottom:12px;">
+    <h5>{{ team.team_name }}</h5>
+    <div class="crm-kpi-row">
+      {% include "components/_kpi_card.html" with label="จำนวนออเดอร์" value=team.order_count|thai_int %}
+      {% include "components/_kpi_card.html" with label="ยอดขายรวม" value=team.sales_amount|thai_amount %}
+      {% include "components/_kpi_card.html" with label="จำนวนรายการ" value=team.row_count|thai_int %}
+    </div>
+  </div>
+{% endfor %}
+
+{% if summary.unassigned.row_count > 0 %}
+  <div class="crm-card crm-muted" style="margin-bottom:16px;">
+    ยังมีรายการที่ยังไม่ถูกจัดทีม: {{ summary.unassigned.row_count|thai_int }} รายการ / {{ summary.unassigned.order_count|thai_int }} ออเดอร์
+  </div>
+{% endif %}
+
+<div class="crm-section-title">Top 10 สินค้าขายดี</div>
+<p class="crm-muted">เรียงตามจำนวนสินค้าที่ขายได้</p>
+{% if not top_products %}
+  <div class="crm-card crm-muted">ยังไม่มีข้อมูลสินค้าขายดีในทีม เพราะยังไม่ได้จัด User เข้าทีม</div>
+{% else %}
+  <div class="crm-table" style="--crm-grid-cols: 64px 96px minmax(240px,2fr) 120px 96px;">
+    <div class="crm-table__header">
+      <div class="crm-table__cell">อันดับ</div>
+      <div class="crm-table__cell">SKU</div>
+      <div class="crm-table__cell">สินค้า</div>
+      <div class="crm-table__cell">จำนวนขาย</div>
+      <div class="crm-table__cell">ออเดอร์</div>
+    </div>
+    {% for row in top_products %}
+      <div class="crm-table__row">
+        <div class="crm-table__cell">{{ forloop.counter }}</div>
+        <div class="crm-table__cell">{{ row.sku|default:"-" }}</div>
+        <div class="crm-table__cell">{{ row.product_name|default:"-" }}</div>
+        <div class="crm-table__cell">{{ row.total_quantity|thai_int }}</div>
+        <div class="crm-table__cell">{{ row.order_count|thai_int }}</div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endif %}
+
+<div class="crm-section-title" style="margin-top:24px;">ตั้งค่าทีม User</div>
+{% if not assignment_users %}
+  <div class="crm-card crm-muted">ยังไม่พบ User ที่เปิดใช้งาน</div>
+{% else %}
+  <p class="crm-muted">เลือกทีมแล้วบันทึกทีละ User การเปลี่ยนทีมจะเริ่มมีผลตั้งแต่เวลาที่บันทึก</p>
+  {% for row in assignment_users %}
+    <form method="post" action="{% url 'teams:assign' row.user_id %}" class="crm-card" style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 1fr;gap:16px;align-items:end;margin-bottom:8px;">
+      {% csrf_token %}
+      <input type="hidden" name="base_qs" value="{{ base_qs }}">
+      <div>
+        <b>{{ row.staff_name|default:"-" }}</b>
+        <div class="crm-muted">{{ row.email }}</div>
+      </div>
+      <div>
+        <b>Role</b>
+        <div class="crm-muted">{{ row.role|default:"-" }}</div>
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">ทีม</label>
+        <select name="team_choice" class="crm-select">
+          {% for opt in assignment_options %}
+            <option value="{{ opt }}" {% if row.current_label == opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="crm-btn crm-btn--secondary">บันทึก</button>
+    </form>
+  {% endfor %}
+{% endif %}
+{% endblock %}

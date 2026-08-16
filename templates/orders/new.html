@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load crm_format static %}
+{% block title %}เพิ่มคำสั่งซื้อ · Sales CRM{% endblock %}
+{% block extra_head %}
+<script src="{% static 'crm/js/address-cascade.js' %}" defer></script>
+<script src="{% static 'crm/js/sku-autocomplete.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="เพิ่มคำสั่งซื้อ" subtitle="สร้างคำสั่งซื้อใหม่ให้ลูกค้า (ลูกค้าใหม่หรือลูกค้าเดิม)" %}
+
+{% if form.non_field_errors %}
+  <div class="crm-card" style="border:1px solid #DC2626;margin-bottom:16px;">
+    {% for error in form.non_field_errors %}<p class="crm-error" style="margin:0;">{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" class="crm-card">
+  {% csrf_token %}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">{{ form.customer_name.label }}</label>
+      {{ form.customer_name }}
+      {% for e in form.customer_name.errors %}<div class="crm-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">{{ form.order_no.label }}</label>
+      {{ form.order_no }}
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">{{ form.phone1.label }}</label>
+      {{ form.phone1 }}
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">{{ form.phone2.label }}</label>
+      {{ form.phone2 }}
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">{{ form.sale_type.label }}</label>
+      {{ form.sale_type }}
+    </div>
+    {% if is_manager %}
+    <div class="crm-form-group">
+      <label class="crm-label">{{ form.staff_code.label }}</label>
+      {{ form.staff_code }}
+    </div>
+    {% else %}
+    <div class="crm-form-group">
+      <label class="crm-label">ผู้ดูแล</label>
+      <input class="crm-input" type="text" value="{{ request.user.staff_name|default:request.user.email }} (ล็อกเป็นบัญชีของคุณ)" disabled>
+    </div>
+    {% endif %}
+  </div>
+  <div class="crm-form-group">
+    <label class="crm-label">{{ form.url.label }}</label>
+    {{ form.url }}
+  </div>
+
+  <div class="crm-form-group"
+       x-data='thAddressCascade({{ address_initial|default:"{}" }})'>
+    <label class="crm-label" style="display:block;margin-bottom:8px;">ที่อยู่จัดส่ง</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">
+      <select class="crm-select" x-model="provinceCode" @change="onProvinceChange()">
+        <option value="">-- จังหวัด --</option>
+        <template x-for="p in (data ? data.provinces : [])" :key="p.code">
+          <option :value="p.code" x-text="p.name"></option>
+        </template>
+      </select>
+      <select class="crm-select" x-model="districtCode" @change="onDistrictChange()" :disabled="!provinceCode">
+        <option value="">-- อำเภอ --</option>
+        <template x-for="d in districts" :key="d.code">
+          <option :value="d.code" x-text="d.name"></option>
+        </template>
+      </select>
+      <select class="crm-select" x-model="subdistrictCode" @change="onSubdistrictChange()" :disabled="!districtCode">
+        <option value="">-- ตำบล --</option>
+        <template x-for="s in subdistricts" :key="s.code">
+          <option :value="s.code" x-text="s.name"></option>
+        </template>
+      </select>
+      <input class="crm-input" type="text" name="postal_code" placeholder="รหัสไปรษณีย์"
+             x-model="postalCode" @input="onPostalInput()" maxlength="5" inputmode="numeric">
+    </div>
+    <template x-if="zipMatches.length > 1">
+      <div class="crm-form-group" style="margin-top:8px;">
+        <label class="crm-label">พบหลายพื้นที่สำหรับรหัสไปรษณีย์นี้ กรุณาเลือก</label>
+        <select class="crm-select" @change="chooseZipMatch($event.target.value)">
+          <option value="">-- เลือกพื้นที่ --</option>
+          <template x-for="(m, idx) in zipMatches" :key="idx">
+            <option :value="idx" x-text="labelFor(m)"></option>
+          </template>
+        </select>
+      </div>
+    </template>
+    <input type="hidden" name="province" :value="provinceName">
+    <input type="hidden" name="city" :value="districtName">
+  </div>
+
+  <div class="crm-form-group">
+    <label class="crm-label">{{ form.address.label }}</label>
+    {{ form.address }}
+  </div>
+
+  <div class="crm-form-group">
+    <label class="crm-label" style="display:block;margin-bottom:8px;">รายการสินค้า</label>
+    <div style="display:grid;grid-template-columns:1fr 2fr 0.6fr 0.8fr;gap:8px;margin-bottom:6px;">
+      <span class="crm-muted">SKU</span><span class="crm-muted">ชื่อสินค้า</span>
+      <span class="crm-muted">จำนวน</span><span class="crm-muted">ราคา</span>
+    </div>
+    {% for i in "012345" %}
+    {% with sku_name="sku_"|add:i product_name="product_name_"|add:i qty_name="qty_"|add:i amount_name="amount_"|add:i %}
+    <div style="display:grid;grid-template-columns:1fr 2fr 0.6fr 0.8fr;gap:8px;margin-bottom:6px;">
+      {{ form|field:sku_name }}
+      <datalist id="sku-datalist-{{ i }}"></datalist>
+      {{ form|field:product_name }}
+      {{ form|field:qty_name }}
+      {{ form|field:amount_name }}
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  <button type="submit" class="crm-btn crm-btn--primary">บันทึกคำสั่งซื้อ</button>
+</form>
+{% endblock %}

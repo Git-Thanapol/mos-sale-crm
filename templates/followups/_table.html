@@ -1,0 +1,149 @@
+{% load crm_format %}
+<div id="followup-table">
+  <div class="crm-kpi-row">
+    {% include "components/_kpi_card.html" with label="ลูกค้าที่พบ" value=page.total_rows|thai_int %}
+    {% include "components/_kpi_card.html" with label="ต้องติดตามวันนี้" value=summary.due_today %}
+    {% include "components/_kpi_card.html" with label="ค้างเกินกำหนด" value=summary.overdue %}
+    {% include "components/_kpi_card.html" with label="สัปดาห์นี้" value=summary.other %}
+    {% include "components/_kpi_card.html" with label="เสร็จแล้ว" value=summary.done %}
+  </div>
+
+  {% if not page.items %}
+    <div class="crm-card">ไม่พบข้อมูลตามตัวกรอง</div>
+  {% else %}
+  <div class="crm-table" style="--crm-grid-cols: 1.1fr 1.3fr 0.9fr 1.6fr 1.2fr 0.8fr 1.4fr 1.1fr 1.2fr 1fr 0.8fr;">
+    <div class="crm-table__header">
+      <div class="crm-table__cell">ติดตาม</div>
+      <div class="crm-table__cell">เพิ่มคำสั่งซื้อ</div>
+      <div class="crm-table__cell">วันนัด</div>
+      <div class="crm-table__cell">ชื่อลูกค้า</div>
+      <div class="crm-table__cell">เบอร์โทร</div>
+      <div class="crm-table__cell">SKU</div>
+      <div class="crm-table__cell">สินค้า</div>
+      <div class="crm-table__cell">สถานะลูกค้า</div>
+      <div class="crm-table__cell">สถานะติดตาม</div>
+      <div class="crm-table__cell">ความสำคัญ</div>
+      <div class="crm-table__cell">URL</div>
+    </div>
+    {% for row in page.items %}
+      {% with c=row.customer last=row.customer.last_order line=row.customer.last_order.lines.all.0 %}
+      <div class="crm-table__row">
+        <div class="crm-table__cell">
+          <a class="crm-btn crm-btn--secondary" href="?{{ base_qs }}&page={{ page.page }}&followup_id={{ row.id }}#detail-{{ row.id }}">ติดตาม</a>
+        </div>
+        <div class="crm-table__cell">
+          <a class="crm-btn crm-btn--secondary" href="?{{ base_qs }}&page={{ page.page }}&followup_id={{ row.id }}#order-{{ row.id }}">เพิ่มคำสั่งซื้อ</a>
+        </div>
+        <div class="crm-table__cell">{{ row.next_followup_date|default:"ว่าง" }}</div>
+        <div class="crm-table__cell">{{ c.customer_name|default:"-" }}</div>
+        <div class="crm-table__cell">{{ c.phone1|default:c.phone2|default:"-" }}</div>
+        <div class="crm-table__cell">{{ line.sku|default:"-" }}</div>
+        <div class="crm-table__cell">{{ line.product_name|default:"-" }}</div>
+        <div class="crm-table__cell">{% include "components/_badge.html" with label=row.lead_status|lead_label tone="blue" %}</div>
+        <div class="crm-table__cell">{% include "components/_badge.html" with label=row.status|followup_status_label tone="gray" %}</div>
+        <div class="crm-table__cell">{% include "components/_badge.html" with label=row.priority tone=row.priority|priority_tone %}</div>
+        <div class="crm-table__cell">
+          {% if c.url %}<a class="crm-link" href="{{ c.url }}" target="_blank">เปิดลิงก์</a>{% else %}-{% endif %}
+        </div>
+      </div>
+      {% endwith %}
+    {% endfor %}
+  </div>
+
+  {% if detail_row %}
+  <div id="detail-{{ detail_row.id }}" class="crm-card" style="margin-top:16px;">
+    <div class="crm-section-title" style="margin-top:0;">รายละเอียด Follow-up</div>
+    <p class="crm-muted" style="margin-top:-8px;">
+      {{ detail_row.customer.customer_name|default:"-" }} ·
+      {{ detail_row.customer.phone1|default:detail_row.customer.phone2|default:"-" }} ·
+      ผู้ดูแล: {{ detail_row.customer.owner_display|default:"ยังไม่มอบหมาย" }}
+    </p>
+
+    {% if can_edit and edit_form %}
+    <form method="post" action="{% url 'followups:save' detail_row.id %}">
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div class="crm-form-group">
+          <label class="crm-label">{{ edit_form.lead_status.label }}</label>
+          {{ edit_form.lead_status }}
+        </div>
+        <div class="crm-form-group">
+          <label class="crm-label">{{ edit_form.status.label }}</label>
+          {{ edit_form.status }}
+        </div>
+        <div class="crm-form-group">
+          <label class="crm-label">{{ edit_form.priority.label }}</label>
+          {{ edit_form.priority }}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;align-items:end;">
+        <div class="crm-form-group">
+          <label class="crm-label">{{ edit_form.next_followup_date.label }}</label>
+          {{ edit_form.next_followup_date }}
+        </div>
+        <div class="crm-form-group">
+          <label style="display:flex;align-items:center;gap:6px;">{{ edit_form.clear_date }} {{ edit_form.clear_date.label }}</label>
+        </div>
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">{{ edit_form.note.label }}</label>
+        {{ edit_form.note }}
+      </div>
+      <button type="submit" class="crm-btn crm-btn--primary">บันทึก Follow-up</button>
+    </form>
+    {% else %}
+      <p class="crm-muted">ไม่มีสิทธิ์แก้ไขรายการนี้</p>
+    {% endif %}
+
+    <div id="order-{{ detail_row.id }}" class="crm-section-title">เพิ่มคำสั่งซื้อ</div>
+    {% if not detail_row.customer.owner_display %}
+      <p class="crm-muted">รายการนี้ยังไม่มีผู้ดูแล จึงยังเพิ่มคำสั่งซื้อจากตรงนี้ไม่ได้</p>
+    {% elif order_form %}
+    <form method="post" action="{% url 'followups:add_order' detail_row.id %}">
+      {% csrf_token %}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="crm-form-group">
+          <label class="crm-label">{{ order_form.order_no.label }}</label>
+          {{ order_form.order_no }}
+        </div>
+        <div class="crm-form-group">
+          <label class="crm-label">{{ order_form.sale_type.label }}</label>
+          {{ order_form.sale_type }}
+        </div>
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">{{ order_form.url.label }}</label>
+        {{ order_form.url }}
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label">{{ order_form.address.label }}</label>
+        {{ order_form.address }}
+      </div>
+      <div class="crm-form-group">
+        <label class="crm-label" style="display:block;margin-bottom:8px;">รายการสินค้า</label>
+        <div style="display:grid;grid-template-columns:1fr 2fr 0.6fr 0.8fr;gap:8px;margin-bottom:6px;">
+          <span class="crm-muted">SKU</span><span class="crm-muted">ชื่อสินค้า</span>
+          <span class="crm-muted">จำนวน</span><span class="crm-muted">ราคา</span>
+        </div>
+        {% for i in "012345" %}
+        {% with sku_name="sku_"|add:i product_name="product_name_"|add:i qty_name="qty_"|add:i amount_name="amount_"|add:i %}
+        <div style="display:grid;grid-template-columns:1fr 2fr 0.6fr 0.8fr;gap:8px;margin-bottom:6px;">
+          {{ order_form|field:sku_name }}
+          {{ order_form|field:product_name }}
+          {{ order_form|field:qty_name }}
+          {{ order_form|field:amount_name }}
+        </div>
+        {% endwith %}
+        {% endfor %}
+      </div>
+      <button type="submit" class="crm-btn crm-btn--primary">บันทึกคำสั่งซื้อ</button>
+    </form>
+    {% else %}
+      <p class="crm-muted">ไม่มีสิทธิ์เพิ่มคำสั่งซื้อ</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% include "components/_pager.html" with page=page base_qs=base_qs %}
+  {% endif %}
+</div>

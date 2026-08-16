@@ -1,0 +1,21 @@
+.crm-pager {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+
+.crm-pager__link, .crm-pager__ellipsis {
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-input);
+  text-decoration: none;
+  color: var(--c-ink);
+}
+
+.crm-pager__link--active { background: var(--c-accent); color: var(--c-accent-ink); font-weight: 700; }
+.crm-pager__caption { color: var(--c-ink-2); font-size: 13px; margin-right: var(--space-4); }

@@ -1,0 +1,57 @@
+{% load static %}<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Sales CRM{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'crm/css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/base.css' %}">
+  <script>
+    (function () {
+      if (localStorage.getItem("crm-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="{% static 'crm/css/components/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/card.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/kpi.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/form.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/pill.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/pager.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/modal.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/table-grid.css' %}">
+  <link rel="stylesheet" href="{% static 'crm/css/components/matrix-table.css' %}">
+  <script src="{% static 'crm/vendor/htmx.min.js' %}" defer></script>
+  {% comment %}
+    extra_head (any page-level Alpine.data() registrations via alpine:init) must
+    load BEFORE alpine.min.js: defer scripts run in order after the document is
+    fully parsed, so by the time alpine.min.js's own script body runs,
+    document.readyState is already "interactive" (not "loading") and Alpine
+    auto-starts synchronously right there — a registration script placed AFTER
+    alpine.min.js would not yet have attached its alpine:init listener.
+  {% endcomment %}
+  {% block extra_head %}{% endblock %}
+  <script src="{% static 'crm/vendor/alpine.min.js' %}" defer></script>
+</head>
+<body>
+  {% if user.is_authenticated %}
+  <div class="crm-layout">
+    {% include "_sidebar.html" %}
+    <main class="crm-main">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="crm-card" style="margin-bottom:16px;{% if message.tags == 'error' %}border:1px solid #DC2626;{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% else %}
+    {% block auth_content %}{% endblock %}
+  {% endif %}
+  <div id="modal-root"></div>
+</body>
+</html>

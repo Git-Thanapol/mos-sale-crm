@@ -1,0 +1,92 @@
+{% load crm_format %}
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">สถานะลูกค้า</label>
+      <select name="lead_status" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for key, label in lead_status_options %}
+          <option value="{{ key }}" {% if filters.lead_status == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">สถานะติดตาม</label>
+      <select name="followup_status" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for key, label in followup_status_options %}
+          <option value="{{ key }}" {% if filters.followup_status == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ความสำคัญ</label>
+      <select name="priority" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for p in priority_tabs %}
+          <option value="{{ p }}" {% if filters.priority == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:12px;">
+    <div class="crm-form-group">
+      <label class="crm-label">สินค้า / SKU</label>
+      <select name="product" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for p in options.products %}
+          <option value="{{ p }}" {% if filters.product == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if can_view_owner_filter %}
+    <div class="crm-form-group">
+      <label class="crm-label">ผู้ดูแล</label>
+      <select name="owner" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for o in options.owners %}
+          <option value="{{ o }}" {% if filters.owner == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:12px;">
+    <div class="crm-form-group">
+      <label class="crm-label">ค้นหา</label>
+      <input class="crm-input" type="text" name="keyword" value="{{ filters.keyword }}"
+             placeholder="เบอร์โทร / ชื่อลูกค้า / เลขคำสั่งซื้อ">
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">วันที่นัด</label>
+      <select name="date_mode" class="crm-select">
+        <option value="all" {% if filters.date_mode == "all" %}selected{% endif %}>ทั้งหมด</option>
+        <option value="today" {% if filters.date_mode == "today" %}selected{% endif %}>วันนี้</option>
+        <option value="single" {% if filters.date_mode == "single" %}selected{% endif %}>เลือกวัน</option>
+        <option value="range" {% if filters.date_mode == "range" %}selected{% endif %}>เลือกช่วงระหว่างวัน</option>
+      </select>
+    </div>
+  </div>
+  {% if filters.date_mode == "single" or filters.date_mode == "range" %}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+    <div class="crm-form-group">
+      <label class="crm-label">{% if filters.date_mode == "single" %}เลือกวันที่นัด{% else %}จากวันที่{% endif %}</label>
+      <input class="crm-input" type="date" name="date_start" value="{{ filters.date_start }}">
+    </div>
+    {% if filters.date_mode == "range" %}
+    <div class="crm-form-group">
+      <label class="crm-label">ถึงวันที่</label>
+      <input class="crm-input" type="date" name="date_end" value="{{ filters.date_end }}">
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;">
+    <button type="submit" class="crm-btn crm-btn--primary" style="flex:2;min-width:160px;">ค้นหา</button>
+    <a href="?" class="crm-btn crm-btn--secondary" style="flex:1;min-width:160px;text-align:center;">รีเฟรช / ล้างตัวกรอง</a>
+    {% if can_export %}
+    <a class="crm-btn crm-btn--secondary" style="flex:1;min-width:160px;text-align:center;"
+       href="{% url 'customers:export' %}?{{ base_qs }}">ดาวน์โหลดข้อมูลลูกค้า (.xlsx)</a>
+    {% endif %}
+  </div>
+</form>

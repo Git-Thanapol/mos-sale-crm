@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="Dashboard" subtitle="ภาพรวมงาน CRM รายวันสำหรับทีม Telesales" %}
+
+<div class="crm-kpi-row">
+  {% include "components/_kpi_card.html" with label="ลูกค้าทั้งหมด" value=kpis.total_customers %}
+  {% include "components/_kpi_card.html" with label="ต้องติดตามวันนี้" value=kpis.due_today %}
+  {% include "components/_kpi_card.html" with label="ค้างติดตาม" value=kpis.overdue %}
+  {% include "components/_kpi_card.html" with label="Lead สนใจ" value=kpis.interested %}
+  {% include "components/_kpi_card.html" with label="ปิดการขายแล้ว" value=kpis.won %}
+  {% include "components/_kpi_card.html" with label="อัปเดตล่าสุด" value=kpis.latest_update %}
+</div>
+
+<div class="crm-section-title">Quick Access</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap;">
+  <a class="crm-btn crm-btn--secondary" href="{% url 'customers:list' %}">เปิดหน้าค้นหาลูกค้า</a>
+  <a class="crm-btn crm-btn--secondary" href="{% url 'followups:list' %}">เปิดหน้าติดตามลูกค้า</a>
+  <a class="crm-btn crm-btn--secondary" href="{% url 'orders:new' %}">เปิดหน้าเพิ่มคำสั่งซื้อ</a>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+from .base import *  # noqa: F403
+
+DEBUG = False
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")  # noqa: F405
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]  # noqa: F405
+
+SESSION_COOKIE_SECURE = True  # noqa: F405
+CSRF_COOKIE_SECURE = True  # noqa: F405
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True

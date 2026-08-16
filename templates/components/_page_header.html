@@ -1,0 +1,4 @@
+{# usage: {% include "components/_page_header.html" with eyebrow="CRM Core" title="Dashboard" subtitle="..." %} #}
+<p class="crm-eyebrow">{{ eyebrow|default:"CRM Core" }}</p>
+<h1 class="crm-h1">{{ title }}</h1>
+{% if subtitle %}<p class="crm-subtitle">{{ subtitle }}</p>{% endif %}
