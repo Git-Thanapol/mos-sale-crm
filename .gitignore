@@ -6,6 +6,7 @@ __pycache__/
 *.sqlite3
 staticfiles/
 media/
+import_uploads/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/

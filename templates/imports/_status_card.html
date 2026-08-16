@@ -1,0 +1,18 @@
+<div id="import-status" class="crm-card" style="margin-bottom:16px;{% if job.status == 'failed' %}border:1px solid #DC2626;{% endif %}"
+     {% if job.status == "queued" or job.status == "running" %}hx-get="{% url 'imports:status' job.pk %}" hx-trigger="load delay:2s" hx-swap="outerHTML"{% endif %}>
+  {% if job.status == "queued" %}
+    <p class="crm-muted">กำลังรอคิว...</p>
+  {% elif job.status == "running" %}
+    <p class="crm-muted">กำลังนำเข้าข้อมูล...</p>
+  {% elif job.status == "done" %}
+    <p>
+      นำเข้าสำเร็จ: {{ job.result.valid }} แถวถูกต้อง, {{ job.result.invalid }} แถวไม่ถูกต้อง
+      (ลูกค้าใหม่ {{ job.result.customers_created }}, คำสั่งซื้อใหม่ {{ job.result.orders_created }},
+      รายการสินค้าใหม่ {{ job.result.lines_created }})
+    </p>
+    <a href="{% url 'imports:upload' %}" class="crm-btn crm-btn--primary">นำเข้าไฟล์ใหม่</a>
+  {% elif job.status == "failed" %}
+    <p>นำเข้าไม่สำเร็จ: {{ job.error_message }}</p>
+    <a href="{% url 'imports:upload' %}" class="crm-btn crm-btn--primary">ลองใหม่</a>
+  {% endif %}
+</div>

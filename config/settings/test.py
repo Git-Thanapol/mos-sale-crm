@@ -10,3 +10,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"  # noqa: F405 -- no redis
 CACHES = {  # noqa: F405
     "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
 }
+
+RQ_QUEUES = {  # noqa: F405 -- run jobs inline in tests, no redis dependency
+    "crm-default": {**RQ_QUEUES["crm-default"], "ASYNC": False},  # noqa: F405
+}

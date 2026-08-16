@@ -9,7 +9,13 @@ Customer.subdistrict/StagingImportRow.subdistrict column).
 
 from __future__ import annotations
 
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from django.db import models
+
+# Private storage: IMPORT_UPLOAD_ROOT has no URL route (see its definition
+# in config.settings.base) — unlike MEDIA_ROOT, which nginx serves publicly.
+import_upload_storage = FileSystemStorage(location=str(settings.IMPORT_UPLOAD_ROOT))
 
 
 class StagingImportRow(models.Model):
@@ -61,6 +67,37 @@ class StagingImportRow(models.Model):
 
     def __str__(self) -> str:
         return f"StagingImportRow(id={self.pk}, order_id={self.order_id!r})"
+
+
+class ImportJob(models.Model):
+    """Tracks a workbook upload processed asynchronously by the RQ worker
+    (see crm.imports.tasks.run_import_job) — large files were timing out
+    nginx/gunicorn when processed synchronously inside the request. The
+    upload view just saves the file + enqueues; this row is how the status
+    page polls for progress without holding the request open.
+    """
+
+    STATUS_QUEUED = "queued"
+    STATUS_RUNNING = "running"
+    STATUS_DONE = "done"
+    STATUS_FAILED = "failed"
+    STATUS_CHOICES = [(s, s) for s in (STATUS_QUEUED, STATUS_RUNNING, STATUS_DONE, STATUS_FAILED)]
+
+    file = models.FileField(upload_to="", storage=import_upload_storage)
+    original_filename = models.CharField(max_length=255, blank=True)
+    uploaded_by = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_QUEUED)
+    result = models.JSONField(null=True, blank=True)
+    error_message = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "crm_import_job"
+
+    def __str__(self) -> str:
+        return f"ImportJob(id={self.pk}, status={self.status!r})"
 
 
 # TODO(Phase 2 follow-up): two indexes from the plan's index set need raw SQL

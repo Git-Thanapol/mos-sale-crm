@@ -20,7 +20,11 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels/base -r requireme
     && rm -rf /wheels
 
 COPY . .
-RUN chown -R crm:crm /app
+# Explicit, not relying on these existing in the build context: a named
+# volume mounted over a path with nothing there in the image gets created
+# fresh by Docker as root:root, which the non-root crm user below can't
+# write into.
+RUN mkdir -p /app/staticfiles /app/media /app/import_uploads && chown -R crm:crm /app
 USER crm
 
 ENTRYPOINT ["docker/entrypoint.sh"]

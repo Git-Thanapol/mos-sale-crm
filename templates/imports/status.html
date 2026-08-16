@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}สถานะการนำเข้า · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="สถานะการนำเข้า" subtitle=job.original_filename %}
+{% include "imports/_status_card.html" %}
+{% endblock %}

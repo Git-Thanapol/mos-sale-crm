@@ -111,6 +111,12 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Deliberately NOT under MEDIA_ROOT: nginx serves /media/ publicly with no
+# auth (see docker/nginx/crm.conf), and ImportJob.file holds raw uploaded
+# workbooks (customer names/phones/addresses) between upload and the RQ
+# worker picking them up. This directory has no URL route at all.
+IMPORT_UPLOAD_ROOT = BASE_DIR / "import_uploads"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # --- session config: hard 8h wall, no rolling extension, see docs/DECISIONS.md #7 ---
