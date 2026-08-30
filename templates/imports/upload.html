@@ -12,6 +12,14 @@
   </p>
 </div>
 
+<div class="crm-card" style="margin-bottom:16px;">
+  <b>ไฟล์คำสั่งซื้อออนไลน์ (ระบบขนส่ง):</b>
+  <p class="crm-muted" style="margin-top:8px;">
+    รองรับไฟล์ InoutManageMain*.xlsx และ AllLiteDetailOrder*.xlsx โดยตรวจจับอัตโนมัติจากหัวตาราง
+    — อัปโหลดไฟล์ใดก่อนก็ได้ และอัปโหลดซ้ำได้ตลอด ระบบจะรวมข้อมูลด้วยหมายเลขคำสั่งซื้อออนไลน์
+  </p>
+</div>
+
 <form method="post" enctype="multipart/form-data" class="crm-card">
   {% csrf_token %}
   <div class="crm-form-group">

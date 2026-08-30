@@ -19,6 +19,7 @@ NAV_GROUPS: list[tuple[str, list[tuple[str, str, object]]]] = [
         ("ติดตามลูกค้า", "followups:list", perm.can_view_followup),
         ("เพิ่มคำสั่งซื้อ", "orders:new", perm.can_add_manual_order),
         ("นำเข้า Excel", "imports:upload", perm.can_import_excel),
+        ("คำสั่งซื้อออนไลน์", "online_orders:list", perm.can_view_followup),
     ]),
     ("ข้อมูล", [
         ("สินค้า", "catalog:list", None),

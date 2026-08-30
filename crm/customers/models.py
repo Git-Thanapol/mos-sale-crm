@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from django.db import models
+from django.db.models import F
 
 from crm.core.scoping import StaffScopedQuerySet
 
@@ -54,7 +55,18 @@ class Customer(models.Model):
             models.Index(
                 fields=["staff_code", "-last_order_date", "-id"], name="ix_customer_scope_recent"
             ),
-            models.Index(fields=["-last_order_date", "-updated_at", "-id"], name="ix_customer_recent"),
+            # NULLS LAST, not the plain-field default (NULLS FIRST on DESC) —
+            # crm.online_orders can create phone-only customers with no
+            # crm_order rollup (last_order_date stays NULL), and those must
+            # sort to the bottom of the list, not the top. Matches the
+            # ordering in crm.customers.selectors.customer_page /
+            # customer_export_queryset — keep both in sync.
+            models.Index(
+                F("last_order_date").desc(nulls_last=True),
+                F("updated_at").desc(),
+                F("id").desc(),
+                name="ix_customer_recent_nl",
+            ),
         ]
 
     def __str__(self) -> str:

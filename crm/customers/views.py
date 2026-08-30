@@ -25,6 +25,7 @@ from crm.customers.selectors import (
     owner_assignment_options,
 )
 from crm.customers.services import assign_owner, assign_url, save_follow_marker
+from crm.online_orders.selectors import online_orders_for_customer
 
 
 def _back_to_list_url(request, customer_id: int) -> str:
@@ -110,6 +111,7 @@ def detail(request, customer_id: int):
         "orders": orders,
         "products_bought": list(products_bought.values()),
         "can_edit": can_edit_customer_lead(request.user, customer),
+        "online_orders": online_orders_for_customer(customer),
     }
     return render(request, "customers/detail.html", context)
 

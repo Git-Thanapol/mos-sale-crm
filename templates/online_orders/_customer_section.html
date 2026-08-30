@@ -1,0 +1,34 @@
+{# usage: include with orders (crm.online_orders.selectors.online_orders_for_customer result, .lines prefetched) #}
+{% load crm_format %}
+{% if not orders %}
+  <div class="crm-card crm-muted">ยังไม่มีข้อมูลคำสั่งซื้อออนไลน์สำหรับลูกค้ารายนี้</div>
+{% else %}
+<div class="crm-table" style="--crm-grid-cols: 1fr 1.2fr 0.9fr 0.9fr 1fr 0.9fr 0.8fr;">
+  <div class="crm-table__header">
+    <div class="crm-table__cell">วันที่</div>
+    <div class="crm-table__cell">เลขคำสั่งซื้อออนไลน์</div>
+    <div class="crm-table__cell">ร้านค้า</div>
+    <div class="crm-table__cell">ขนส่ง</div>
+    <div class="crm-table__cell">เลขพัสดุ</div>
+    <div class="crm-table__cell">ยอดรวม</div>
+    <div class="crm-table__cell">สถานะ</div>
+  </div>
+  {% for o in orders %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">{{ o.ordered_at|date:"Y-m-d"|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.online_order_no }}</div>
+      <div class="crm-table__cell">{{ o.shop_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.carrier|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.tracking_no|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.total_amount|default:"-"|thai_amount }}</div>
+      <div class="crm-table__cell">
+        {% if o.order_status == "ยกเลิก" %}
+          {% include "components/_badge.html" with label=o.order_status tone="red" %}
+        {% elif o.order_status %}
+          {% include "components/_badge.html" with label=o.order_status tone="green" %}
+        {% else %}-{% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}

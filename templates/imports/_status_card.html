@@ -11,11 +11,24 @@
       <p class="crm-muted" style="margin:0;">กำลังนำเข้าข้อมูลเบื้องหลัง... หน้านี้จะอัปเดตอัตโนมัติเมื่อเสร็จ</p>
     </div>
   {% elif job.status == "done" %}
-    <p class="crm-success">
-      นำเข้าสำเร็จ: {{ job.result.valid }} แถวถูกต้อง, {{ job.result.invalid }} แถวไม่ถูกต้อง
-      (ลูกค้าใหม่ {{ job.result.customers_created }}, คำสั่งซื้อใหม่ {{ job.result.orders_created }},
-      รายการสินค้าใหม่ {{ job.result.lines_created }})
-    </p>
+    {% if job.result.format == "online_main" %}
+      <p class="crm-success">
+        นำเข้าข้อมูลจัดส่ง (InoutManageMain) สำเร็จ: คำสั่งซื้อใหม่ {{ job.result.orders_created }},
+        อัปเดต {{ job.result.orders_updated }},
+        ลูกค้าใหม่ {{ job.result.customers_created }}, เชื่อมลูกค้าเดิม {{ job.result.customers_linked }}
+      </p>
+    {% elif job.result.format == "online_detail" %}
+      <p class="crm-success">
+        นำเข้ารายละเอียดคำสั่งซื้อ (AllLiteDetailOrder) สำเร็จ: คำสั่งซื้อใหม่ {{ job.result.orders_created }},
+        อัปเดต {{ job.result.orders_updated }}, รายการสินค้า {{ job.result.lines_created }}
+      </p>
+    {% else %}
+      <p class="crm-success">
+        นำเข้าสำเร็จ: {{ job.result.valid }} แถวถูกต้อง, {{ job.result.invalid }} แถวไม่ถูกต้อง
+        (ลูกค้าใหม่ {{ job.result.customers_created }}, คำสั่งซื้อใหม่ {{ job.result.orders_created }},
+        รายการสินค้าใหม่ {{ job.result.lines_created }})
+      </p>
+    {% endif %}
     <a href="{% url 'imports:upload' %}" class="crm-btn crm-btn--primary">นำเข้าไฟล์ใหม่</a>
   {% elif job.status == "failed" %}
     <p class="crm-error">นำเข้าไม่สำเร็จ: {{ job.error_message }}</p>

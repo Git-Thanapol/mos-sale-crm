@@ -1,0 +1,107 @@
+{% load crm_format %}
+{% if not page.items %}
+  <div class="crm-card">ไม่พบข้อมูลตามเงื่อนไขที่ค้นหา</div>
+{% else %}
+<div class="crm-table" style="--crm-grid-cols: 1fr 1.2fr 0.9fr 1.1fr 1fr 0.9fr 0.9fr 1fr 0.8fr 0.9fr 0.8fr;">
+  <div class="crm-table__header">
+    <div class="crm-table__cell">วันที่สั่งซื้อ</div>
+    <div class="crm-table__cell">เลขคำสั่งซื้อออนไลน์</div>
+    <div class="crm-table__cell">เลขออเดอร์ภายใน</div>
+    <div class="crm-table__cell">ผู้รับ</div>
+    <div class="crm-table__cell">เบอร์โทร</div>
+    <div class="crm-table__cell">ร้านค้า</div>
+    <div class="crm-table__cell">ขนส่ง</div>
+    <div class="crm-table__cell">เลขพัสดุ</div>
+    <div class="crm-table__cell">ยอดรวม</div>
+    <div class="crm-table__cell">สถานะ</div>
+    <div class="crm-table__cell">รายละเอียด</div>
+  </div>
+  {% for o in page.items %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">{{ o.ordered_at|date:"Y-m-d H:i"|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.online_order_no }}</div>
+      <div class="crm-table__cell">{{ o.internal_order_no|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.recipient_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.phone|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.shop_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.carrier|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.tracking_no|default:"-" }}</div>
+      <div class="crm-table__cell">{{ o.total_amount|default:"-"|thai_amount }}</div>
+      <div class="crm-table__cell">
+        {% if o.order_status == "ยกเลิก" %}
+          {% include "components/_badge.html" with label=o.order_status tone="red" %}
+        {% elif o.order_status %}
+          {% include "components/_badge.html" with label=o.order_status tone="green" %}
+        {% else %}-{% endif %}
+      </div>
+      <div class="crm-table__cell">
+        <a class="crm-btn crm-btn--secondary" href="?{{ base_qs }}&page={{ page.page }}&id={{ o.id }}#detail-{{ o.id }}">ดูรายละเอียด</a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% if detail %}
+<div id="detail-{{ detail.id }}" class="crm-card" style="margin-top:16px;">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <h3 style="margin:0 0 4px;">{{ detail.online_order_no }}</h3>
+      <p class="crm-muted" style="margin:0;">
+        เลขออเดอร์ภายใน: {{ detail.internal_order_no|default:"-" }} ·
+        ชื่อลูกค้า: {{ detail.customer_name|default:"-" }}
+      </p>
+    </div>
+    {% if detail.customer_id %}
+      <a href="{% url 'customers:detail' detail.customer_id %}" class="crm-btn crm-btn--secondary">เปิด Customer 360</a>
+    {% endif %}
+  </div>
+
+  {% if not detail.shipping_imported_at or not detail.detail_imported_at %}
+  <p class="crm-muted" style="margin-top:8px;">
+    {% if not detail.shipping_imported_at %}รอข้อมูลจากไฟล์ InoutManageMain (ที่อยู่/เบอร์โทร){% endif %}
+    {% if not detail.detail_imported_at %}รอข้อมูลจากไฟล์ AllLiteDetailOrder (รายการสินค้า){% endif %}
+  </p>
+  {% endif %}
+
+  <div class="crm-kpi-row" style="margin-top:12px;">
+    {% include "components/_kpi_card.html" with label="พนักงานขาย" value=detail.sales_staff|default:"-" %}
+    {% include "components/_kpi_card.html" with label="วิธีการชำระเงิน" value=detail.payment_method|default:"-" %}
+    {% include "components/_kpi_card.html" with label="เบอร์โทร" value=detail.phone|default:"-" %}
+  </div>
+
+  <div class="crm-section-title">ที่อยู่จัดส่ง</div>
+  <p style="margin:0 0 12px;">
+    {{ detail.address|default:"-" }}<br>
+    {{ detail.subdistrict|default:"-" }} {{ detail.district|default:"-" }} {{ detail.province|default:"-" }} {{ detail.postal_code|default:"-" }}
+  </p>
+
+  <div class="crm-section-title">รายการสินค้า</div>
+  {% with lines=detail.lines.all %}
+  {% if not lines %}
+    <div class="crm-card crm-muted">ยังไม่มีรายการสินค้า (รอไฟล์ AllLiteDetailOrder)</div>
+  {% else %}
+  <div class="crm-table" style="--crm-grid-cols: 1fr 1.6fr 0.7fr 1.2fr 1fr;">
+    <div class="crm-table__header">
+      <div class="crm-table__cell">SKU</div>
+      <div class="crm-table__cell">ชื่อสินค้า</div>
+      <div class="crm-table__cell">จำนวน</div>
+      <div class="crm-table__cell">พนักงาน Upsell</div>
+      <div class="crm-table__cell">ยอดขาย Upsell</div>
+    </div>
+    {% for line in lines %}
+    <div class="crm-table__row">
+      <div class="crm-table__cell">{{ line.sku|default:"-" }}</div>
+      <div class="crm-table__cell">{{ line.product_name|default:"-" }}</div>
+      <div class="crm-table__cell">{{ line.quantity|thai_int }}</div>
+      <div class="crm-table__cell">{{ line.upsell_staff|default:"-" }}</div>
+      <div class="crm-table__cell">{{ line.upsell_amount|default:"-"|thai_amount }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+</div>
+{% endif %}
+
+{% include "components/_pager.html" with page=page base_qs=base_qs %}
+{% endif %}

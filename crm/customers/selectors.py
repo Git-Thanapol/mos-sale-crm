@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import F, Q
 
 from crm.core.pagination import Page, clamp_page, clamp_page_size
 from crm.core.permissions import can_manage_all, clean
@@ -57,7 +57,12 @@ def customer_page(user, filters: CustomerFilters, page: int, page_size: int) -> 
     qs = _base_queryset(filters)
     if settings.CRM_SCOPE_CUSTOMERS_LIST:
         qs = qs.for_user(user)
-    qs = qs.order_by("-last_order_date", "-updated_at", "-id")
+    # Online orders (crm.online_orders) can create phone-only customers with
+    # no crm_order rollup, so last_order_date is NULL — sort those last
+    # rather than let Postgres's default NULLS FIRST on DESC put them at
+    # the top. See ix_customer_recent_nl (crm.customers migration) for the
+    # matching index; plain "-last_order_date" no longer uses an index scan.
+    qs = qs.order_by(F("last_order_date").desc(nulls_last=True), "-updated_at", "-id")
 
     page_size = clamp_page_size(page_size)
     total = qs.count()
@@ -78,7 +83,7 @@ def customer_export_queryset(user, filters: CustomerFilters):
     qs = _base_queryset(filters)
     if settings.CRM_SCOPE_CUSTOMERS_LIST:
         qs = qs.for_user(user)
-    return qs.order_by("-last_order_date", "-updated_at", "-id")
+    return qs.order_by(F("last_order_date").desc(nulls_last=True), "-updated_at", "-id")
 
 
 def owner_assignment_options() -> list[tuple[str, str]]:

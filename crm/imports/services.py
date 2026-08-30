@@ -23,6 +23,8 @@ from openpyxl import load_workbook
 from crm.core.identity import clean, make_dedupe_key, normalize_phone, parse_date, phone_key
 from crm.customers.models import Customer
 from crm.imports.models import StagingImportRow
+from crm.online_orders.importers import is_online_detail_format, is_online_main_format
+from crm.online_orders.services import import_online_detail, import_online_main
 from crm.orders.models import Order, OrderLine
 
 HEADER_MAP = {
@@ -315,10 +317,13 @@ def import_row(record: dict, row_number: int, batch_id, uploaded_by: str) -> dic
 def import_workbook(file_obj, uploaded_by: str) -> dict:
     """The single entry point: parses + validates + commits every row.
     Raises WorkbookFormatError before anything is written if the header
-    row is unusable. Supports two header shapes, auto-detected from the
-    header row — the classic fixed template (one row per order line) and
-    the wide multi-SKU template (see is_wide_format/iter_wide_records).
-    Returns the same counts dict the CLI prints either way.
+    row is unusable. Supports four header shapes, auto-detected from the
+    header row: the two online-order platform exports (see
+    crm.online_orders.importers, checked first since they're identified by
+    signature, not by resolve_columns' required-column probe), the classic
+    fixed template (one row per order line), and the wide multi-SKU
+    template (see is_wide_format/iter_wide_records). Returns the same
+    counts dict shape the CLI prints either way.
     """
     try:
         workbook = load_workbook(file_obj, data_only=True, read_only=True)
@@ -333,6 +338,11 @@ def import_workbook(file_obj, uploaded_by: str) -> dict:
     header_row, data_rows = rows[0], rows[1:]
     batch_id = uuid.uuid4()
     counts = dict(EMPTY_COUNTS)
+
+    if is_online_main_format(header_row):
+        return import_online_main(data_rows, batch_id, uploaded_by)
+    if is_online_detail_format(header_row):
+        return import_online_detail(data_rows, batch_id, uploaded_by)
 
     if is_wide_format(header_row):
         records = iter_wide_records(header_row, data_rows)

@@ -15,3 +15,4 @@ backups/
 seed/*.csv
 !seed/users.csv
 scripts/deploy.env
+feedback/

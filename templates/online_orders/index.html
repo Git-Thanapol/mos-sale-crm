@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}คำสั่งซื้อออนไลน์ · Sales CRM{% endblock %}
+{% block content %}
+{% include "components/_page_header.html" with title="คำสั่งซื้อออนไลน์" subtitle="ข้อมูลจัดส่ง/รายละเอียดคำสั่งซื้อจากระบบขนส่ง (นำเข้าจาก InoutManageMain / AllLiteDetailOrder)" %}
+
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">สถานะ</label>
+      <select name="status" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for o in options.statuses %}
+          <option value="{{ o }}" {% if filters.status == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">พนักงานขาย</label>
+      <select name="staff" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for o in options.staff %}
+          <option value="{{ o }}" {% if filters.staff == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ร้านค้า</label>
+      <select name="shop" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for o in options.shops %}
+          <option value="{{ o }}" {% if filters.shop == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ขนส่ง</label>
+      <select name="carrier" class="crm-select">
+        <option value="ทั้งหมด">ทั้งหมด</option>
+        {% for o in options.carriers %}
+          <option value="{{ o }}" {% if filters.carrier == o %}selected{% endif %}>{{ o }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="crm-form-group" style="margin-top:12px;">
+    <label class="crm-label">ค้นหา</label>
+    <input class="crm-input" type="text" name="keyword" value="{{ filters.keyword }}"
+           placeholder="เลขคำสั่งซื้อออนไลน์ / เลขออเดอร์ภายใน / เลขพัสดุ / เบอร์โทร / ชื่อผู้รับ">
+  </div>
+  <div style="display:flex;gap:12px;margin-top:12px;">
+    <button type="submit" class="crm-btn crm-btn--primary" style="flex:1;">ค้นหา</button>
+  </div>
+</form>
+
+{% include "online_orders/_table.html" %}
+{% endblock %}

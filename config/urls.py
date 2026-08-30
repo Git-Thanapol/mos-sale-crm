@@ -9,6 +9,7 @@ urlpatterns = [
     path("followup/", include("crm.followups.urls")),
     path("orders/", include("crm.orders.urls")),
     path("orders/import/", include("crm.imports.urls")),
+    path("online-orders/", include("crm.online_orders.urls")),
     path("products/", include("crm.catalog.urls")),
     path("team-sales/", include("crm.teams.urls")),
     path("daily-sales-matrix/", include("crm.matrix.urls")),
