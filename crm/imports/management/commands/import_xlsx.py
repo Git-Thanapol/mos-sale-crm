@@ -47,8 +47,23 @@ class Command(BaseCommand):
         except OSError as exc:
             raise CommandError(f"cannot open {options['path']}: {exc}") from exc
 
-        self.stdout.write(self.style.SUCCESS(
+        self.stdout.write(self.style.SUCCESS(self._summarize(result)))
+
+    def _summarize(self, result: dict) -> str:
+        fmt = result.get("format")
+        if fmt == "online_main":
+            return (
+                f"batch {result['batch_id']}: InoutManageMain — {result['orders_created']} orders created, "
+                f"{result['orders_updated']} updated, {result['customers_created']} customers created, "
+                f"{result['customers_linked']} linked"
+            )
+        if fmt == "online_detail":
+            return (
+                f"batch {result['batch_id']}: AllLiteDetailOrder — {result['orders_created']} orders created, "
+                f"{result['orders_updated']} updated, {result['lines_created']} lines"
+            )
+        return (
             f"batch {result['batch_id']}: {result['valid']} valid rows, {result['invalid']} invalid, "
             f"{result['customers_created']} customers created, {result['orders_created']} orders created, "
             f"{result['lines_created']} lines created"
-        ))
+        )

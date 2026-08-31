@@ -326,7 +326,11 @@ def import_workbook(file_obj, uploaded_by: str) -> dict:
     counts dict shape the CLI prints either way.
     """
     try:
-        workbook = load_workbook(file_obj, data_only=True, read_only=True)
+        # read_only=True trusts the worksheet's <dimension> XML tag for row/col
+        # bounds; the online-order platform exports write that tag wrong
+        # (declares just A1), which silently truncates read_only iteration to
+        # one cell. Non-read-only parses the real rows regardless of that tag.
+        workbook = load_workbook(file_obj, data_only=True, read_only=False)
     except Exception as exc:  # openpyxl raises several distinct types for a bad file
         raise WorkbookFormatError(f"ไม่สามารถเปิดไฟล์ได้: {exc}") from exc
 
