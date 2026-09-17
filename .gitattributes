@@ -1,0 +1,13 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force LF regardless of local core.autocrlf -- these run inside Linux
+# containers via a shebang (docker/entrypoint.sh is the ENTRYPOINT every
+# container boots through); a CRLF checkout breaks them with "no such
+# file or directory" at exec time. The committed blobs are already LF
+# (this repo had no .gitattributes at all, so a Windows checkout with
+# core.autocrlf=true silently corrupts the working-tree copy -- exactly
+# what happened building this image locally while testing the TRACKFLOW
+# webhook integration), but this closes the gap for any future Windows
+# contributor or CI runner.
+*.sh text eol=lf
