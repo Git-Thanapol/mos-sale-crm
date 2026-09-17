@@ -60,9 +60,6 @@ def test_updates_every_online_order_sharing_the_tracking_no(client):
         ("ตีกลับเรียบร้อยแล้ว", "ตีกลับแล้ว"),
         ("แจ้งเคลม", "รอแจ้งเคลม"),
         ("แจ้งเคลมสำเร็จ", "แจ้งเคลมเรียบร้อย"),
-        # No CRM equivalent exists for CLAIM_FAILED -- passed through as-is
-        # rather than silently dropped or mismapped (see
-        # crm.online_orders.services.TRACKFLOW_STATUS_MAP's docstring).
         ("เคลมไม่สำเร็จ", "เคลมไม่สำเร็จ"),
     ],
 )

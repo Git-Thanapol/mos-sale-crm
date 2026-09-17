@@ -23,16 +23,19 @@ from itertools import groupby
 from django.db import transaction
 from django.utils import timezone
 
-# TRACKFLOW's own 8-value status enum maps down to this CRM's 7-value
+# TRACKFLOW's own 8-value status enum maps down to this CRM's 8-value
 # order_status vocabulary (confirmed with the business). TRACKFLOW's two
 # return sub-stages ("ตีกลับเข้าคลัง"/"ตีกลับเรียบร้อยแล้ว" -- warehouse
 # received vs. fully closed out) both collapse to this CRM's single
-# "ตีกลับแล้ว", since this CRM never tracked that distinction.
-# "เคลมไม่สำเร็จ" (claim failed) has no equivalent in the CRM's
-# vocabulary at all -- passed through as-is (see apply_trackflow_status's
-# docstring) rather than silently dropped or mismapped onto a status that
-# would misrepresent the outcome; flagged as an open item for the
-# business to decide whether the CRM's own status list should grow one.
+# "ตีกลับแล้ว", since this CRM never tracked that distinction. Every
+# other TRACKFLOW status, including "เคลมไม่สำเร็จ" (claim failed, once
+# an open gap -- the business has since confirmed the CRM's own
+# vocabulary uses this exact string), maps onto an identical or
+# CRM-specific spelling below -- listed explicitly even where the two
+# strings are identical, so a value TRACKFLOW starts sending that ISN'T
+# in this dict is what stays visibly unmapped (see
+# apply_trackflow_status's docstring), not one the business already
+# confirmed.
 TRACKFLOW_STATUS_MAP = {
     "จัดส่งแล้ว": "จัดส่งแล้ว",
     "เรียบร้อย": "เรียบร้อย",
@@ -40,6 +43,7 @@ TRACKFLOW_STATUS_MAP = {
     "ตีกลับเข้าคลัง": "ตีกลับแล้ว",
     "ตีกลับเรียบร้อยแล้ว": "ตีกลับแล้ว",
     "แจ้งเคลม": "รอแจ้งเคลม",
+    "เคลมไม่สำเร็จ": "เคลมไม่สำเร็จ",
     "แจ้งเคลมสำเร็จ": "แจ้งเคลมเรียบร้อย",
 }
 
