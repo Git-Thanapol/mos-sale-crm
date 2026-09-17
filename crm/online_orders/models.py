@@ -50,6 +50,13 @@ class OnlineOrder(models.Model):
     detail_imported_at = models.DateTimeField(null=True, blank=True)
     import_batch_id = models.UUIDField(null=True, blank=True)
 
+    # Set only by the TRACKFLOW status-push webhook (crm.online_orders.
+    # views.trackflow_webhook) -- a third, live source for order_status
+    # alongside the two batch file imports above. Mirrors their own
+    # *_imported_at freshness-stamp convention rather than introducing a
+    # different shape for the same kind of fact.
+    trackflow_synced_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

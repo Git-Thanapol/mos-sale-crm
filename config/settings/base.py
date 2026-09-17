@@ -145,3 +145,10 @@ RQ_QUEUES = {
 # --- CRM-specific settings, named so intentional carve-outs are visible, not implicit ---
 CRM_SCOPE_CUSTOMERS_LIST = False  # deliberate: Customers list is unscoped for every role, see docs/DECISIONS.md #11
 CRM_APPROX_COUNT_THRESHOLD_MS = None  # off by default; see plan §5.2 point 3
+
+# Shared secret the TRACKFLOW status-push webhook (crm/online_orders/
+# views.py:trackflow_webhook) checks against the caller's X-TRACKFLOW-
+# TOKEN header. Empty by default, which the view treats as "always
+# unauthorized" -- the webhook route only starts accepting calls once an
+# operator sets this to match TRACKFLOW's own CRM_AUTH_TOKEN.
+TRACKFLOW_WEBHOOK_TOKEN = os.environ.get("TRACKFLOW_WEBHOOK_TOKEN", "")

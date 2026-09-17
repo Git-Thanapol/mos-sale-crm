@@ -6,4 +6,5 @@ app_name = "online_orders"
 
 urlpatterns = [
     path("", views.index, name="list"),
+    path("webhook/trackflow/", views.trackflow_webhook, name="trackflow_webhook"),
 ]

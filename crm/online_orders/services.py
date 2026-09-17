@@ -23,6 +23,26 @@ from itertools import groupby
 from django.db import transaction
 from django.utils import timezone
 
+# TRACKFLOW's own 8-value status enum maps down to this CRM's 7-value
+# order_status vocabulary (confirmed with the business). TRACKFLOW's two
+# return sub-stages ("ตีกลับเข้าคลัง"/"ตีกลับเรียบร้อยแล้ว" -- warehouse
+# received vs. fully closed out) both collapse to this CRM's single
+# "ตีกลับแล้ว", since this CRM never tracked that distinction.
+# "เคลมไม่สำเร็จ" (claim failed) has no equivalent in the CRM's
+# vocabulary at all -- passed through as-is (see apply_trackflow_status's
+# docstring) rather than silently dropped or mismapped onto a status that
+# would misrepresent the outcome; flagged as an open item for the
+# business to decide whether the CRM's own status list should grow one.
+TRACKFLOW_STATUS_MAP = {
+    "จัดส่งแล้ว": "จัดส่งแล้ว",
+    "เรียบร้อย": "เรียบร้อย",
+    "รอตีกลับ": "รอตีกลับ",
+    "ตีกลับเข้าคลัง": "ตีกลับแล้ว",
+    "ตีกลับเรียบร้อยแล้ว": "ตีกลับแล้ว",
+    "แจ้งเคลม": "รอแจ้งเคลม",
+    "แจ้งเคลมสำเร็จ": "แจ้งเคลมเรียบร้อย",
+}
+
 from crm.core.identity import phone_key
 from crm.customers.models import Customer
 from crm.online_orders.importers import iter_detail_rows, iter_main_records
@@ -266,3 +286,34 @@ def import_online_detail(data_rows, batch_id, uploaded_by: str) -> dict:
     counts["lines_created"] = len(lines)
 
     return {"batch_id": batch_id, "format": "online_detail", **counts}
+
+
+def apply_trackflow_status(*, tracking_no: str, status: str) -> int:
+    """Live status push from TRACKFLOW (crm.online_orders.views.
+    trackflow_webhook is the only caller). Updates every OnlineOrder row
+    whose tracking_no matches -- tracking_no is not unique on this model
+    (see the module docstring's merge rule), and there is no way to
+    disambiguate further from a bare tracking number alone, so every
+    matching row gets the same status rather than guessing which one
+    "the" order is. Returns the number of rows updated (0 means no match).
+
+    UPDATE-only, deliberately: this channel's rows are created only by
+    the two file imports above (see module docstring) -- a webhook call
+    arriving before today's shipping export has been uploaded finds no
+    matching row and updates nothing, which the view turns into a 404.
+    TRACKFLOW's own outbox retries with backoff on a non-2xx response, so
+    once the file import lands the next retry succeeds on its own -- no
+    separate "pending" state needs to exist here.
+
+    `status` is TRACKFLOW's raw internal Thai status string; the mapping
+    into this CRM's own vocabulary (TRACKFLOW_STATUS_MAP above) happens
+    here rather than being trusted from the caller, so a status value
+    TRACKFLOW starts sending in the future without this map being
+    updated is at least visible (passed through as-is) instead of being
+    silently coerced into the wrong CRM status.
+    """
+    mapped_status = TRACKFLOW_STATUS_MAP.get(status, status)
+    return OnlineOrder.objects.filter(tracking_no=tracking_no).update(
+        order_status=mapped_status,
+        trackflow_synced_at=timezone.now(),
+    )
