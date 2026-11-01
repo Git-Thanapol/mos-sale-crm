@@ -68,6 +68,12 @@
     }
   });
 
+  // Forms the prototype submits the moment a file or date is chosen.
+  document.addEventListener("change", function (event) {
+    var form = event.target.closest("form[data-v2-autosubmit]");
+    if (form && event.target.value) { form.requestSubmit(); }
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("form[data-v2-filters]").forEach(init);
   });

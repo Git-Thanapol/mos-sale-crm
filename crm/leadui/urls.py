@@ -1,5 +1,6 @@
 from django.urls import path
 
+from crm.leadui import import_views as imports
 from crm.leadui import views
 
 app_name = "leadui"
@@ -16,4 +17,15 @@ urlpatterns = [
         views.customer_history,
         name="customer_history",
     ),
+    # CRM V2 import: upload, preview, confirm/commit, conflicts, history.
+    path("import/", imports.import_page, name="import"),
+    path("import/upload/", imports.import_upload, name="import_upload"),
+    path("import/conflicts/", imports.conflicts_page, name="import_conflicts"),
+    path("import/conflicts/<int:conflict_id>/resolve/", imports.conflict_resolve, name="conflict_resolve"),
+    path("import/history/", imports.history_page, name="import_history"),
+    path("import/<uuid:batch_uuid>/preview/", imports.import_preview, name="import_preview"),
+    path("import/<uuid:batch_uuid>/date/", imports.import_date, name="import_date"),
+    path("import/<uuid:batch_uuid>/confirm/", imports.import_confirm, name="import_confirm"),
+    path("import/<uuid:batch_uuid>/commit/", imports.import_commit, name="import_commit"),
+    path("import/<uuid:batch_uuid>/rollback/", imports.history_rollback, name="history_rollback"),
 ]

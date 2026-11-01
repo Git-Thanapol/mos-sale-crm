@@ -37,19 +37,28 @@ def _labels(item):
     return [child["label"] for child in item["children"]]
 
 
-def test_editor_sees_four_children():
+def test_editor_sees_every_child():
     editor = make_user(email="e@example.com", role=ROLE_EDITOR, staff_code="E1")
     assert _labels(_followup_item(editor)) == [
         "งานของฉัน",
         "Global Unassigned",
         "Team Unassigned",
         "STOPPED Review",
+        "นำเข้าข้อมูล",
+        "แก้ Conflict",
+        "ประวัตินำเข้า",
     ]
 
 
-def test_team_lead_sees_work_team_unassigned_stopped():
+def test_team_lead_sees_work_review_queues_conflicts_and_history():
     lead = make_user(email="tl@example.com", role="TEAM_LEAD", staff_code="L1", team_scope=["A"])
-    assert _labels(_followup_item(lead)) == ["งานของฉัน", "Team Unassigned", "STOPPED Review"]
+    assert _labels(_followup_item(lead)) == [
+        "งานของฉัน",
+        "Team Unassigned",
+        "STOPPED Review",
+        "แก้ Conflict",
+        "ประวัตินำเข้า",
+    ]
 
 
 def test_telesale_sees_only_my_work():
