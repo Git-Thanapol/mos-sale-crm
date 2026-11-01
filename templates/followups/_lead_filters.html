@@ -1,0 +1,52 @@
+{# Lead queue filters. Mirrors _filters.html so the page reads as one form
+   family; Thai labels are inline literals, per docs/DECISIONS.md (USE_I18N is
+   off and UI strings live in templates). #}
+<form method="get" class="crm-card" style="margin-bottom:16px;">
+  <input type="hidden" name="lead_section" value="{{ lead_section }}">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+    <div class="crm-form-group">
+      <label class="crm-label">อายุออเดอร์ล่าสุด</label>
+      <select name="age_preset" class="crm-select">
+        <option value="">ทั้งหมด</option>
+        {% for value, label in age_preset_options %}
+          <option value="{{ value }}" {% if lead_filters.age_preset == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">สถานะ Lead</label>
+      <select name="lifecycle" class="crm-select">
+        <option value="">ทั้งหมด</option>
+        {% for value, label in lifecycle_options %}
+          <option value="{{ value }}" {% if lead_filters.lifecycle_status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ออเดอร์ตกหล่นช่องทางอื่น</label>
+      <select name="missed_channel" class="crm-select">
+        <option value="">ทั้งหมด</option>
+        <option value="0" {% if lead_filters.missed_channel_group == "0" %}selected{% endif %}>0</option>
+        <option value="1" {% if lead_filters.missed_channel_group == "1" %}selected{% endif %}>1</option>
+        <option value="2" {% if lead_filters.missed_channel_group == "2" %}selected{% endif %}>2</option>
+        <option value="3+" {% if lead_filters.missed_channel_group == "3+" %}selected{% endif %}>3+</option>
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">นัดติดตาม</label>
+      <select name="appointment_protection" class="crm-select">
+        <option value="ANY" {% if lead_filters.appointment_protection == "ANY" %}selected{% endif %}>ทั้งหมด</option>
+        <option value="ACTIVE" {% if lead_filters.appointment_protection == "ACTIVE" %}selected{% endif %}>มีนัด</option>
+        <option value="NONE" {% if lead_filters.appointment_protection == "NONE" %}selected{% endif %}>ไม่มีนัด</option>
+      </select>
+    </div>
+    <div class="crm-form-group">
+      <label class="crm-label">ค้นหา Lead</label>
+      <input type="text" name="lead_keyword" class="crm-input" value="{{ lead_filters.keyword }}" placeholder="ชื่อ / เบอร์โทร">
+    </div>
+    <div class="crm-form-group" style="align-self:end;">
+      <button type="submit" class="crm-btn crm-btn--primary">กรอง</button>
+      <a class="crm-btn" href="{% url 'followups:list' %}">ล้างตัวกรอง</a>
+    </div>
+  </div>
+</form>

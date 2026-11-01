@@ -10,8 +10,21 @@ from crm.core.permissions import (
     can_edit_customer_lead,
     can_export_customers,
     can_manage_all,
+    can_resolve_intake,
+    can_review_any_lead,
     can_view_followup_owner_filter,
     require_permission,
+)
+from crm.domain.enums import CONTACT_ATTEMPT_RESULTS, STOP_REASONS
+from crm.leads import presenters
+from crm.leads.selectors import (
+    LeadQueueFilters,
+    global_unassigned_queue,
+    lead_queue,
+    my_work_queue,
+    reallocation_review_queue,
+    stopped_review_queue,
+    team_unassigned_queue,
 )
 from crm.core.thai import FOLLOWUP_PRIORITY_OPTIONS, FOLLOWUP_STATUS_LABELS, LEAD_STATUS_LABELS
 from crm.followups.forms import AddOrderForm, FollowupEditForm
@@ -25,6 +38,7 @@ from crm.followups.selectors import (
 )
 from crm.followups.services import save_followup
 from crm.orders.services import LineItem, OwnerConflictError, save_order_for_customer
+
 
 
 def _back_to_list_url(request, followup_id: int) -> str:
@@ -88,9 +102,57 @@ def index(request):
     qs_no_priority.pop("priority", None)
     base_qs_no_priority = qs_no_priority.urlencode()
 
+    # --- CRM V2 Lead surface -------------------------------------------
+    # The legacy Followup list above is untouched. These sections are additive
+    # and each one is omitted entirely for a user who may not act on it --
+    # the nav keeps its show-but-gray behaviour, but a review queue a telesale
+    # cannot use is noise, not a disabled affordance.
+    lead_filters = LeadQueueFilters.from_query(request.GET)
+    lead_cursor = request.GET.get("lead_cursor") or None
+    lead_section = (request.GET.get("lead_section") or "queue").strip()
+
+    may_review = can_review_any_lead(request.user)
+    may_resolve_intake = can_resolve_intake(request.user)
+
+    if lead_section == "my_work":
+        lead_page = my_work_queue(request.user, after_cursor=lead_cursor)
+    elif lead_section == "team_unassigned" and may_review:
+        lead_page = team_unassigned_queue(request.user, after_cursor=lead_cursor)
+    elif lead_section == "stopped" and may_review:
+        lead_page = stopped_review_queue(request.user, after_cursor=lead_cursor)
+    elif lead_section == "reallocation" and may_review:
+        lead_page = reallocation_review_queue(request.user, after_cursor=lead_cursor)
+    else:
+        lead_section = "queue"
+        lead_page = lead_queue(request.user, filters=lead_filters, after_cursor=lead_cursor)
+
+    lead_rows = [presenters.decorate(lead) for lead in lead_page.items]
+    intake_page = global_unassigned_queue(request.user) if may_resolve_intake else None
+
+    lead_qs = request.GET.copy()
+    lead_qs.pop("lead_cursor", None)
+    lead_qs.pop("lead_section", None)
+
     context = {
         "page": page,
         "filters": filters,
+        "lead_page": lead_page,
+        "lead_rows": lead_rows,
+        "lead_filters": lead_filters,
+        "lead_section": lead_section,
+        "lead_base_qs": lead_qs.urlencode(),
+        "intake_page": intake_page,
+        "may_review_leads": may_review,
+        "may_resolve_intake": may_resolve_intake,
+        "age_preset_options": presenters.age_preset_options(),
+        "contact_result_options": [
+            (value, presenters.CONTACT_RESULT_LABELS.get(value, value))
+            for value in CONTACT_ATTEMPT_RESULTS
+        ],
+        "stop_reason_options": [
+            (value, presenters.STOP_REASON_LABELS.get(value, value)) for value in STOP_REASONS
+        ],
+        "lifecycle_options": list(presenters.LIFECYCLE_LABELS.items()),
         "summary": summary,
         "options": options,
         "priority_tabs": FOLLOWUP_PRIORITY_OPTIONS,

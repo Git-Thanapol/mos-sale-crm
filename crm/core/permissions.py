@@ -308,3 +308,19 @@ _PREDICATE_MESSAGES.update(
         "can_resolve_intake": MSG_SYSTEM_PAGE_BLOCKED,
     }
 )
+
+
+def can_review_any_lead(user: object) -> bool:
+    """Role-level: may this user act on ownership for ANY lead?
+
+    Used to decide whether to RENDER a review section, where there is no
+    specific lead yet. EDITOR qualifies everywhere; a TEAM_LEAD qualifies when
+    they hold a non-empty team scope. Per-row authority is still decided by
+    can_reassign_caretaker, so this only ever controls whether a heading and
+    its queue are drawn -- never whether a write is allowed.
+    """
+    if not _is_usable(user):
+        return False
+    if user_role(user) == ROLE_EDITOR:
+        return True
+    return is_team_lead(user) and bool(team_scope(user))
