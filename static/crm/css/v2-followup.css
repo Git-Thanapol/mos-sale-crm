@@ -103,3 +103,6 @@
 .v2 dialog { border: 1px solid #dce2e1; border-radius: 10px; padding: 18px; min-width: 360px; color: #1f2937; }
 .v2 dialog form { display: grid; gap: 8px; }
 .v2 dialog h2 { margin: 0 0 8px; }
+
+/* Host adaptation: the prototype's list-button is a <button>; here it is a link row. */
+.v2 a.list-button { text-decoration: none; padding: 9px 14px; border-radius: 7px; font-weight: 650; }

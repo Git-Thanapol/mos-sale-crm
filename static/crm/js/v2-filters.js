@@ -26,6 +26,33 @@
     });
   }
 
+  // Lazy order history: the first button swaps the container, "โหลดเพิ่ม"
+  // appends its rows in place of itself.
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest("[data-v2-history]");
+    if (!button) { return; }
+    button.disabled = true;
+    fetch(button.getAttribute("data-v2-history"), { credentials: "same-origin" })
+      .then(function (response) {
+        if (!response.ok) { throw new Error("history " + response.status); }
+        return response.text();
+      })
+      .then(function (html) {
+        var target = button.getAttribute("data-v2-into");
+        if (target) {
+          document.querySelector(target).innerHTML = html;
+          button.disabled = false;
+        } else {
+          button.insertAdjacentHTML("beforebegin", html);
+          button.remove();
+        }
+      })
+      .catch(function () {
+        button.disabled = false;
+        button.insertAdjacentHTML("afterend", '<div class="state-box error">โหลดไม่สำเร็จ</div>');
+      });
+  });
+
   // <dialog> openers/closers (used instead of window.confirm).
   document.addEventListener("click", function (event) {
     var opener = event.target.closest("[data-v2-open]");

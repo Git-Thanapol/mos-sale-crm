@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from datetime import date, datetime
+from decimal import Decimal
 
 from django import template
 from django.utils.html import format_html
@@ -71,3 +72,20 @@ def bangkok_short(moment):
     if isinstance(local, date):
         return f"{local.day:02d}/{local.month:02d}/{(local.year + 543) % 100:02d}"
     return _DASH
+
+
+@register.filter
+def baht(amount):
+    """'฿1,428' like toLocaleString(); a missing amount is '฿—'."""
+    if amount is None or amount == "":
+        return "฿—"
+    text = f"{Decimal(amount):,.2f}".rstrip("0").rstrip(".")
+    return f"฿{text}"
+
+
+@register.filter
+def order_state(order):
+    """The mapped machine status when this repo's vocabulary has one, else the raw text."""
+    from crm.leads.order_status import to_machine_status
+
+    return to_machine_status(order.order_status) or order.order_status or "UNKNOWN"

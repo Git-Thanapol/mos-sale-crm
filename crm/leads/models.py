@@ -207,7 +207,18 @@ class LeadAuditEvent(models.Model):
     record survives the row.
     """
 
-    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="audit_events")
+    #: Null for an event about a customer rather than one of their leads
+    #: (CUSTOMER_HISTORY_VIEW on a customer who has no lead yet).
+    lead = models.ForeignKey(
+        Lead, null=True, blank=True, on_delete=models.CASCADE, related_name="audit_events"
+    )
+    customer = models.ForeignKey(
+        "customers.Customer",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     action = models.CharField(max_length=32, choices=[(v, v) for v in AUDIT_ACTIONS])
     actor = models.ForeignKey(
         "accounts.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"

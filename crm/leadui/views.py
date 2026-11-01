@@ -12,7 +12,10 @@ from functools import wraps
 
 from django.contrib.auth.views import redirect_to_login
 from django.http import Http404
+from django.urls import reverse
+from django.utils.http import urlencode
 from django.shortcuts import render
+from django.views.decorators.http import require_GET
 from datetime import timedelta
 
 from django.utils import timezone
@@ -27,7 +30,8 @@ from crm.core.permissions import (
 )
 from crm.domain.last_order_age import REALLOCATION_REVIEW_DEFAULT_DAYS
 from crm.followcycles.models import FollowupCycle
-from crm.leads.models import Lead
+from crm.leads.models import Lead, LeadAuditEvent
+from crm.leadui import selectors as page_selectors
 from crm.teams.models import Team
 from crm.leads import presenters
 from crm.leads.selectors import (
@@ -260,4 +264,50 @@ def lead_detail(request, lead_id: int):
     )
 
 
-customer_detail = customer_history = _not_built
+@lead_page(can_use_lead_workspace)
+def customer_detail(request, customer_id: int):
+    customer = page_selectors.visible_customer(request.user, customer_id)
+    if customer is None:
+        raise Http404
+    return render(
+        request,
+        "leadui/customer_detail.html",
+        {
+            "customer": customer,
+            "summary": page_selectors.order_summary(customer),
+            "leads": decorate_rows(page_selectors.visible_leads(request.user, customer)),
+            "history_url": reverse("leadui:customer_history", args=[customer.id]),
+        },
+    )
+
+
+@lead_page(can_use_lead_workspace)
+@require_GET
+def customer_history(request, customer_id: int):
+    """Order history, loaded only when the user asks (the prototype's "ดูประวัติเก่า").
+
+    The first page writes one CUSTOMER_HISTORY_VIEW audit event; continuation
+    pages do not. Returns an HTML fragment, not a page.
+    """
+    customer = page_selectors.visible_customer(request.user, customer_id)
+    if customer is None:
+        raise Http404
+    cursor = request.GET.get("cursor") or None
+    first_page = page_selectors.history_cursor_is_first_page(cursor)
+    page = page_selectors.order_history(customer, cursor)
+    if first_page:
+        leads = page_selectors.visible_leads(request.user, customer)
+        LeadAuditEvent.objects.create(
+            lead=leads[0] if leads else None,
+            customer=customer,
+            action="CUSTOMER_HISTORY_VIEW",
+            actor=request.user,
+            payload={"kind": "ORDER_HISTORY_VIEW", "customer_id": customer.id},
+        )
+    more_url = (
+        reverse("leadui:customer_history", args=[customer.id]) + "?" + urlencode({"cursor": page.next_cursor})
+        if page.next_cursor
+        else ""
+    )
+    template = "leadui/_history_section.html" if first_page else "leadui/_history_rows.html"
+    return render(request, template, {"orders": page.items, "more_url": more_url})
