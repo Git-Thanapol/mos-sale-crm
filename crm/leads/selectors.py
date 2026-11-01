@@ -108,9 +108,17 @@ def _apply_filters(qs: QuerySet, filters: LeadQueueFilters, now: datetime) -> Qu
     if filters.exclude_stopped:
         qs = qs.exclude(lifecycle_status="STOPPED")
 
-    cutoffs = last_order_age_cutoffs(
-        filters.age_preset or None, filters.age_min_days, filters.age_max_days, now
-    )
+    try:
+        cutoffs = last_order_age_cutoffs(
+            filters.age_preset or None, filters.age_min_days, filters.age_max_days, now
+        )
+    except ValueError:
+        # A hand-edited querystring must not 500. The domain function is right
+        # to raise -- an unknown preset or min>max is a programming error from
+        # a trusted caller -- but a URL is not a trusted caller, so an
+        # unusable filter degrades to no filter, matching how decode_cursor
+        # and the lead_id guard already treat junk input.
+        cutoffs = None
     if cutoffs is not None:
         if cutoffs.no_order:
             qs = qs.filter(last_order_at__isnull=True)

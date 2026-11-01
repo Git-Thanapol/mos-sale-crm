@@ -62,13 +62,31 @@ def last_order_age_label(last_order_at, now=None) -> str:
     return f"{age} วันที่แล้ว"
 
 
-def decorate(lead, *, now=None, threshold_days: int = REALLOCATION_REVIEW_DEFAULT_DAYS) -> dict:
-    """Everything the row template needs, computed once per lead."""
+def decorate(
+    lead,
+    *,
+    now=None,
+    threshold_days: int = REALLOCATION_REVIEW_DEFAULT_DAYS,
+    lock_active: bool | None = None,
+) -> dict:
+    """Everything the row template needs, computed once per lead.
+
+    `lock_active` lets a list caller pass a prefetched value instead of one
+    query per row. Hardcoding it False -- as an earlier version did -- badged
+    a locked lead "ควรทบทวน" while reallocation_review_queue excluded it, so
+    the badge pointed at a queue the lead was not in.
+    """
     now = now or timezone.now()
+    if lock_active is None:
+        from crm.followcycles.models import FollowupCycle
+
+        lock_active = FollowupCycle.objects.filter(
+            lead=lead, status="ACTIVE", lock_active=True
+        ).exists()
     protection = ProtectionSummary(
         active_appointment=lead.next_follow_at is not None,
         active_followup_cycle=lead.current_cycle_id is not None,
-        ownership_lock_active=False,
+        ownership_lock_active=lock_active,
         next_follow_at=lead.next_follow_at,
     )
     computed = appointment_state(lead.next_follow_at, now)

@@ -150,14 +150,29 @@ def log_contact_attempt(
     threshold = lead.team.max_no_answer_attempts
     stop_recommended = streak >= threshold
 
-    update_fields = ["no_answer_streak", "updated_at"]
     lead.no_answer_streak = streak
+    lead.save(update_fields=["no_answer_streak", "updated_at"])
+
+    auto_stopped = False
     if stop_recommended and lead.team.auto_stop and lead.lifecycle_status != "STOPPED":
-        lead.lifecycle_status = "STOPPED"
-        lead.stopped_reason = "CONTACT_LIMIT_REACHED"
-        lead.stopped_at = when
-        update_fields += ["lifecycle_status", "stopped_reason", "stopped_at"]
-    lead.save(update_fields=update_fields)
+        # Through stop_lead, not an inline field assignment: that service also
+        # ends the ACTIVE cycle with reason STOPPED, clears lock_active and
+        # writes STATUS_CHANGE. Setting the fields here left a stopped lead
+        # holding an active locked cycle, which pins ownership under
+        # LATEST_ORDER_WITH_LOCK and keeps the lead out of reallocation
+        # review because current_cycle_id stays non-null.
+        from crm.leads.services import stop_lead
+
+        # System-initiated: the team's autoStop policy is the authorization,
+        # not the telesale who logged the attempt (they have no stop
+        # authority). See stop_lead's enforce_permission docstring.
+        stop_lead(
+            actor=actor,
+            lead=lead,
+            reason="CONTACT_LIMIT_REACHED",
+            enforce_permission=False,
+        )
+        auto_stopped = True
 
     LeadAuditEvent.objects.create(
         lead=lead,
@@ -168,7 +183,7 @@ def log_contact_attempt(
             "no_answer_streak": streak,
             "threshold": threshold,
             "stop_recommended": stop_recommended,
-            "auto_stopped": "lifecycle_status" in update_fields,
+            "auto_stopped": auto_stopped,
         },
     )
     return ContactAttemptOutcome(

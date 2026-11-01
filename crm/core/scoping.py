@@ -32,6 +32,7 @@ from crm.core.permissions import (
     clean,
     current_team_codes,
     is_team_lead,
+    is_telesell,
     team_scope,
 )
 
@@ -54,29 +55,36 @@ class StaffScopedQuerySet(models.QuerySet):
             return self.filter(**{f"{team_path}__in": sorted(scope)})
 
         code = clean(getattr(user, "staff_code", "")) if user else ""
+        path = getattr(self.model, "STAFF_CODE_PATH", None)
+        team_path = getattr(self.model, "TEAM_PATH", None)
+
+        # A model declaring TEAM_PATH is team-dimensioned (today: Lead). It
+        # mirrors crm.core.permissions.can_view_lead exactly -- caretaker OR
+        # (own customer AND the lead's team is one of mine) -- because a
+        # queryset that admits a row the predicate rejects, or the reverse, is
+        # how a leak gets in.
+        #
+        # The caretaker leg comes BEFORE the staff_code gate: a caretaker with
+        # a blank staff_code would otherwise be able to mutate a lead by URL
+        # (the predicate allows it) while seeing it in no queue at all.
+        if team_path and is_telesell(user) and getattr(user, "pk", None) is not None:
+            if not path:
+                raise NotImplementedError(
+                    f"{self.model.__name__} declares TEAM_PATH but no STAFF_CODE_PATH"
+                )
+            visible = models.Q(caretaker_id=user.pk)
+            if code:
+                visible |= models.Q(
+                    **{path: code, f"{team_path}__in": sorted(current_team_codes(user))}
+                )
+            return self.filter(visible)
+
         if not code:
             return self.none()
 
-        path = getattr(self.model, "STAFF_CODE_PATH", None)
         if not path:
             raise NotImplementedError(
                 f"{self.model.__name__} uses StaffScopedQuerySet but has no STAFF_CODE_PATH"
             )
-
-        # A model that declares TEAM_PATH is team-dimensioned (today: Lead), so
-        # staff_code alone is not enough scope for it: one customer can hold a
-        # Lead in several teams and staff_code lives on the customer. Mirrors
-        # crm.core.permissions.can_view_lead exactly -- caretaker OR
-        # (own customer AND the lead's team is one of mine) -- because a
-        # queryset that admits a row the predicate rejects, or the reverse, is
-        # how a leak gets in.
-        team_path = getattr(self.model, "TEAM_PATH", None)
-        if team_path:
-            from django.db.models import Q
-
-            own = Q(**{path: code, f"{team_path}__in": sorted(current_team_codes(user))})
-            if getattr(user, "pk", None) is not None:
-                own = own | Q(caretaker_id=user.pk)
-            return self.filter(own)
 
         return self.filter(**{path: code})

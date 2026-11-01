@@ -76,7 +76,15 @@ def reassign(request, lead_id: int):
     if raw:
         from crm.accounts.models import User
 
-        caretaker = User.objects.filter(pk=raw).first()
+        # isdigit first: a non-numeric pk reaches the ORM and raises
+        # ValueError("Field 'id' expected a number") before .first() can
+        # return, which is a 500 rather than the bad request below.
+        if not raw.isdigit():
+            return HttpResponseBadRequest("unknown caretaker")
+        # is_active is enforced HERE, not only by the template dropdown: this
+        # module's own docstring says a rendered form is not a control.
+        # A caretaker must also be someone the lead's team can hold.
+        caretaker = User.objects.filter(pk=raw, is_active=True).first()
         if caretaker is None:
             return HttpResponseBadRequest("unknown caretaker")
 

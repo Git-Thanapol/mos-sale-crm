@@ -205,6 +205,13 @@ class Command(BaseCommand):
                     else:
                         intake_batch.append(customer)
                     continue
+                if pk in existing_leads:
+                    # The staff_code branch checks this; without the same check
+                    # here a dry run over an already-backfilled table reports
+                    # every resolved-to customer as new, so the number an
+                    # operator decides on is wrong on a re-run.
+                    skipped_leads += 1
+                    continue
                 if dry_run:
                     created_leads += 1
                     continue

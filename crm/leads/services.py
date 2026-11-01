@@ -230,7 +230,7 @@ def reassign_caretaker(*, actor, lead: Lead, caretaker: User | None, reason: str
 
 
 @transaction.atomic
-def stop_lead(*, actor, lead: Lead, reason: str) -> Lead:
+def stop_lead(*, actor, lead: Lead, reason: str, enforce_permission: bool = True) -> Lead:
     """Move a lead to STOPPED, audited, with its cycle and lock released.
 
     STOPPED is a lifecycle state that always carries a reason
@@ -240,11 +240,18 @@ def stop_lead(*, actor, lead: Lead, reason: str) -> Lead:
     The cycle is ended with reason STOPPED and its lock cleared: a stopped
     lead holding an ACTIVE cycle with lock_active would keep ownership pinned
     under LATEST_ORDER_WITH_LOCK on work nobody is doing.
+
+    `enforce_permission=False` is for the ONE system-initiated caller: the
+    autoStop branch of log_contact_attempt. There the authorization is the
+    team's own policy (an operator set autoStop and maxNoAnswerAttempts), and
+    the actor is merely whichever telesale happened to log the attempt that
+    crossed the threshold -- a telesale has no stop authority, so enforcing it
+    there would make the policy unreachable. Every human path keeps the check.
     """
     from crm.core.permissions import can_review_stopped
     from crm.domain.enums import STOP_REASONS
 
-    if not can_review_stopped(actor, lead):
+    if enforce_permission and not can_review_stopped(actor, lead):
         raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
     if reason not in STOP_REASONS:
         raise ValueError(f"UNKNOWN_STOP_REASON:{reason}")

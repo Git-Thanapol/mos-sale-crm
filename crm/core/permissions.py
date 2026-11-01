@@ -29,7 +29,16 @@ ROLE_USER_ALIASES = {"USER"}
 SYSTEM_VIEW_ROLES = {ROLE_EDITOR}
 ORDER_DELETE_ROLES = {ROLE_EDITOR, ROLE_STAFF, "STAFF"}
 
-ROLE_OPTIONS = ["EDITOR", "ADMIN", ROLE_STAFF, "TELESELL", "STAFF", "USER", ROLE_VIEWER]
+ROLE_OPTIONS = [
+    "EDITOR",
+    "ADMIN",
+    "TEAM_LEAD",
+    ROLE_STAFF,
+    "TELESELL",
+    "STAFF",
+    "USER",
+    ROLE_VIEWER,
+]
 
 
 class HasRoleAndStaffCode(Protocol):
@@ -110,7 +119,15 @@ def can_manage_system_page(user: HasRoleAndStaffCode | None) -> bool:
 
 
 def can_view_followup(user: HasRoleAndStaffCode | None) -> bool:
-    return user_role(user) == ROLE_EDITOR or is_staff_limited(user)
+    # TEAM_LEAD is included because the Team Unassigned, STOPPED Review and
+    # reallocation sections live on this page and are gated on
+    # can_review_any_lead -- without this the only non-EDITOR role that can
+    # use them could not open the page at all.
+    return (
+        user_role(user) == ROLE_EDITOR
+        or user_role(user) == ROLE_TEAM_LEAD
+        or is_staff_limited(user)
+    )
 
 
 def can_view_followup_owner_filter(user: HasRoleAndStaffCode | None) -> bool:
@@ -260,6 +277,19 @@ def current_team_codes(user: object) -> frozenset[str]:
     )
 
 
+def is_lead_caretaker(user: object, lead: object) -> bool:
+    """Is this user the lead's caretaker?
+
+    Shared by the predicate and by StaffScopedQuerySet so the two cannot
+    disagree about what "my own work" means.
+    """
+    caretaker_id = getattr(lead, "caretaker_id", None)
+    user_pk = getattr(user, "pk", None)
+    if caretaker_id is None or user_pk is None:
+        return False
+    return str(caretaker_id) == str(user_pk)
+
+
 def _lead_team_code(lead: object) -> str:
     """The LEAD's own team.
 
@@ -279,19 +309,25 @@ def can_view_lead(user: object, lead: object) -> bool:
     if is_team_lead(user):
         return _lead_team_code(lead) in team_scope(user)
 
-    # Telesale. Ownership in the legacy schema is per-CUSTOMER
-    # (Customer.staff_code), and one customer can hold a Lead in several
-    # teams -- so comparing staff_code alone matches EVERY team's lead for
-    # that customer. 06 section B makes "Telesale cannot access another Team's
+    # Telesale only. The role gate comes FIRST: an earlier version let the
+    # caretaker check short-circuit ahead of it, so any role at all -- ทั่วไป
+    # (read-only) and ADMIN (deliberately weaker for follow-up) included --
+    # could view and therefore edit a lead merely by being its caretaker, and
+    # the reassign dropdown lists every active user with a staff_code.
+    if not is_telesell(user):
+        return False
+
+    # Being the caretaker is its own path: that lead is the user's own work
+    # regardless of team membership, and with TeamAssignment sparse in this
+    # deployment team-only scoping would hide work from the person doing it.
+    if is_lead_caretaker(user, lead):
+        return True
+
+    # Otherwise: ownership in the legacy schema is per-CUSTOMER
+    # (Customer.staff_code), and one customer can hold a Lead in several teams
+    # -- so comparing staff_code alone matches EVERY team's lead for that
+    # customer. 06 section B makes "Telesale cannot access another Team's
     # protected Lead" an acceptance item, so the lead's own team has to count.
-    #
-    # Being the caretaker is kept as an independent path: that lead is the
-    # user's own work regardless of team membership, and with TeamAssignment
-    # sparse in this deployment team-only scoping would hide work from the
-    # person doing it.
-    if getattr(lead, "caretaker_id", None) is not None and getattr(user, "pk", None) is not None:
-        if str(lead.caretaker_id) == str(user.pk):
-            return True
     if not can_edit_customer_lead(user, getattr(lead, "customer", None)):
         return False
     return _lead_team_code(lead) in current_team_codes(user)

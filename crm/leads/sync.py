@@ -47,19 +47,30 @@ def sync_leads_for_order(*, actor, order, open_new_cycle: bool = True) -> int:
     if not leads:
         return 0
 
+    from django.db import transaction
+
     touched = 0
     for lead in leads:
+        # Each lead gets its own savepoint. save_order_for_customer is already
+        # atomic, and _refresh_order_rollups / recompute_lead_missed_channel
+        # are not -- so a DatabaseError in either would mark the OUTER
+        # transaction for rollback, get swallowed by the except below, and
+        # take the order down with the next query. The savepoint is what makes
+        # this function's promise ("must not lose the order itself") true.
         try:
-            lock_active = FollowupCycle.objects.filter(
-                lead=lead, status="ACTIVE", lock_active=True
-            ).exists()
-            apply_order_to_lead(actor=actor, lead=lead, order=order, lock_active=lock_active)
-            _refresh_order_rollups(lead=lead, order=order)
-            recompute_lead_missed_channel(lead=lead)
-            if open_new_cycle and lead.lifecycle_status != "STOPPED":
-                # A new order starts a new follow-up cycle; the previous one is
-                # ended with NEW_ORDER rather than deleted.
-                open_cycle(actor=actor, lead=lead, trigger_order=order)
+            with transaction.atomic():
+                lock_active = FollowupCycle.objects.filter(
+                    lead=lead, status="ACTIVE", lock_active=True
+                ).exists()
+                apply_order_to_lead(
+                    actor=actor, lead=lead, order=order, lock_active=lock_active
+                )
+                _refresh_order_rollups(lead=lead, order=order)
+                recompute_lead_missed_channel(lead=lead)
+                if open_new_cycle and lead.lifecycle_status != "STOPPED":
+                    # A new order starts a new follow-up cycle; the previous
+                    # one is ended with NEW_ORDER rather than deleted.
+                    open_cycle(actor=actor, lead=lead, trigger_order=order)
             touched += 1
         except Exception:
             logger.exception(
@@ -88,6 +99,17 @@ def _refresh_order_rollups(*, lead: Lead, order) -> None:
     lead.last_order_at = (
         datetime.combine(newest, time.min, tzinfo=BANGKOK_TZ) if newest is not None else None
     )
-    lead.last_order_id = order.pk
+    # The id must name the order last_order_at describes. Writing order.pk
+    # unconditionally let a BACKDATED order leave the pair pointing at two
+    # different orders.
+    newest_id = (
+        Order.objects.filter(customer_id=lead.customer_id, order_date=newest)
+        .order_by("-pk")
+        .values_list("pk", flat=True)
+        .first()
+        if newest is not None
+        else None
+    )
+    lead.last_order_id = newest_id
     lead.total_orders = stats["total"] or 0
     lead.save(update_fields=["last_order_at", "last_order_id", "total_orders", "updated_at"])
