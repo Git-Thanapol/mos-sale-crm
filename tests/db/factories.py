@@ -113,7 +113,11 @@ def make_order(
     customer: Customer | None = None,
     closer: User | None = None,
     ordered_at: datetime | None = None,
-    order_status: str = "DELIVERED",
+    # This repo's real vocabulary, not the prototype's machine codes: the live
+    # crm_order.order_status holds only 'สำเร็จ' and blank. Defaulting to
+    # DELIVERED here would make every test exercise a value the adapter's
+    # status map correctly refuses to recognise.
+    order_status: str = "สำเร็จ",
     order_no: str | None = None,
     sale_type: str = "NEW_ORDER",
     total_amount: str | Decimal | None = None,
