@@ -19,12 +19,18 @@ time a Lead list is opened".
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from django.db.models import Q, QuerySet
+from django.db.models import Case, F, IntegerField, Q, QuerySet, When
 from django.utils import timezone
 
-from crm.core.pagination import KeysetPage, decode_cursor, encode_cursor
+from crm.core.pagination import (
+    KeysetPage,
+    decode_cursor,
+    decode_cursor_parts,
+    encode_cursor,
+)
+from crm.domain.bangkok import day_start, epoch_day
 from crm.domain.last_order_age import (
     REALLOCATION_REVIEW_DEFAULT_DAYS,
     last_order_age_cutoffs,
@@ -37,6 +43,11 @@ MAX_LIMIT = 200
 
 #: Tri-state protection filter, as in the prototype's ProtectionFilter.
 PROTECTION_FILTERS = ("ANY", "ACTIVE", "NONE")
+
+#: Prototype LastOrderAgeSort. OLDEST_LAST_ORDER is also the pre-existing
+#: default order, so callers that never pass a sort are unchanged.
+SORT_MODES = ("WORK_PRIORITY", "OLDEST_LAST_ORDER", "NEWEST_LAST_ORDER")
+DEFAULT_SORT = "OLDEST_LAST_ORDER"
 
 
 @dataclass(frozen=True)
@@ -57,15 +68,24 @@ class LeadQueueFilters:
     exclude_stopped: bool = False
     missed_channel_group: str = ""
     keyword: str = ""
+    sort: str = DEFAULT_SORT
+    #: Prototype "หลีดที่ควรตรวจสอบการจัดสรรใหม่": the same predicate as
+    #: reallocation_review_queue, as a composable filter.
+    reallocation_review: bool = False
+    reallocation_threshold_days: int = REALLOCATION_REVIEW_DEFAULT_DAYS
 
     @classmethod
-    def from_query(cls, query) -> "LeadQueueFilters":
+    def from_query(cls, query, default_sort: str = DEFAULT_SORT) -> "LeadQueueFilters":
         def _int(name):
             raw = (query.get(name) or "").strip()
             try:
                 return int(raw) if raw else None
             except (TypeError, ValueError):
                 return None
+
+        def _sort():
+            value = (query.get("age_sort") or "").strip().upper()
+            return value if value in SORT_MODES else default_sort
 
         def _protection(name):
             value = (query.get(name) or "ANY").strip().upper()
@@ -84,6 +104,8 @@ class LeadQueueFilters:
             exclude_stopped=(query.get("exclude_stopped") or "") in ("1", "true", "on"),
             missed_channel_group=(query.get("missed_channel") or "").strip(),
             keyword=(query.get("lead_keyword") or "").strip(),
+            sort=_sort(),
+            reallocation_review=(query.get("reallocation_review") or "") in ("1", "true", "on"),
         )
 
 
@@ -156,6 +178,21 @@ def _apply_filters(qs: QuerySet, filters: LeadQueueFilters, now: datetime) -> Qu
     elif group == "3+":
         qs = qs.filter(missed_channel_count__gte=3)
 
+    if filters.reallocation_review:
+        review = last_order_age_cutoffs(None, filters.reallocation_threshold_days, None, now)
+        locked = Lead.objects.filter(cycles__status="ACTIVE", cycles__lock_active=True).values("pk")
+        qs = (
+            qs.exclude(lifecycle_status="STOPPED")
+            .exclude(pk__in=locked)
+            .filter(
+                caretaker__isnull=False,
+                last_order_at__isnull=False,
+                last_order_at__lt=review.ordered_at_before,
+                next_follow_at__isnull=True,
+                current_cycle_id__isnull=True,
+            )
+        )
+
     if filters.keyword:
         keyword = filters.keyword
         qs = qs.filter(
@@ -177,6 +214,8 @@ def _seek(qs: QuerySet, after_cursor: str | None) -> QuerySet:
     cursor = decode_cursor(after_cursor)
     if cursor is None:
         return qs
+    if len(cursor) != 2:
+        return qs  # a cursor taken under another sort: start over, never 500
     raw_value, last_id = cursor
     if raw_value is None:
         return qs.filter(last_order_at__isnull=True, id__gt=last_id)
@@ -188,7 +227,64 @@ def _seek(qs: QuerySet, after_cursor: str | None) -> QuerySet:
     )
 
 
-def _page(qs: QuerySet, limit: int, *, key=lambda row: row.last_order_at) -> KeysetPage:
+def _work_rank(now: datetime):
+    """Prototype workRank: overdue 0, appointment today 1, then lifecycle."""
+    start = day_start(epoch_day(now))
+    end = start + timedelta(days=1)
+    return Case(
+        When(next_follow_at__lt=start, then=0),
+        When(next_follow_at__gte=start, next_follow_at__lt=end, then=1),
+        When(lifecycle_status="WAITING_FOLLOWUP", then=2),
+        When(lifecycle_status="NEW", then=3),
+        When(lifecycle_status="WAITING_CUSTOMER", then=4),
+        default=5,
+        output_field=IntegerField(),
+    )
+
+
+def _seek_keys(qs: QuerySet, specs: list[tuple[str, bool]], after_cursor: str | None) -> QuerySet:
+    """Keyset predicate for `specs` = [(field, descending), ...], NULLS LAST.
+
+    A cursor of the wrong length or with unusable values means "start over".
+    """
+    kinds = tuple("int" if f in ("id", "work_rank") else "datetime?" for f, _ in specs)
+    values = decode_cursor_parts(after_cursor, kinds)
+    if values is None:
+        return qs
+    after = Q()
+    equal = Q()
+    for (field, desc), value in zip(specs, values):
+        if field in ("id", "work_rank"):
+            ahead = Q(**{f"{field}__{'lt' if desc else 'gt'}": value})
+        elif value is None:
+            ahead = Q(pk__in=[])  # nothing sorts after NULL when NULLS LAST
+        else:
+            ahead = Q(**{f"{field}__{'lt' if desc else 'gt'}": value}) | Q(
+                **{f"{field}__isnull": True}
+            )
+        after |= equal & ahead
+        equal &= Q(**{f"{field}__isnull": True}) if value is None else Q(**{field: value})
+    return qs.filter(after)
+
+
+def _apply_sort(qs: QuerySet, sort: str, after_cursor: str | None, now: datetime) -> QuerySet:
+    if sort == "NEWEST_LAST_ORDER":
+        specs = [("last_order_at", True), ("id", False)]
+        return _seek_keys(qs, specs, after_cursor).order_by(
+            F("last_order_at").desc(nulls_last=True), "id"
+        )
+    if sort == "WORK_PRIORITY":
+        specs = [("work_rank", False), ("next_follow_at", False), ("id", False)]
+        qs = qs.annotate(work_rank=_work_rank(now))
+        return _seek_keys(qs, specs, after_cursor).order_by(
+            "work_rank", F("next_follow_at").asc(nulls_last=True), "id"
+        )
+    return _seek(qs, after_cursor).order_by("last_order_at", "id")
+
+
+def _page(
+    qs: QuerySet, limit: int, *, key=lambda row: row.last_order_at, sort: str | None = None
+) -> KeysetPage:
     """Fetch limit+1 rows to learn whether more exist, without a COUNT(*)."""
     limit = _clamp_limit(limit)
     rows = list(qs[: limit + 1])
@@ -197,8 +293,14 @@ def _page(qs: QuerySet, limit: int, *, key=lambda row: row.last_order_at) -> Key
     next_cursor = None
     if has_more and items:
         last = items[-1]
-        value = key(last)
-        next_cursor = encode_cursor((value.isoformat() if value else None, last.id))
+        if sort == "WORK_PRIORITY":
+            follow = last.next_follow_at
+            next_cursor = encode_cursor(
+                (last.work_rank, follow.isoformat() if follow else None, last.id)
+            )
+        else:
+            value = key(last)
+            next_cursor = encode_cursor((value.isoformat() if value else None, last.id))
     return KeysetPage(items=items, next_cursor=next_cursor, has_more=has_more)
 
 
@@ -210,9 +312,9 @@ def _lead_queue_queryset(
         Lead.objects.select_related("customer", "team", "caretaker")
         .for_user(user)
     )
-    qs = _apply_filters(qs, filters, now or timezone.now())
-    qs = _seek(qs, after_cursor)
-    return qs.order_by("last_order_at", "id")
+    now = now or timezone.now()
+    qs = _apply_filters(qs, filters, now)
+    return _apply_sort(qs, filters.sort, after_cursor, now)
 
 
 def lead_queue(
@@ -222,11 +324,17 @@ def lead_queue(
     after_cursor: str | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
-    return _page(_lead_queue_queryset(user, filters, after_cursor, limit), limit)
+    return _page(
+        _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
+    )
 
 
 def my_work_queue(
-    user, *, after_cursor: str | None = None, limit: int = DEFAULT_LIMIT
+    user,
+    *,
+    filters: LeadQueueFilters = NO_FILTERS,
+    after_cursor: str | None = None,
+    limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
     """Acceptance item A "My Work".
 
@@ -234,38 +342,51 @@ def my_work_queue(
     arriving from a querystring is discarded — otherwise a telesale could read
     another caretaker's work by editing the URL.
     """
-    filters = replace(NO_FILTERS, caretaker_user_id=str(getattr(user, "pk", "") or ""))
-    return _page(_lead_queue_queryset(user, filters, after_cursor, limit), limit)
+    filters = replace(filters, caretaker_user_id=str(getattr(user, "pk", "") or ""))
+    return _page(
+        _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
+    )
 
 
 def team_unassigned_queue(
-    user, *, team=None, after_cursor: str | None = None, limit: int = DEFAULT_LIMIT
+    user,
+    *,
+    team=None,
+    filters: LeadQueueFilters = NO_FILTERS,
+    after_cursor: str | None = None,
+    limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
     """Real Leads whose Team is known and whose caretaker is empty.
 
     Distinct from Global Unassigned, which is pre-Lead intake.
     """
     filters = replace(
-        NO_FILTERS,
-        team_code=getattr(team, "code", "") or "",
+        filters,
+        team_code=getattr(team, "code", "") or filters.team_code,
         exclude_stopped=True,
     )
     qs = _lead_queue_queryset(user, filters, after_cursor, limit).filter(
         routing_state="TEAM_UNASSIGNED"
     )
-    return _page(qs, limit)
+    return _page(qs, limit, sort=filters.sort)
 
 
 def stopped_review_queue(
-    user, *, after_cursor: str | None = None, limit: int = DEFAULT_LIMIT
+    user,
+    *,
+    filters: LeadQueueFilters = NO_FILTERS,
+    after_cursor: str | None = None,
+    limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
     """STOPPED leads awaiting authorized reactivation or reassignment.
 
     STOPPED is a lifecycle state, not an unassigned one, so this queue is
     filtered on lifecycle_status and never on routing_state.
     """
-    filters = replace(NO_FILTERS, lifecycle_status="STOPPED")
-    return _page(_lead_queue_queryset(user, filters, after_cursor, limit), limit)
+    filters = replace(filters, lifecycle_status="STOPPED", exclude_stopped=False)
+    return _page(
+        _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
+    )
 
 
 def reallocation_review_queue(

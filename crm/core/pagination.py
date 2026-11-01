@@ -128,3 +128,45 @@ def decode_cursor(raw: str | None) -> list | None:
         except ValueError:
             return None
     return value
+
+
+def decode_cursor_parts(raw: str | None, kinds: tuple[str, ...]) -> list | None:
+    """Decode a cursor of a known shape into typed values, or None.
+
+    `kinds` has one entry per cursor element: "int", or "datetime?" for an
+    ISO-8601 string that may also be null. Like decode_cursor this never
+    raises and treats any mismatch (wrong length, wrong type, unparseable
+    date) as "no cursor", because a cursor arrives in a hand-editable
+    querystring. Datetimes come back parsed.
+    """
+    from datetime import datetime
+
+    if not raw or not raw.strip():
+        return None
+    text = raw.strip()
+    padded = text + "=" * (-len(text) % 4)
+    try:
+        value = json.loads(base64.urlsafe_b64decode(padded.encode("ascii")))
+    except Exception:
+        return None
+    if not isinstance(value, list) or len(value) != len(kinds):
+        return None
+    parsed: list = []
+    for kind, item in zip(kinds, value):
+        if kind == "int":
+            if not isinstance(item, int) or isinstance(item, bool):
+                return None
+            parsed.append(item)
+        elif kind == "datetime?":
+            if item is None:
+                parsed.append(None)
+            elif isinstance(item, str):
+                try:
+                    parsed.append(datetime.fromisoformat(item))
+                except ValueError:
+                    return None
+            else:
+                return None
+        else:
+            raise ValueError(f"unknown cursor kind {kind!r}")
+    return parsed
