@@ -90,3 +90,10 @@
 .v2 .decision-form input { min-width: 180px; padding: 7px 9px; border: 1px solid #cfd8d6; border-radius: 6px; }
 .v2 .decision-form select { padding: 7px 9px; border: 1px solid #cfd8d6; border-radius: 6px; }
 .v2 .decision-card .resolved { display: flex; gap: 10px; align-items: center; border-top: 1px dashed #dce2e1; padding-top: 10px; }
+
+/* Host adaptation (not in the prototype): the prototype's pager and row
+   actions are <button>s; here they are links, so they get the same look. */
+.v2 a.v2-btn { display: inline-block; border: 0; border-radius: 7px; padding: 9px 14px; background: #176b5b; color: white; cursor: pointer; font-weight: 650; text-decoration: none; }
+.v2 a.v2-btn.secondary { background: #e8efed; color: #28554d; }
+.v2 a.v2-btn.danger-button { background: #b63b3b; }
+.v2 a.link { color: #185f53; font-weight: 650; text-decoration: none; }

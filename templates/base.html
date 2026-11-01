@@ -40,6 +40,7 @@
   <div class="crm-layout">
     {% include "_sidebar.html" %}
     <main class="crm-main">
+      {% block messages %}
       {% if messages %}
         {% for message in messages %}
           <div class="crm-card" style="margin-bottom:16px;{% if message.tags == 'error' %}border:1px solid #DC2626;{% endif %}">
@@ -47,6 +48,7 @@
           </div>
         {% endfor %}
       {% endif %}
+      {% endblock %}
       {% block content %}{% endblock %}
     </main>
   </div>

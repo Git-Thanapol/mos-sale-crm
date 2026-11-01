@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'crm/css/v2-followup.css' %}">
+  <script src="{% static 'crm/js/v2-filters.js' %}" defer></script>
+  {% block v2_head %}{% endblock %}
+{% endblock %}
+{% block messages %}{% endblock %}
+{% block content %}
+<div class="v2">
+  {% for message in messages %}<div class="toast">{{ message }}</div>{% endfor %}
+  {% block v2_content %}{% endblock %}
+</div>
+{% endblock %}
