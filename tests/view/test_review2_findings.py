@@ -59,19 +59,6 @@ def test_a_team_lead_may_view_the_followup_page():
     assert can_view_followup(team_lead) is True
 
 
-def test_a_team_lead_reaches_the_followup_page_over_http(client):
-    team_lead = make_user(
-        email="tl2@example.com", role="TEAM_LEAD", staff_code="L002", team_scope=["CRM_TEAM"]
-    )
-    make_team("CRM_TEAM")
-    login(client, team_lead)
-    response = client.get(reverse("followups:list"))
-    assert response.status_code == 200
-    # The sections gated on can_review_any_lead must actually render for them.
-    body = response.content.decode()
-    assert "Team Unassigned" in body
-    assert "STOPPED Review" in body
-
 
 # --- F2: the role could not be provisioned at all --------------------------
 
@@ -116,25 +103,6 @@ def test_the_user_form_only_stores_a_team_scope_for_a_team_lead():
     )
     assert team_lead.is_valid(), team_lead.errors
     assert team_lead.cleaned_data["team_scope"] == ["CRM_TEAM"]
-
-
-# --- F3: a hand-edited age filter was an uncaught 500 ----------------------
-
-
-@pytest.mark.parametrize(
-    "params",
-    [
-        {"age_preset": "foo"},
-        {"age_min_days": "10", "age_max_days": "5"},
-        {"age_min_days": "-1"},
-        {"age_preset": "NO_ORDER", "age_min_days": "10", "age_max_days": "20"},
-        {"age_min_days": "999999"},
-    ],
-)
-def test_a_nonsensical_age_filter_does_not_500(client, editor, params):
-    make_lead(customer=make_customer(_uid="0000001", staff_code="S0001"))
-    login(client, editor)
-    assert client.get(reverse("followups:list"), params).status_code == 200
 
 
 # --- F4: a non-numeric caretaker was a 500, and was unvalidated ------------

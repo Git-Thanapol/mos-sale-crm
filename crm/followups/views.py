@@ -10,28 +10,8 @@ from crm.core.permissions import (
     can_edit_customer_lead,
     can_export_customers,
     can_manage_all,
-    can_edit_lead,
-    can_reassign_caretaker,
-    can_resolve_intake,
-    can_review_any_lead,
     can_view_followup_owner_filter,
     require_permission,
-)
-from crm.accounts.models import User
-from crm.domain.enums import CONTACT_ATTEMPT_RESULTS, STOP_REASONS
-from crm.followcycles.models import Appointment
-from crm.followcycles.selectors import cycle_history
-from crm.leads.models import Lead
-from crm.teams.models import Team
-from crm.leads import presenters
-from crm.leads.selectors import (
-    LeadQueueFilters,
-    global_unassigned_queue,
-    lead_queue,
-    my_work_queue,
-    reallocation_review_queue,
-    stopped_review_queue,
-    team_unassigned_queue,
 )
 from crm.core.thai import FOLLOWUP_PRIORITY_OPTIONS, FOLLOWUP_STATUS_LABELS, LEAD_STATUS_LABELS
 from crm.followups.forms import AddOrderForm, FollowupEditForm
@@ -45,7 +25,6 @@ from crm.followups.selectors import (
 )
 from crm.followups.services import save_followup
 from crm.orders.services import LineItem, OwnerConflictError, save_order_for_customer
-
 
 
 def _back_to_list_url(request, followup_id: int) -> str:
@@ -109,114 +88,9 @@ def index(request):
     qs_no_priority.pop("priority", None)
     base_qs_no_priority = qs_no_priority.urlencode()
 
-    # --- CRM V2 Lead surface -------------------------------------------
-    # The legacy Followup list above is untouched. These sections are additive
-    # and each one is omitted entirely for a user who may not act on it --
-    # the nav keeps its show-but-gray behaviour, but a review queue a telesale
-    # cannot use is noise, not a disabled affordance.
-    lead_filters = LeadQueueFilters.from_query(request.GET)
-    lead_cursor = request.GET.get("lead_cursor") or None
-    lead_section = (request.GET.get("lead_section") or "queue").strip()
-
-    may_review = can_review_any_lead(request.user)
-    may_resolve_intake = can_resolve_intake(request.user)
-
-    if lead_section == "my_work":
-        lead_page = my_work_queue(request.user, after_cursor=lead_cursor)
-    elif lead_section == "team_unassigned" and may_review:
-        lead_page = team_unassigned_queue(request.user, after_cursor=lead_cursor)
-    elif lead_section == "stopped" and may_review:
-        lead_page = stopped_review_queue(request.user, after_cursor=lead_cursor)
-    elif lead_section == "reallocation" and may_review:
-        lead_page = reallocation_review_queue(request.user, after_cursor=lead_cursor)
-    else:
-        lead_section = "queue"
-        lead_page = lead_queue(request.user, filters=lead_filters, after_cursor=lead_cursor)
-
-    lead_rows = [presenters.decorate(lead) for lead in lead_page.items]
-
-    # The detail panel. Resolved from the scoped queue rather than by a bare
-    # pk lookup, so ?lead_id= cannot reach a lead the user may not see.
-    lead_detail = None
-    detail_can_edit = detail_can_review = False
-    detail_cycles: list = []
-    detail_appointments: list = []
-    detail_caretaker_options: list = []
-    requested_lead_id = (request.GET.get("lead_id") or "").strip()
-    if not requested_lead_id.isdigit():
-        # A non-numeric lead_id reaches the ORM as a pk and raises
-        # ValueError("Field 'id' expected a number"), which is a 500 on a
-        # hand-edited querystring. Treated as "no lead requested".
-        requested_lead_id = ""
-    if requested_lead_id:
-        detail_lead = (
-            Lead.objects.select_related("customer", "team", "caretaker")
-            .for_user(request.user)
-            .filter(pk=requested_lead_id)
-            .first()
-        )
-        if detail_lead is not None:
-            lead_detail = presenters.decorate(detail_lead)
-            detail_can_edit = can_edit_lead(request.user, detail_lead)
-            detail_can_review = can_reassign_caretaker(request.user, detail_lead)
-            detail_cycles = cycle_history(request.user, detail_lead)
-            detail_appointments = list(
-                Appointment.objects.filter(lead=detail_lead, status="SCHEDULED").order_by(
-                    "scheduled_at"
-                )
-            )
-            if detail_can_review:
-                detail_caretaker_options = list(
-                    User.objects.filter(is_active=True)
-                    .exclude(staff_code="")
-                    .order_by("staff_name", "email")[:200]
-                )
-    intake_page = global_unassigned_queue(request.user) if may_resolve_intake else None
-    # Closed set for the intake select: a typed team code is a typo waiting
-    # to happen on an action that creates a Lead.
-    assignable_teams = list(Team.objects.filter(active=True).order_by("code")) if may_resolve_intake else []
-
-    lead_qs = request.GET.copy()
-    lead_qs.pop("lead_cursor", None)
-    lead_qs.pop("lead_section", None)
-
     context = {
         "page": page,
         "filters": filters,
-        "lead_page": lead_page,
-        "lead_rows": lead_rows,
-        "lead_filters": lead_filters,
-        "lead_section": lead_section,
-        "lead_base_qs": lead_qs.urlencode(),
-        "intake_page": intake_page,
-        "may_review_leads": may_review,
-        "may_resolve_intake": may_resolve_intake,
-        "assignable_teams": assignable_teams,
-        "lead_detail": lead_detail,
-        "detail_can_edit": detail_can_edit,
-        "detail_can_review": detail_can_review,
-        "detail_cycles": detail_cycles,
-        "detail_appointments": detail_appointments,
-        "detail_caretaker_options": detail_caretaker_options,
-        "detail_next": request.get_full_path(),
-        "age_preset_options": presenters.age_preset_options(),
-        "contact_result_options": [
-            (value, presenters.CONTACT_RESULT_LABELS.get(value, value))
-            for value in CONTACT_ATTEMPT_RESULTS
-        ],
-        "stop_reason_options": [
-            (value, presenters.STOP_REASON_LABELS.get(value, value)) for value in STOP_REASONS
-        ],
-        "lifecycle_options": list(presenters.LIFECYCLE_LABELS.items()),
-        # STOPPED is excluded from the EDIT control: it carries a reason and
-        # ends the follow-up cycle, so leads:set_lifecycle rejects it and the
-        # stop form beside it is the real path. Offering it would be an
-        # option the server always refuses. The FILTER dropdown keeps it.
-        "lifecycle_edit_options": [
-            (value, label)
-            for value, label in presenters.LIFECYCLE_LABELS.items()
-            if value != "STOPPED"
-        ],
         "summary": summary,
         "options": options,
         "priority_tabs": FOLLOWUP_PRIORITY_OPTIONS,
