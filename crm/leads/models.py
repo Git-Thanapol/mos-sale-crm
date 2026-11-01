@@ -209,8 +209,10 @@ class LeadAuditEvent(models.Model):
 
     #: Null for an event about a customer rather than one of their leads
     #: (CUSTOMER_HISTORY_VIEW on a customer who has no lead yet).
+    #: SET_NULL, not CASCADE: an audit row must outlive the lead it describes
+    #: (an import rollback deletes the leads it created, not other people's audit).
     lead = models.ForeignKey(
-        Lead, null=True, blank=True, on_delete=models.CASCADE, related_name="audit_events"
+        Lead, null=True, blank=True, on_delete=models.SET_NULL, related_name="audit_events"
     )
     customer = models.ForeignKey(
         "customers.Customer",

@@ -20,6 +20,7 @@ from crm.domain.import_state import needs_rollback
 from crm.importv2.models import ImportBatch, ImportJournalEntry, ImportOperation
 from crm.importv2.services.commit import _remember, _replay, _require_admin
 from crm.importv2.services.journal import MODELS, restore_values, snapshot
+from crm.importv2.services.locks import batch_running
 from crm.importv2.services.state import transition
 
 DEFAULT_ROLLBACK_CHUNK_SIZE = 100
@@ -76,6 +77,15 @@ def rollback_batch(
     replay = _replay(batch, operation_key)
     if replay is not None:
         return replay
+    with batch_running(batch):
+        batch.refresh_from_db()
+        replay = _replay(batch, operation_key)
+        if replay is not None:
+            return replay
+        return _rollback_locked(actor=actor, batch=batch, reason=reason, operation_key=operation_key, chunk_size=chunk_size)
+
+
+def _rollback_locked(*, actor, batch: ImportBatch, reason: str, operation_key: str, chunk_size: int) -> dict:
     if batch.status != "ROLLING_BACK" and not needs_rollback(batch.status):
         raise ValueError(f"ILLEGAL_STATE: a batch in {batch.status} cannot be rolled back")
     chunk_size = max(1, min(int(chunk_size), 500))

@@ -54,6 +54,9 @@ def transition(
     Returns True when the status actually changed (a self-transition only
     appends a history entry). Saves the batch.
     """
+    batch.refresh_from_db(
+        fields=["status", "transition_history", "attempt_count", "confirmed_by", "confirmed_at", "committed_at", "rolled_back_at"]
+    )
     now = round(dj_timezone.now().timestamp() * 1000)
     context = {
         "actor": _label(actor) or "system",

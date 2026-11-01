@@ -33,6 +33,7 @@ from crm.domain.import_errors import ConfirmError
 from crm.domain.order_merge import merge_order
 from crm.importv2.models import ImportBatch, ImportConflict, ImportOperation, ImportRowPlan
 from crm.importv2.services import adapters
+from crm.importv2.services.locks import batch_running
 from crm.importv2.services.journal import Journal, LeadTracker, snapshot, stored_snapshot
 from crm.importv2.services.preview import recompute_preview_hash
 from crm.importv2.services.state import transition
@@ -83,6 +84,17 @@ def confirm_batch(*, actor, batch: ImportBatch, preview_hash: str, operation_key
     if replay is not None:
         return replay
 
+    with transaction.atomic():
+        # Serialise concurrent confirms of one batch; the loser re-reads and replays.
+        ImportBatch.objects.select_for_update().get(pk=batch.pk)
+        batch.refresh_from_db()
+        replay = _replay(batch, operation_key)
+        if replay is not None:
+            return replay
+        return _confirm_locked(actor=actor, batch=batch, preview_hash=preview_hash, operation_key=operation_key)
+
+
+def _confirm_locked(*, actor, batch: ImportBatch, preview_hash: str, operation_key: str) -> dict:
     profile = get_profile(batch.mapping_profile_id)
     open_blocking = batch.conflicts.filter(severity="BLOCKING", status="OPEN").count()
     stored_hash = batch.preview_hash
@@ -294,8 +306,13 @@ def _ensure_lead_or_intake(*, batch, customer, facts, team, journal) -> None:
             journal.created("INTAKE", item)
 
 
-def _apply_lead_resolutions(*, actor, customer, closer, resolution, order) -> None:
-    for lead in Lead.objects.select_related("team", "caretaker").filter(customer=customer):
+def _apply_lead_resolutions(*, actor, customer, closer, resolution, order, team) -> None:
+    """Apply the person's decision to the lead the conflict was about: the row's
+    team's lead, or the customer's only lead when the row names no team. Never to
+    the customer's other teams' leads."""
+    leads = Lead.objects.select_related("team", "caretaker").filter(customer=customer)
+    leads = leads.filter(team=team) if team is not None else (leads if leads.count() == 1 else leads.none())
+    for lead in leads:
         if resolution.get("REACTIVATION") == "REACTIVATE" and lead.lifecycle_status == "STOPPED":
             reactivate_lead(actor=actor, lead=lead, reason=f"import order {order.order_no}")
         if resolution.get("OWNERSHIP") == "REASSIGN" and closer is not None:
@@ -337,7 +354,7 @@ def _apply_group(*, actor, batch, plan, directory, journal, resolutions) -> str:
             apply_order_to_lead(actor=actor, lead=lead, order=order, lock_active=lock)
             _refresh_order_rollups(lead=lead, order=order)
             recompute_lead_missed_channel(lead=lead)
-        _apply_lead_resolutions(actor=actor, customer=customer, closer=closer, resolution=resolution, order=order)
+        _apply_lead_resolutions(actor=actor, customer=customer, closer=closer, resolution=resolution, order=order, team=team)
     tracker.finish()
     return outcome
 
@@ -348,6 +365,15 @@ def commit_batch(*, actor, batch: ImportBatch, operation_key: str, chunk_size: i
     replay = _replay(batch, operation_key)
     if replay is not None:
         return replay
+    with batch_running(batch):
+        batch.refresh_from_db()
+        replay = _replay(batch, operation_key)
+        if replay is not None:
+            return replay
+        return _commit_locked(actor=actor, batch=batch, operation_key=operation_key, chunk_size=chunk_size)
+
+
+def _commit_locked(*, actor, batch: ImportBatch, operation_key: str, chunk_size: int) -> dict:
     if batch.status != "COMMITTING":
         raise ValueError(f"ILLEGAL_STATE: a batch in {batch.status} cannot be committed")
     chunk_size = max(1, min(int(chunk_size), MAX_CHUNK_SIZE))

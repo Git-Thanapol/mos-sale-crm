@@ -105,7 +105,10 @@ def _read_csv(raw: bytes) -> dict:
         text = raw.decode("utf-8-sig")
     except UnicodeDecodeError as error:
         raise UploadError("UNSUPPORTED_FILE", "the CSV must be UTF-8") from error
-    rows = [list(r) for r in csv.reader(io.StringIO(text))]
+    try:
+        rows = [list(r) for r in csv.reader(io.StringIO(text))]
+    except csv.Error as error:
+        raise UploadError("UNSUPPORTED_FILE", f"the CSV cannot be read: {error}") from error
     return _split_header(rows)
 
 
