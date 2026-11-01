@@ -19,7 +19,13 @@ from crm.core.permissions import can_review_any_lead, can_use_lead_workspace
 from crm.domain.last_order_age import REALLOCATION_REVIEW_DEFAULT_DAYS
 from crm.followcycles.models import FollowupCycle
 from crm.leads import presenters
-from crm.leads.selectors import LeadQueueFilters, my_work_queue
+from crm.leads.selectors import (
+    NO_FILTERS,
+    LeadQueueFilters,
+    my_work_queue,
+    stopped_review_queue,
+    team_unassigned_queue,
+)
 
 PAGE_SIZE = 25
 
@@ -138,9 +144,54 @@ def my_work(request):
     )
 
 
+def _review_queue(request, *, kind):
+    """Shared by Team Unassigned and STOPPED Review (prototype ReviewQueue).
+
+    Only the age preset is a filter here, as in the prototype; every other
+    querystring value is ignored rather than trusted.
+    """
+    cursor = request.GET.get("cursor") or None
+    preset = (request.GET.get("age_preset") or "").strip()
+    if kind == "TEAM":
+        filters = replace(NO_FILTERS, age_preset=preset, sort="WORK_PRIORITY")
+        page = team_unassigned_queue(
+            request.user, filters=filters, after_cursor=cursor, limit=PAGE_SIZE
+        )
+        title, subtitle = "Team Unassigned", "Lead มี Team แล้ว แต่ยังไม่มี caretaker"
+    else:
+        filters = replace(NO_FILTERS, sort="WORK_PRIORITY")
+        page = stopped_review_queue(
+            request.user, filters=filters, after_cursor=cursor, limit=PAGE_SIZE
+        )
+        title, subtitle = "STOPPED Review", "STOPPED เป็น lifecycle state แยกจาก Unassigned"
+    return render(
+        request,
+        "leadui/review_queue.html",
+        {
+            "kind": kind,
+            "title": title,
+            "subtitle": subtitle,
+            "rows": decorate_rows(page.items),
+            "age_preset": preset,
+            "age_preset_options": presenters.age_preset_options(),
+            **pager_urls(request, page),
+        },
+    )
+
+
+@lead_page(can_review_any_lead)
+def team_unassigned(request):
+    return _review_queue(request, kind="TEAM")
+
+
+@lead_page(can_review_any_lead)
+def stopped_review(request):
+    return _review_queue(request, kind="STOPPED")
+
+
 def _not_built(request, *args, **kwargs):
     raise Http404
 
 
-global_unassigned = team_unassigned = stopped_review = _not_built
+global_unassigned = _not_built
 lead_detail = customer_detail = customer_history = _not_built
