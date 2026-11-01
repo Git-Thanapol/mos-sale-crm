@@ -106,3 +106,37 @@ scoping on anything else would let the queryset and the predicate disagree. A
 queryset that admits a row the predicate rejects — or the reverse — is how a
 leak gets in. `derive_customer_access` is a union across every team holding a
 lead for that customer and must therefore never scope a single lead.
+
+
+## CRM V2 follow-up UI and import
+
+The follow-up pages are a port of the customer's CRM V2 prototype UI, not a
+redesign. Pure rules (ownership, missed-channel, last-order-age, import state
+machine, confirm gate, batch business date, conflict scope, identity, order
+merge, row evaluation, mapping, status map, migration decisions) live in
+`crm/domain` and are proven against fixtures produced by EXECUTING the
+prototype (`scripts/export_crmv2_*.mts`, `tests/fixtures/crmv2/`). Never
+hand-edit those fixtures; regenerate them.
+
+Import scope. The engine (`crm/importv2`) runs end to end for `CRM_CUSTOMERS`,
+the CRM's own 26-column line-level export. LITE_DETAIL_ORDER, INOUT_MANAGE_MAIN,
+TELE_SALES_REPORT and CUTOVER_ORDER_SHEET are recognised and validated but
+Preview refuses them (`SOURCE_NOT_SUPPORTED`), because they need data from other
+files joined first. It never half-imports.
+
+Import rulings: file rows are grouped by order id and line amounts summed;
+identity candidates come from the phone index only; a staff or team name resolves
+only when exactly one active user/team matches; an order with a bad row is
+INVALID as a whole and blocks Confirm; imports never open follow-up cycles; a
+NEW_CUSTOMER resolution against an exact phone match creates a split
+`phone_key` (`<key>#<order id>`) because `crm_customer.phone_key` is still
+unique; an order with no known team and no lead goes to Global Unassigned
+(D019/D024). Commit writes in transactions of 100, journals every change
+(including lead, ownership segment, audit and cycle rows by diffing them) and
+replays by operation key. Rollback undoes exactly the journal, in reverse, and
+stops with ROLLBACK_FAILED, changing nothing, if a person has edited an imported
+row since.
+
+Roles map as above (Admin = EDITOR); repo ADMIN, the read-only roles and
+inactive users hold no import authority. Hidden menu entries are a convenience:
+every page returns 404 to a user outside its audience and every write re-checks.

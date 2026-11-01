@@ -254,3 +254,30 @@ docker compose -f compose.yaml -p crmverify exec -T web python manage.py seed_te
 docker compose -f compose.yaml -p crmverify exec -T web python -m pytest tests/unit tests/db tests/view
 docker compose -f compose.yaml -p crmverify down -v   # removes ONLY crmverify_* volumes
 ```
+
+
+## CRM V2 follow-up pages and import
+
+Pages live under ติดตามลูกค้า in the sidebar (`/followup/work/`, `/followup/import/`,
+...). To look at them with believable data on a DEBUG instance:
+
+    docker compose exec web python manage.py seed_leadui_demo          # create (idempotent)
+    docker compose exec web python manage.py seed_leadui_demo --clean  # remove it
+
+Importing a CRM export (EDITOR only): upload the `.xlsx`/`.csv` on นำเข้าข้อมูล,
+press สร้าง Preview, resolve any Conflict (แก้ Conflict), then Confirm and Commit.
+History shows every batch; Rollback (EDITOR) undoes one from its journal.
+
+Migration decisions come from the run-once HX63 planner. Load them with:
+
+    docker compose exec web python manage.py load_migration_decisions --from decisions.json [--dry-run]
+
+It never overwrites a resolved decision and refuses a decision whose evidence
+changed ("source drift requires review"). Decide them on Migration Decisions.
+
+Parity fixtures are regenerated from the prototype (cwd = the prototype repo):
+
+    node --import tsx <this repo>/scripts/export_crmv2_import_fixtures.mts "$PWD" <this repo>/tests/fixtures/crmv2
+    # likewise export_crmv2_merge_fixtures.mts, export_crmv2_decision_fixtures.mts,
+    # export_crmv2_mapping_fixtures.mts (also takes crm/importv2/profiles.json) and
+    # export_crmv2_fixtures.mts
