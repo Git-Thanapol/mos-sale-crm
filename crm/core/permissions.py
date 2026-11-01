@@ -407,3 +407,40 @@ def can_use_lead_workspace(user: object) -> bool:
     if not _is_usable(user):
         return False
     return user_role(user) in (ROLE_EDITOR, ROLE_TEAM_LEAD) or is_telesell(user)
+
+
+def import_actor_role(user: object) -> str | None:
+    """Map a repo user onto the prototype's import roles.
+
+    EDITOR is the prototype's ADMIN, TEAM_LEAD is TEAM_LEAD and a telesale is
+    TELESALE. Repo ADMIN, the read-only roles and deactivated accounts map to
+    None: they hold no import authority at all. The import rules in crm.domain
+    speak the prototype's vocabulary; this is the single translation point.
+    """
+    if not _is_usable(user):
+        return None
+    role = user_role(user)
+    if role == ROLE_EDITOR:
+        return "ADMIN"
+    if role == ROLE_TEAM_LEAD:
+        return "TEAM_LEAD"
+    if is_telesell(user):
+        return "TELESALE"
+    return None
+
+
+def can_import_v2(user: object) -> bool:
+    """Upload, confirm, commit, rollback and migration decisions: Admin only."""
+    return import_actor_role(user) == "ADMIN"
+
+
+def can_resolve_import_conflicts(user: object) -> bool:
+    """See the conflict queue: EDITOR, or a TEAM_LEAD who holds a team scope.
+    Per-conflict authority is crm.domain.conflict_scope.assert_resolver_scope."""
+    role = import_actor_role(user)
+    return role == "ADMIN" or (role == "TEAM_LEAD" and bool(team_scope(user)))
+
+
+def can_view_import_history(user: object) -> bool:
+    """Same audience as the conflict queue; Rollback inside it is Admin only."""
+    return can_resolve_import_conflicts(user)

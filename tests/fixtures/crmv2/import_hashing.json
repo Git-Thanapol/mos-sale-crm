@@ -1,0 +1,514 @@
+[
+  {
+    "name": "stable/null",
+    "input": {
+      "fn": "stableStringify",
+      "value": null
+    },
+    "expected": {
+      "value": "null",
+      "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    }
+  },
+  {
+    "name": "stable/string",
+    "input": {
+      "fn": "stableStringify",
+      "value": "ทดสอบ \"quote\""
+    },
+    "expected": {
+      "value": "\"ทดสอบ \\\"quote\\\"\"",
+      "sha256": "5cda6bdc4913bbaf5debd68c18287d86675ddcc4a015c635032b1e0b4505a7bb"
+    }
+  },
+  {
+    "name": "stable/int",
+    "input": {
+      "fn": "stableStringify",
+      "value": 42
+    },
+    "expected": {
+      "value": "42",
+      "sha256": "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049"
+    }
+  },
+  {
+    "name": "stable/float-integral",
+    "input": {
+      "fn": "stableStringify",
+      "value": 3
+    },
+    "expected": {
+      "value": "3",
+      "sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"
+    }
+  },
+  {
+    "name": "stable/float",
+    "input": {
+      "fn": "stableStringify",
+      "value": 1.5
+    },
+    "expected": {
+      "value": "1.5",
+      "sha256": "9f29a130438b81170b92a42650f9a94291ecad60bd47af2a3886e75f7f728725"
+    }
+  },
+  {
+    "name": "stable/bool",
+    "input": {
+      "fn": "stableStringify",
+      "value": true
+    },
+    "expected": {
+      "value": "true",
+      "sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+    }
+  },
+  {
+    "name": "stable/array",
+    "input": {
+      "fn": "stableStringify",
+      "value": [
+        1,
+        "a",
+        null,
+        {
+          "b": 2,
+          "a": 1
+        }
+      ]
+    },
+    "expected": {
+      "value": "[1,\"a\",null,{\"a\":1,\"b\":2}]",
+      "sha256": "c026d8f843c276d299ebfdc659556042a18cfa600c2fd80cb01775730e3acd71"
+    }
+  },
+  {
+    "name": "stable/key-order-lower",
+    "input": {
+      "fn": "stableStringify",
+      "value": {
+        "b": 1,
+        "a": 2,
+        "c": 3
+      }
+    },
+    "expected": {
+      "value": "{\"a\":2,\"b\":1,\"c\":3}",
+      "sha256": "e145110e712e3ed0a6b233551b27a90aa39b4c93ed67e111ba2002d16e5ed1fa"
+    }
+  },
+  {
+    "name": "stable/key-order-mixed-case",
+    "input": {
+      "fn": "stableStringify",
+      "value": {
+        "Bb": 1,
+        "aa": 2,
+        "AA": 3,
+        "ab": 4,
+        "B": 5,
+        "_x": 6,
+        "1k": 7,
+        "k1": 8
+      }
+    },
+    "expected": {
+      "value": "{\"1k\":7,\"aa\":2,\"AA\":3,\"ab\":4,\"B\":5,\"Bb\":1,\"k1\":8,\"_x\":6}",
+      "sha256": "de8c7318f68c4dad571556802760d8094a0195b20ff289c67ffdfceee1240d71"
+    }
+  },
+  {
+    "name": "stable/nested",
+    "input": {
+      "fn": "stableStringify",
+      "value": {
+        "z": {
+          "y": [
+            1,
+            {
+              "x": null
+            }
+          ],
+          "a": "ก"
+        },
+        "m": "v"
+      }
+    },
+    "expected": {
+      "value": "{\"m\":\"v\",\"z\":{\"a\":\"ก\",\"y\":[1,{\"x\":null}]}}",
+      "sha256": "8dde65a00fe65c1e57cf5f0a0300d6259b8aa55d049dc5edcdc7de325875db53"
+    }
+  },
+  {
+    "name": "stable/thai-keys",
+    "input": {
+      "fn": "stableStringify",
+      "value": {
+        "ข": 1,
+        "ก": 2
+      }
+    },
+    "expected": {
+      "value": "{\"ก\":2,\"ข\":1}",
+      "sha256": "ecc6e68b61c37992174158233f4c63f0f0912c41cc0a7bb21085f70231ad1917"
+    }
+  },
+  {
+    "name": "fields/exists-all",
+    "input": {
+      "fn": "hashFields",
+      "data": {
+        "a": 1,
+        "b": 2
+      },
+      "fields": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": {
+      "value": "67d05c8c234b9da984e47f52842a71da0cd28f66546943a36bf3de9846385bec"
+    }
+  },
+  {
+    "name": "fields/missing-field",
+    "input": {
+      "fn": "hashFields",
+      "data": {
+        "a": 1
+      },
+      "fields": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": {
+      "value": "423b12c9917d70e4f210e4b8f580b10b9c91c86b588f84c969706ddc90c3dec5"
+    }
+  },
+  {
+    "name": "fields/null-doc",
+    "input": {
+      "fn": "hashFields",
+      "data": null,
+      "fields": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": {
+      "value": "99676ce8618622f9eb49b6c1867e7495908cf341cd36b87e186e1da00ad89c84"
+    }
+  },
+  {
+    "name": "fields/empty-doc",
+    "input": {
+      "fn": "hashFields",
+      "data": {},
+      "fields": [
+        "a"
+      ]
+    },
+    "expected": {
+      "value": "a9d221bfa8917da5123cdadb640bdc3f788dd89f91e36563ec5f6871b2ccc1e8"
+    }
+  },
+  {
+    "name": "fields/null-value-vs-missing",
+    "input": {
+      "fn": "hashFields",
+      "data": {
+        "a": null
+      },
+      "fields": [
+        "a",
+        "b"
+      ]
+    },
+    "expected": {
+      "value": "8acf1e7c4e38b459b5c63cae9d449b64c6023930e3ac8dcae9b5fd3384716805"
+    }
+  },
+  {
+    "name": "preview/base",
+    "input": {
+      "fn": "computePreviewHash",
+      "value": {
+        "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "mappingProfileId": "crm-customers",
+        "mappingProfileVersion": 1,
+        "batchBusinessDate": null,
+        "rows": [
+          {
+            "rowIndex": 1,
+            "orderId": "SO-1",
+            "changes": {
+              "phone": "081",
+              "name": "ก"
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "9f454481415d32b3e1d69021070efd9c6d9691f2bf962d0432095f986dbd93f0"
+    }
+  },
+  {
+    "name": "preview/with-date",
+    "input": {
+      "fn": "computePreviewHash",
+      "value": {
+        "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "mappingProfileId": "crm-customers",
+        "mappingProfileVersion": 1,
+        "batchBusinessDate": "2026-10-26",
+        "rows": [
+          {
+            "rowIndex": 1,
+            "orderId": "SO-1",
+            "changes": {
+              "phone": "081",
+              "name": "ก"
+            }
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "7f35031e8148454b9718b963f6ef8e979ed7a6f9be4b29853f4b784a2db01134"
+    }
+  },
+  {
+    "name": "preview/two-rows",
+    "input": {
+      "fn": "computePreviewHash",
+      "value": {
+        "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "mappingProfileId": "crm-customers",
+        "mappingProfileVersion": 1,
+        "batchBusinessDate": null,
+        "rows": [
+          {
+            "rowIndex": 1,
+            "orderId": "SO-1",
+            "changes": {
+              "phone": "081",
+              "name": "ก"
+            }
+          },
+          {
+            "rowIndex": 2,
+            "orderId": "SO-2",
+            "changes": {}
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "7f71f904a224b0aa2c37e6ed81f0e8c18b2f02ed414e2bfd6347b0e73d20ded5"
+    }
+  },
+  {
+    "name": "preview/decisions",
+    "input": {
+      "fn": "computePreviewHash",
+      "value": {
+        "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "mappingProfileId": "crm-customers",
+        "mappingProfileVersion": 1,
+        "batchBusinessDate": null,
+        "rows": [
+          {
+            "rowIndex": 1,
+            "orderId": "SO-1",
+            "changes": {
+              "phone": "081",
+              "name": "ก"
+            }
+          }
+        ],
+        "decisions": [
+          {
+            "conflictId": "c1",
+            "choice": "KEEP_CURRENT"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "c8572f38976db4c7f260e82147d24c2b32fed9b29138c053d018e6b0305f55f3"
+    }
+  },
+  {
+    "name": "preview/extra-key-ignored",
+    "input": {
+      "fn": "computePreviewHash",
+      "value": {
+        "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "mappingProfileId": "crm-customers",
+        "mappingProfileVersion": 1,
+        "batchBusinessDate": null,
+        "rows": [
+          {
+            "rowIndex": 1,
+            "orderId": "SO-1",
+            "changes": {},
+            "ignored": true
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "0b50e92caf98a718c0e1fa994ee34b12ad0411f281ab7e30089dd9c15182e6af"
+    }
+  },
+  {
+    "name": "next-resolution-hash/first",
+    "input": {
+      "fn": "nextResolutionPreviewHash",
+      "previous": null,
+      "decision": {
+        "conflictId": "c1",
+        "version": 1,
+        "resolution": "KEEP_CURRENT"
+      }
+    },
+    "expected": {
+      "value": "fcc1c66b42ca5fa2405bbf3336fdf762361003a5414c8c0c6b53abe0fef02043"
+    }
+  },
+  {
+    "name": "next-resolution-hash/chained",
+    "input": {
+      "fn": "nextResolutionPreviewHash",
+      "previous": "abc",
+      "decision": {
+        "conflictId": "c2",
+        "version": 3,
+        "resolution": "REASSIGN"
+      }
+    },
+    "expected": {
+      "value": "3e3b85ac447d7f436e61a0a96cecab9ab2d7026f003ecebde371272ca30efede"
+    }
+  },
+  {
+    "name": "conflict-hash/base",
+    "input": {
+      "fn": "conflictVersionHash",
+      "conflict": {
+        "conflictId": "c1",
+        "batchId": "b1",
+        "rowIndex": 4,
+        "kind": "OWNERSHIP",
+        "severity": "BLOCKING",
+        "status": "OPEN",
+        "teamId": "team-crm",
+        "affectedTeamIds": [
+          "team-crm"
+        ],
+        "summary": "Caretaker ปัจจุบันต่างจากไฟล์นำเข้า",
+        "sourceRowRef": "row:4",
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ],
+        "version": 1,
+        "resolution": null
+      }
+    },
+    "expected": {
+      "value": "090ff28be7c3adbfec1168a43cadc0276eaa35fc39ba2c4336369ed670816259"
+    }
+  },
+  {
+    "name": "conflict-hash/resolved",
+    "input": {
+      "fn": "conflictVersionHash",
+      "conflict": {
+        "conflictId": "c1",
+        "batchId": "b1",
+        "rowIndex": 4,
+        "kind": "OWNERSHIP",
+        "severity": "BLOCKING",
+        "status": "RESOLVED",
+        "teamId": "team-crm",
+        "affectedTeamIds": [
+          "team-crm"
+        ],
+        "summary": "Caretaker ปัจจุบันต่างจากไฟล์นำเข้า",
+        "sourceRowRef": "row:4",
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ],
+        "version": 2,
+        "resolution": "REASSIGN"
+      }
+    },
+    "expected": {
+      "value": "7fdb80cd57753742641f0dcc9a93c465c114261c555f559904f7e87732ffc607"
+    }
+  },
+  {
+    "name": "conflict-hash/missing-optional",
+    "input": {
+      "fn": "conflictVersionHash",
+      "conflict": {
+        "conflictId": "c1",
+        "batchId": "b1",
+        "rowIndex": 4,
+        "kind": "OWNERSHIP",
+        "severity": "BLOCKING",
+        "status": "OPEN",
+        "teamId": "team-crm",
+        "affectedTeamIds": [
+          "team-crm"
+        ],
+        "summary": "Caretaker ปัจจุบันต่างจากไฟล์นำเข้า",
+        "sourceRowRef": "row:4",
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ],
+        "version": 1
+      }
+    },
+    "expected": {
+      "value": "898c33ef7ad1bc1a89d16c42007fe61b269bb5a3f7da35238b141d12b84a8d1b"
+    }
+  },
+  {
+    "name": "conflict-hash/extra-field-ignored",
+    "input": {
+      "fn": "conflictVersionHash",
+      "conflict": {
+        "conflictId": "c1",
+        "batchId": "b1",
+        "rowIndex": 4,
+        "kind": "OWNERSHIP",
+        "severity": "BLOCKING",
+        "status": "OPEN",
+        "teamId": "team-crm",
+        "affectedTeamIds": [
+          "team-crm"
+        ],
+        "summary": "Caretaker ปัจจุบันต่างจากไฟล์นำเข้า",
+        "sourceRowRef": "row:4",
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ],
+        "version": 1,
+        "resolution": null,
+        "createdAt": 123
+      }
+    },
+    "expected": {
+      "value": "090ff28be7c3adbfec1168a43cadc0276eaa35fc39ba2c4336369ed670816259"
+    }
+  }
+]

@@ -1,0 +1,1578 @@
+[
+  {
+    "name": "confirm/ok",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/team-lead-not-authorized",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "tl",
+          "role": "TEAM_LEAD",
+          "teamIds": [
+            "t"
+          ]
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "NOT_AUTHORIZED",
+            "message": "TEAM_LEAD may not confirm an import; only Admin may."
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/telesale-not-authorized",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "ts",
+          "role": "TELESALE",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "NOT_AUTHORIZED",
+            "message": "TELESALE may not confirm an import; only Admin may."
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/preview-state",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "PREVIEW",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "ILLEGAL_STATE",
+            "message": "a batch in PREVIEW cannot be confirmed"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/paused-quota-ok",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "PAUSED_QUOTA",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/failed-retryable-ok",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "FAILED_RETRYABLE",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/committed-illegal",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "COMMITTED",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "ILLEGAL_STATE",
+            "message": "a batch in COMMITTED cannot be confirmed"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/profile-missing",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PROFILE_MISSING",
+            "message": "the mapping profile used by this batch no longer exists"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/profile-draft",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "DRAFT"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PROFILE_NOT_ACTIVE",
+            "message": "mapping profile crm-customers is DRAFT; only an ACTIVE version may commit"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/profile-retired",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "RETIRED"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PROFILE_NOT_ACTIVE",
+            "message": "mapping profile crm-customers is RETIRED; only an ACTIVE version may commit"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/profile-version-mismatch",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 2,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PROFILE_VERSION_MISMATCH",
+            "message": "batch is pinned to crm-customers@1 but crm-customers@2 was supplied"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/profile-id-mismatch",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "other",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PROFILE_VERSION_MISMATCH",
+            "message": "batch is pinned to crm-customers@1 but other@1 was supplied"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/validation-not-ok",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": false
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "VALIDATION_BLOCKED",
+            "message": "validation did not pass"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/validation-block-issue",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": [
+            {
+              "severity": "BLOCK",
+              "code": "X"
+            },
+            {
+              "severity": "WARNING"
+            }
+          ]
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "VALIDATION_BLOCKED",
+            "message": "1 validation error(s) must be fixed first"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/validation-warning-only",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": [
+            {
+              "severity": "WARNING"
+            }
+          ]
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/blocking-open",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [
+          {
+            "severity": "BLOCKING",
+            "status": "OPEN"
+          },
+          {
+            "severity": "BLOCKING",
+            "status": "RESOLVED"
+          },
+          {
+            "severity": "WARNING",
+            "status": "OPEN"
+          }
+        ],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "BLOCKING_CONFLICTS_OPEN",
+            "message": "1 blocking conflict(s) are still open"
+          }
+        ],
+        "openBlockingConflicts": 1
+      }
+    }
+  },
+  {
+    "name": "confirm/blocking-resolved",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [
+          {
+            "severity": "BLOCKING",
+            "status": "RESOLVED"
+          },
+          {
+            "severity": "BLOCKING",
+            "status": "AUTO_RESOLVED"
+          }
+        ],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/summary-wins",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null,
+        "conflictSummary": {
+          "openBlockingConflicts": 3
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "BLOCKING_CONFLICTS_OPEN",
+            "message": "3 blocking conflict(s) are still open"
+          }
+        ],
+        "openBlockingConflicts": 3
+      }
+    }
+  },
+  {
+    "name": "confirm/summary-zero-wins",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [
+          {
+            "severity": "BLOCKING",
+            "status": "OPEN"
+          }
+        ],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null,
+        "conflictSummary": {
+          "openBlockingConflicts": 0
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/preview-missing",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": null,
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PREVIEW_MISSING",
+            "message": "no preview exists for this batch"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/staged-file-changed",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "STAGED_FILE_CHANGED",
+            "message": "the staged file differs from the batch file; re-upload and re-preview"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/preview-hash-mismatch",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PREVIEW_HASH_MISMATCH",
+            "message": "the decisions changed after the preview; re-preview before committing"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/batch-has-no-preview-hash",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": ""
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PREVIEW_HASH_MISMATCH",
+            "message": "the decisions changed after the preview; re-preview before committing"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/staged-profile-mismatch",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 9,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": false,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "PROFILE_VERSION_MISMATCH",
+            "message": "the staged mapping profile is not the version pinned on the batch"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/date-required-missing",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": true,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "BATCH_DATE_REQUIRED",
+            "message": "BATCH_DATE_REQUIRED: this source cannot supply orderedAt on its own"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/date-required-unconfirmed",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": true,
+        "batchBusinessDate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "OPERATOR",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": null,
+          "filenameAmbiguous": false
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "BATCH_DATE_REQUIRED",
+            "message": "BATCH_DATE_NOT_CONFIRMED: an operator has not confirmed the batch business date"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/date-required-invalid",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": true,
+        "batchBusinessDate": {
+          "dayKey": "2026-13-40",
+          "timezone": "Asia/Bangkok",
+          "source": "OPERATOR",
+          "confirmedBy": "admin",
+          "confirmedAt": 10,
+          "filenameCandidate": null,
+          "filenameAmbiguous": false
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "BATCH_DATE_REQUIRED",
+            "message": "INVALID_BATCH_DATE: not a calendar date: 2026-13-40"
+          }
+        ],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/date-required-ok",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "AWAITING_RESOLUTION",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "teamIds": []
+        },
+        "profile": {
+          "profileId": "crm-customers",
+          "version": 1,
+          "status": "ACTIVE"
+        },
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "conflicts": [],
+        "staged": {
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "requiresBatchBusinessDate": true,
+        "batchBusinessDate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "OPERATOR",
+          "confirmedBy": "admin",
+          "confirmedAt": 10,
+          "filenameCandidate": null,
+          "filenameAmbiguous": false
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": true,
+        "blockers": [],
+        "openBlockingConflicts": 0
+      }
+    }
+  },
+  {
+    "name": "confirm/everything-wrong",
+    "input": {
+      "fn": "evaluateConfirm",
+      "value": {
+        "batch": {
+          "status": "COMMITTED",
+          "mappingProfileId": "crm-customers",
+          "mappingProfileVersion": 1,
+          "fileSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "previewHash": "pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp"
+        },
+        "actor": {
+          "userId": "ts",
+          "role": "TELESALE",
+          "teamIds": []
+        },
+        "profile": null,
+        "validation": {
+          "ok": false
+        },
+        "conflicts": [
+          {
+            "severity": "BLOCKING",
+            "status": "OPEN"
+          }
+        ],
+        "staged": null,
+        "requiresBatchBusinessDate": true,
+        "batchBusinessDate": null
+      }
+    },
+    "expected": {
+      "value": {
+        "ok": false,
+        "blockers": [
+          {
+            "code": "NOT_AUTHORIZED",
+            "message": "TELESALE may not confirm an import; only Admin may."
+          },
+          {
+            "code": "ILLEGAL_STATE",
+            "message": "a batch in COMMITTED cannot be confirmed"
+          },
+          {
+            "code": "PROFILE_MISSING",
+            "message": "the mapping profile used by this batch no longer exists"
+          },
+          {
+            "code": "VALIDATION_BLOCKED",
+            "message": "validation did not pass"
+          },
+          {
+            "code": "BLOCKING_CONFLICTS_OPEN",
+            "message": "1 blocking conflict(s) are still open"
+          },
+          {
+            "code": "PREVIEW_MISSING",
+            "message": "no preview exists for this batch"
+          },
+          {
+            "code": "BATCH_DATE_REQUIRED",
+            "message": "BATCH_DATE_REQUIRED: this source cannot supply orderedAt on its own"
+          }
+        ],
+        "openBlockingConflicts": 1
+      }
+    }
+  },
+  {
+    "name": "requires-date/CRM_CUSTOMERS",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "CRM_CUSTOMERS"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "requires-date/LITE_DETAIL_ORDER",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "LITE_DETAIL_ORDER"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "requires-date/INOUT_MANAGE_MAIN",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "INOUT_MANAGE_MAIN"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "requires-date/TELE_SALES_REPORT",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "TELE_SALES_REPORT"
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "requires-date/CUTOVER_ORDER_SHEET",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "CUTOVER_ORDER_SHEET"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "requires-date/HX63_HISTORICAL",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "HX63_HISTORICAL"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "requires-date/PENDING_SOURCE_SAMPLE",
+    "input": {
+      "fn": "sourceRequiresBatchDate",
+      "kind": "PENDING_SOURCE_SAMPLE"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "confirm-roles",
+    "input": {
+      "fn": "IMPORT_CONFIRM_ROLES"
+    },
+    "expected": {
+      "value": [
+        "ADMIN"
+      ]
+    }
+  }
+]

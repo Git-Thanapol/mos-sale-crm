@@ -1,0 +1,1078 @@
+[
+  {
+    "name": "scope/admin/own-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/own-team-no-affected",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/other-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t2",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/multi-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/duplicated-same-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "STALE",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/no-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": null,
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/identity",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "IDENTITY",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/reactivation",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "REACTIVATION",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/admin/affected-overrides-teamId",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "a",
+        "role": "ADMIN",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/own-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/own-team-no-affected",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/other-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t2",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/multi-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/duplicated-same-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "STALE",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/no-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": null,
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/identity",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "IDENTITY",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/reactivation",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "REACTIVATION",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1/affected-overrides-teamId",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/own-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/own-team-no-affected",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/other-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t2",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/multi-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/duplicated-same-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "STALE",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/no-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": null,
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/identity",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "IDENTITY",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/reactivation",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "REACTIVATION",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-t1-t2/affected-overrides-teamId",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l2",
+        "role": "TEAM_LEAD",
+        "teamIds": [
+          "t1",
+          "t2"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "scope/team-lead-none/own-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/own-team-no-affected",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/other-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t2",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/multi-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/duplicated-same-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "STALE",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/no-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": null,
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/identity",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "IDENTITY",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/reactivation",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "REACTIVATION",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/team-lead-none/affected-overrides-teamId",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "l3",
+        "role": "TEAM_LEAD",
+        "teamIds": []
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/own-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/own-team-no-affected",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/other-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t2",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/multi-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/duplicated-same-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "STALE",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1",
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/no-team",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": null,
+        "affectedTeamIds": []
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/identity",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "IDENTITY",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/reactivation",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "REACTIVATION",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t1"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  },
+  {
+    "name": "scope/telesale/affected-overrides-teamId",
+    "input": {
+      "fn": "assertResolverScope",
+      "actor": {
+        "userId": "t",
+        "role": "TELESALE",
+        "teamIds": [
+          "t1"
+        ]
+      },
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "teamId": "t1",
+        "affectedTeamIds": [
+          "t2"
+        ]
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "ApplicationError",
+        "code": "FORBIDDEN"
+      }
+    }
+  }
+]

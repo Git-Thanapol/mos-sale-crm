@@ -27,6 +27,15 @@ def load_cases(module: str) -> list[dict]:
 
 def test_every_fixture_file_is_loadable():
     files = sorted(p.stem for p in FIXTURE_DIR.glob("*.json"))
-    assert files == ["last_order_age", "missed_channel", "ownership"]
+    assert files == [
+        "import_confirm",
+        "import_conflict_scope",
+        "import_hashing",
+        "import_state",
+        "import_tele_date",
+        "last_order_age",
+        "missed_channel",
+        "ownership",
+    ]
     for module in files:
         load_cases(module)
