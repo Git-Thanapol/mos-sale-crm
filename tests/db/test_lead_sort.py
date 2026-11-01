@@ -227,3 +227,24 @@ def test_reallocation_review_filter_matches_the_review_queue_predicate(editor):
     assert _ids(page) == [candidate.id]
     assert LeadQueueFilters.from_query({"reallocation_review": "on"}).reallocation_review is True
     assert LeadQueueFilters.from_query({}).reallocation_review is False
+
+
+def test_my_work_for_an_editor_is_the_whole_scope_not_just_their_own_leads(editor):
+    # Prototype pageMyWork: only TELESALE is pinned to its own caretaker; ADMIN
+    # (EDITOR here) sees every lead and may filter by caretaker.
+    other = make_user(email="o@example.com", role=ROLE_TELESELL, staff_code="S9")
+    mine = _lead(caretaker=editor)
+    theirs = _lead(caretaker=other)
+    unassigned = _lead()
+    assert set(_ids(my_work_queue(editor))) == {mine.id, theirs.id, unassigned.id}
+    only_other = my_work_queue(editor, filters=LeadQueueFilters(caretaker_user_id=str(other.pk)))
+    assert _ids(only_other) == [theirs.id]
+
+
+def test_my_work_for_a_team_lead_is_their_team_only():
+    lead_user = make_user(
+        email="tl@example.com", role="TEAM_LEAD", staff_code="L1", team_scope=["TEAM_A"]
+    )
+    in_scope = make_lead(customer=make_customer(), team_code="TEAM_A")
+    make_lead(customer=make_customer(), team_code="TEAM_B")
+    assert _ids(my_work_queue(lead_user)) == [in_scope.id]

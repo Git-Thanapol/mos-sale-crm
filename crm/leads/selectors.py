@@ -24,6 +24,7 @@ from datetime import datetime, timedelta
 from django.db.models import Case, F, IntegerField, Q, QuerySet, When
 from django.utils import timezone
 
+from crm.core.permissions import is_telesell
 from crm.core.pagination import (
     KeysetPage,
     decode_cursor,
@@ -336,13 +337,17 @@ def my_work_queue(
     after_cursor: str | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
-    """Acceptance item A "My Work".
+    """Acceptance item A "My Work", scoped as the prototype's pageMyWork does.
 
-    The caretaker is pinned to `user` HERE, server-side, and any caretaker
-    arriving from a querystring is discarded — otherwise a telesale could read
-    another caretaker's work by editing the URL.
+    A telesale (TELESALE) sees only leads they are caretaker of: the caretaker
+    is pinned to `user` HERE, server-side, and any caretaker arriving from a
+    querystring is discarded, otherwise they could read another caretaker's
+    work by editing the URL. A TEAM_LEAD sees their authorized teams and an
+    EDITOR (ADMIN) sees everything, both through Lead.objects.for_user(); either
+    may narrow by caretaker.
     """
-    filters = replace(filters, caretaker_user_id=str(getattr(user, "pk", "") or ""))
+    if is_telesell(user):
+        filters = replace(filters, caretaker_user_id=str(getattr(user, "pk", "") or ""))
     return _page(
         _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
     )

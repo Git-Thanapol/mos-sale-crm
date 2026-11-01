@@ -7,13 +7,51 @@ sidebar hides it, and a 403 would confirm the route exists.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from functools import wraps
 
 from django.contrib.auth.views import redirect_to_login
 from django.http import Http404
 from django.shortcuts import render
+from django.utils import timezone
 
-from crm.core.permissions import can_use_lead_workspace
+from crm.core.permissions import can_review_any_lead, can_use_lead_workspace
+from crm.domain.last_order_age import REALLOCATION_REVIEW_DEFAULT_DAYS
+from crm.followcycles.models import FollowupCycle
+from crm.leads import presenters
+from crm.leads.selectors import LeadQueueFilters, my_work_queue
+
+PAGE_SIZE = 25
+
+#: Raw querystring keys the My Work form echoes back, so a value the server
+#: ignored as nonsense (min > max, a negative number) is still shown to the user.
+MY_WORK_FIELDS = (
+    "lead_keyword",
+    "missed_channel",
+    "age_preset",
+    "age_min_days",
+    "age_max_days",
+    "age_sort",
+    "appointment_protection",
+    "followup_protection",
+)
+
+MISSED_CHANNEL_OPTIONS = ("0", "1", "2", "3+")
+SORT_OPTIONS = (
+    ("WORK_PRIORITY", "ลำดับงานปกติ"),
+    ("OLDEST_LAST_ORDER", "ออเดอร์เก่าสุดก่อน"),
+    ("NEWEST_LAST_ORDER", "ออเดอร์ใหม่สุดก่อน"),
+)
+APPOINTMENT_OPTIONS = (
+    ("ANY", "ทุกสถานะนัดหมาย"),
+    ("ACTIVE", "มีนัดหมายทำงานอยู่"),
+    ("NONE", "ไม่มีนัดหมายทำงานอยู่"),
+)
+FOLLOWUP_OPTIONS = (
+    ("ANY", "ทุกรอบติดตาม"),
+    ("ACTIVE", "มีรอบติดตาม"),
+    ("NONE", "ไม่มีรอบติดตาม"),
+)
 
 
 def lead_page(predicate):
@@ -33,9 +71,71 @@ def lead_page(predicate):
     return decorator
 
 
+def decorate_rows(leads) -> list[dict]:
+    """presenters.decorate for a page of leads, with the ownership-lock lookup
+    done once for the page instead of once per row."""
+    leads = list(leads)
+    locked = set(
+        FollowupCycle.objects.filter(
+            lead_id__in=[lead.id for lead in leads], status="ACTIVE", lock_active=True
+        ).values_list("lead_id", flat=True)
+    )
+    now = timezone.now()
+    return [presenters.decorate(lead, now=now, lock_active=lead.id in locked) for lead in leads]
+
+
+def url_with(request, **changes) -> str:
+    """The current querystring with `changes` applied (None removes a key)."""
+    query = request.GET.copy()
+    for key, value in changes.items():
+        if value is None:
+            query.pop(key, None)
+        else:
+            query[key] = value
+    encoded = query.urlencode()
+    return f"?{encoded}" if encoded else "?"
+
+
+def pager_urls(request, page) -> dict:
+    has_cursor = bool((request.GET.get("cursor") or "").strip())
+    return {
+        "first_url": url_with(request, cursor=None) if has_cursor else "",
+        "next_url": url_with(request, cursor=page.next_cursor) if page.next_cursor else "",
+    }
+
+
 @lead_page(can_use_lead_workspace)
 def my_work(request):
-    return render(request, "leadui/my_work.html")
+    filters = LeadQueueFilters.from_query(request.GET, default_sort="WORK_PRIORITY")
+    may_review = can_review_any_lead(request.user)
+    if not may_review:
+        # Hiding the checkbox is a convenience; this is the control.
+        filters = replace(filters, reallocation_review=False)
+    page = my_work_queue(
+        request.user,
+        filters=filters,
+        after_cursor=(request.GET.get("cursor") or None),
+        limit=PAGE_SIZE,
+    )
+    return render(
+        request,
+        "leadui/my_work.html",
+        {
+            "rows": decorate_rows(page.items),
+            "q": {name: (request.GET.get(name) or "").strip() for name in MY_WORK_FIELDS},
+            "sort_value": filters.sort,
+            "exclude_stopped": filters.exclude_stopped,
+            "reallocation_review": filters.reallocation_review,
+            "may_review": may_review,
+            "reallocation_days": REALLOCATION_REVIEW_DEFAULT_DAYS,
+            "missed_channel_options": MISSED_CHANNEL_OPTIONS,
+            "age_preset_options": presenters.age_preset_options(),
+            "sort_options": SORT_OPTIONS,
+            "appointment_options": APPOINTMENT_OPTIONS,
+            "followup_options": FOLLOWUP_OPTIONS,
+            **pager_urls(request, page),
+        },
+    )
 
 
 def _not_built(request, *args, **kwargs):

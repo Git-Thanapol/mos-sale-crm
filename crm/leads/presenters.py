@@ -92,6 +92,7 @@ def decorate(
     computed = appointment_state(lead.next_follow_at, now)
     return {
         "lead": lead,
+        "protection": protection,
         "missed_channel_group": missed_channel_group(lead.missed_channel_count),
         "last_order_age_label": last_order_age_label(lead.last_order_at, now),
         "computed_status": computed,
