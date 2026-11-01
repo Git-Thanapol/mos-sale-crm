@@ -168,6 +168,8 @@ class ImportJournalEntry(models.Model):
     op = models.CharField(max_length=8, choices=_choices(JOURNAL_OPS))
     before = models.JSONField(null=True, blank=True)
     after = models.JSONField(null=True, blank=True)
+    #: Set when rollback has undone this entry, so an interrupted rollback resumes.
+    rolled_back_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "crm_import_journal"

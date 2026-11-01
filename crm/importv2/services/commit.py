@@ -33,7 +33,7 @@ from crm.domain.import_errors import ConfirmError
 from crm.domain.order_merge import merge_order
 from crm.importv2.models import ImportBatch, ImportConflict, ImportOperation, ImportRowPlan
 from crm.importv2.services import adapters
-from crm.importv2.services.journal import Journal, LeadTracker, snapshot
+from crm.importv2.services.journal import Journal, LeadTracker, snapshot, stored_snapshot
 from crm.importv2.services.preview import recompute_preview_hash
 from crm.importv2.services.state import transition
 from crm.importv2.services.upload import get_profile
@@ -252,13 +252,24 @@ def _update_order(*, order: Order, facts: dict, resolution: dict, journal: Journ
             updates[decision["field"]] = decision["after"]
     if not updates:
         return False
-    before = snapshot(order)
+    before = stored_snapshot(order)
     adapters.apply_order_updates(order, updates)
     order.save()
     journal.updated("ORDER", before, order)
     if "items" in updates:
         _write_lines(order, updates["items"], journal)
     return True
+
+
+def _refresh_customer_rollups(customer: Customer, order: Order, journal: Journal) -> None:
+    """Keep crm_customer's order rollups current, as the manual order path does."""
+    before = stored_snapshot(customer)
+    if customer.last_order_date is None or (order.order_date and order.order_date >= customer.last_order_date):
+        customer.last_order_date = order.order_date
+        customer.last_order = order
+    customer.order_count = customer.orders.count()
+    customer.save(update_fields=["last_order_date", "last_order", "order_count", "updated_at"])
+    journal.updated("CUSTOMER", before, customer)
 
 
 def _ensure_lead_or_intake(*, batch, customer, facts, team, journal) -> None:
@@ -319,6 +330,7 @@ def _apply_group(*, actor, batch, plan, directory, journal, resolutions) -> str:
         outcome = "updated" if _update_order(order=order, facts=facts, resolution=resolution, journal=journal) else "unchanged"
 
     if outcome != "unchanged":
+        _refresh_customer_rollups(customer, order, journal)
         _ensure_lead_or_intake(batch=batch, customer=customer, facts=facts, team=team, journal=journal)
         for lead in Lead.objects.select_related("team", "caretaker").filter(customer=customer):
             lock = lead.cycles.filter(status="ACTIVE", lock_active=True).exists()

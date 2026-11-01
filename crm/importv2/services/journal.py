@@ -36,6 +36,13 @@ MODELS = {
 }
 
 
+def stored_snapshot(instance) -> dict:
+    """The row as the database holds it. An in-memory instance can differ from
+    what was stored (a Decimal('1000') is stored and read back as 1000.00), and
+    rollback compares against what a later read sees."""
+    return snapshot(type(instance)._default_manager.get(pk=instance.pk))
+
+
 def snapshot(instance) -> dict:
     """The row's concrete columns as JSON-safe values, keyed by column attname."""
     values = {}
@@ -69,10 +76,10 @@ class Journal:
         )
 
     def created(self, entity: str, instance) -> None:
-        self._append(entity, instance.pk, "CREATE", None, snapshot(instance))
+        self._append(entity, instance.pk, "CREATE", None, stored_snapshot(instance))
 
     def updated(self, entity: str, before: dict, instance) -> None:
-        self._append(entity, instance.pk, "UPDATE", before, snapshot(instance))
+        self._append(entity, instance.pk, "UPDATE", before, stored_snapshot(instance))
 
     def deleted(self, entity: str, before: dict, pk: int) -> None:
         self._append(entity, pk, "DELETE", before, None)

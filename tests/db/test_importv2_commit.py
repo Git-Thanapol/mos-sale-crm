@@ -357,3 +357,11 @@ def test_invalid_orders_are_never_written(editor):
     batch.save()
     commit_batch(actor=editor, batch=batch, operation_key="m")
     assert list(Order.objects.values_list("order_no", flat=True)) == ["SO-100"]
+
+
+def test_the_customer_order_rollups_are_kept_current(editor):
+    run(editor, [crm_row(order="SO-1"), crm_row(order="SO-2", **{"0": "27/10/2569"})])
+    customer = Customer.objects.get(phone1="0812345678")
+    assert customer.order_count == 2
+    assert customer.last_order_date == date(2026, 10, 27)
+    assert customer.last_order.order_no == "SO-2"
