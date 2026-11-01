@@ -1,0 +1,32 @@
+{% extends "leadui/base_v2.html" %}
+{% load v2 %}
+{% block title %}Global Unassigned · Sales CRM{% endblock %}
+{% block v2_content %}
+  {% include "leadui/_page_title.html" with title="Global Unassigned" subtitle="Customer มีอยู่แล้ว แต่ยังไม่รู้ Team — ยังไม่มี Lead" %}
+  <div class="callout">D019: เลือก Team จริงเท่านั้น ระบบจึงสร้าง Lead; ไม่ใช้ Team ปลอมและไม่สร้าง Lead ที่ teamId ว่าง</div>
+  {% if items %}
+    <div class="card-grid">
+      {% for item in items %}
+        <article class="work-card">
+          {% v2_chip item.status %}
+          <h3>{{ item.customer.customer_name|default:item.customer.phone1|default:"(ไม่มีชื่อ)" }}</h3>
+          <p>Order: {{ item.source_order_id|default:"—" }}</p>
+          <small>{{ item.source_ref }}</small>
+          <div class="actions">
+            {% for team in teams %}
+              <form method="post" action="{% url 'leads:resolve_intake' item.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="team" value="{{ team.code }}">
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit"{% if not forloop.first %} class="secondary"{% endif %}>ส่งเข้า {{ team.display_name|default:team.code }}</button>
+              </form>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "leadui/_state.html" with kind="empty" %}
+  {% endif %}
+  {% include "leadui/_pager.html" %}
+{% endblock %}

@@ -15,13 +15,19 @@ from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
 
-from crm.core.permissions import can_review_any_lead, can_use_lead_workspace
+from crm.core.permissions import (
+    can_resolve_intake,
+    can_review_any_lead,
+    can_use_lead_workspace,
+)
 from crm.domain.last_order_age import REALLOCATION_REVIEW_DEFAULT_DAYS
 from crm.followcycles.models import FollowupCycle
+from crm.teams.models import Team
 from crm.leads import presenters
 from crm.leads.selectors import (
     NO_FILTERS,
     LeadQueueFilters,
+    global_unassigned_queue,
     my_work_queue,
     stopped_review_queue,
     team_unassigned_queue,
@@ -193,5 +199,22 @@ def _not_built(request, *args, **kwargs):
     raise Http404
 
 
-global_unassigned = _not_built
+@lead_page(can_resolve_intake)
+def global_unassigned(request):
+    """D019 intake queue. The Team buttons post to leads:resolve_intake, which
+    re-checks authorization and is the only thing that creates a Lead."""
+    page = global_unassigned_queue(
+        request.user, after_cursor=(request.GET.get("cursor") or None), limit=PAGE_SIZE
+    )
+    return render(
+        request,
+        "leadui/global_unassigned.html",
+        {
+            "items": page.items,
+            # Closed set: a typed team code is a typo on an action that creates a Lead.
+            "teams": list(Team.objects.filter(active=True).order_by("code")),
+            "next": request.get_full_path(),
+            **pager_urls(request, page),
+        },
+    )
 lead_detail = customer_detail = customer_history = _not_built
