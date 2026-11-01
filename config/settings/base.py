@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "crm.followups",
     "crm.leads",
     "crm.followcycles",
+    "crm.intake",
     "crm.catalog",
     "crm.imports",
     "crm.reporting",
