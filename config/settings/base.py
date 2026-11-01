@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "crm.followcycles",
     "crm.intake",
     "crm.leadui",
+    "crm.importv2",
     "crm.catalog",
     "crm.imports",
     "crm.reporting",
