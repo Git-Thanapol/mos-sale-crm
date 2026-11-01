@@ -27,13 +27,25 @@ from __future__ import annotations
 
 from django.db import models
 
-from crm.core.permissions import can_manage_all, clean
+from crm.core.permissions import can_manage_all, clean, is_team_lead, team_scope
 
 
 class StaffScopedQuerySet(models.QuerySet):
     def for_user(self, user) -> "StaffScopedQuerySet":
         if can_manage_all(user):
             return self
+
+        # A TEAM_LEAD is scoped by authorized team, not by staff_code: they
+        # work their whole team's leads, not only customers assigned to them.
+        # TEAM_PATH names the row's own team, never a customer-wide union,
+        # which spans teams and would leak team B to a team-A lead.
+        # Fail-closed: no TEAM_PATH or an empty scope sees nothing.
+        if is_team_lead(user):
+            team_path = getattr(self.model, "TEAM_PATH", None)
+            scope = team_scope(user)
+            if not team_path or not scope:
+                return self.none()
+            return self.filter(**{f"{team_path}__in": sorted(scope)})
 
         code = clean(getattr(user, "staff_code", "")) if user else ""
         if not code:

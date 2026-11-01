@@ -94,9 +94,13 @@ class Lead(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     STAFF_CODE_PATH = "customer__staff_code"
-    #: Read by the TEAM_LEAD scoping branch (Task 14). Declared with the model
-    #: so the whole scoping contract lives in one place.
-    TEAM_PATH = "access_team_ids"
+    #: Read by the TEAM_LEAD scoping branch. Points at the Team FK, not at
+    #: access_team_ids: the FK is the authority and the array is a denormalised
+    #: cache a service has to refresh. Scoping on the cache would also let the
+    #: queryset and crm.core.permissions.can_view_lead (which reads
+    #: lead.team.code) disagree, and a queryset that admits a row the predicate
+    #: rejects -- or the reverse -- is how a leak gets in.
+    TEAM_PATH = "team__code"
     objects = StaffScopedQuerySet.as_manager()
 
     class Meta:

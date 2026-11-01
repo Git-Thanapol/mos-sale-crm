@@ -70,3 +70,39 @@ Queues read the maintained columns on `Lead` (`last_order_at`, `total_orders`,
 `missed_channel_count`) instead of aggregating `crm_order` per row, per
 `03_INFRASTRUCTURE_REPLACEMENT_GUIDE.md`: "do not scan all Orders every time a
 Lead list is opened."
+
+## CRM V2 Lead surface (Plan 1) — role mapping
+
+CRM V2's `08_SECURITY_AND_AUTH_REQUIREMENTS.md` defines three roles: Admin
+(full permitted scope), Team Lead (own Team only), Telesale (permitted
+Leads/Customers only, no ownership/admin/import authority). This repo's matrix
+is EDITOR / ADMIN / พนักงาน / ทั่วไป and is deliberately asymmetric — see
+"Preserved verbatim" above, where ADMIN is recorded as WEAKER than EDITOR for
+follow-up, export, owner-assign, order-delete and system pages.
+
+Both cannot hold at once, so the mapping is:
+
+| CRM V2 role | This repo |
+|---|---|
+| Admin | **EDITOR** |
+| Team Lead | **TEAM_LEAD**, new, authorized per team by `User.team_scope` |
+| Telesale | พนักงาน |
+
+**This repo's ADMIN is not the spec's Admin.** It keeps its documented weaker
+scope: it cannot reassign a caretaker and cannot resolve Global Unassigned
+intake. The new predicates were written not to strengthen it, and
+`test_this_repos_admin_is_not_the_specs_admin` pins that.
+
+`crm/core/permissions.py` stays the single source of truth; the Lead
+predicates were added there rather than in a second module. `User.team_scope`
+is server-side only and is never read from a request, because
+08_SECURITY forbids trusting a client-supplied Team scope.
+
+TEAM_LEAD row scoping (`crm/core/scoping.py`) filters on the row's own team
+via `Lead.TEAM_PATH = "team__code"`, not on the denormalised
+`access_team_ids` array. Two reasons: the FK is the authority and the array is
+a cache a service must refresh, and `can_view_lead` reads `lead.team.code`, so
+scoping on anything else would let the queryset and the predicate disagree. A
+queryset that admits a row the predicate rejects — or the reverse — is how a
+leak gets in. `derive_customer_access` is a union across every team holding a
+lead for that customer and must therefore never scope a single lead.

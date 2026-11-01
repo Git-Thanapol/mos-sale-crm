@@ -50,6 +50,10 @@ def make_user(
         staff_code=staff_code,
         staff_name=staff_name or staff_code or email,
         is_active=is_active,
+        # Onboarded. The model defaults this True, and the password-change
+        # middleware then redirects every request before the view runs, so a
+        # permission test would measure the redirect instead of the gate.
+        must_change_password=False,
     )
     if team_scope is not None and hasattr(user, "team_scope"):
         user.team_scope = team_scope

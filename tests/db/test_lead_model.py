@@ -138,7 +138,7 @@ def test_lead_declares_both_scoping_paths():
     # STAFF_CODE_PATH drives the existing staff_code scoping; TEAM_PATH is read
     # by the TEAM_LEAD branch added in Task 14 (pre-flight CONFLICT 3).
     assert Lead.STAFF_CODE_PATH == "customer__staff_code"
-    assert Lead.TEAM_PATH == "access_team_ids"
+    assert Lead.TEAM_PATH == "team__code"
 
 
 def test_counters_default_to_zero_not_null():

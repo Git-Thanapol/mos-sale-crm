@@ -207,3 +207,104 @@ def require_permission(predicate_name: str):
         return wrapped
 
     return decorator
+
+
+# --- CRM V2 Lead surface -----------------------------------------------------
+# Role mapping (docs/DECISIONS.md): the spec's Admin is this repo's EDITOR.
+# This repo's ADMIN is NOT the spec's Admin -- the "Preserved verbatim"
+# asymmetry stands, so ADMIN stays weaker for follow-up/export/owner-assign and
+# must not be quietly strengthened by the predicates below.
+ROLE_TEAM_LEAD = "TEAM_LEAD"
+
+MSG_LEAD_OUT_OF_SCOPE = "ไม่มีสิทธิ์เข้าถึง Lead ของทีมอื่น"
+
+
+def _is_usable(user: object) -> bool:
+    """Falsy or deactivated users have no authority at all.
+
+    Checked before every role test so a disabled account loses access without
+    a separate code path (08_SECURITY: a disabled/resigned user must not retain
+    operational access or caretaker authority).
+    """
+    if not user:
+        return False
+    return bool(getattr(user, "is_active", True))
+
+
+def is_team_lead(user: object) -> bool:
+    return _is_usable(user) and user_role(user) == ROLE_TEAM_LEAD
+
+
+def team_scope(user: object) -> frozenset[str]:
+    if not _is_usable(user):
+        return frozenset()
+    return frozenset(clean(code) for code in getattr(user, "team_scope", []) or [] if clean(code))
+
+
+def _lead_team_code(lead: object) -> str:
+    """The LEAD's own team.
+
+    Deliberately not the customer's access array: that array is a union across
+    every team holding a lead for the customer, so judging a single lead by it
+    would let a team-A user reach a team-B lead for the same person.
+    """
+    team = getattr(lead, "team", None)
+    return clean(getattr(team, "code", "")) if team is not None else ""
+
+
+def can_view_lead(user: object, lead: object) -> bool:
+    if not _is_usable(user):
+        return False
+    if user_role(user) == ROLE_EDITOR:
+        return True
+    if is_team_lead(user):
+        return _lead_team_code(lead) in team_scope(user)
+    return can_edit_customer_lead(user, getattr(lead, "customer", None))
+
+
+def can_edit_lead(user: object, lead: object) -> bool:
+    """Edit the lead's own follow-up state (status, note, appointment).
+
+    Same gate as viewing: a telesale who may see their customer's lead may work
+    it. Ownership and admin actions have their own, narrower predicates.
+    """
+    return can_view_lead(user, lead)
+
+
+def can_reassign_caretaker(user: object, lead: object) -> bool:
+    """Ownership mutation. EDITOR anywhere, TEAM_LEAD within scope, nobody else.
+
+    A telesale never reassigns ownership, even on their own lead
+    (08_SECURITY: "No ownership/admin/import authority").
+    """
+    if not _is_usable(user):
+        return False
+    if user_role(user) == ROLE_EDITOR:
+        return True
+    return is_team_lead(user) and _lead_team_code(lead) in team_scope(user)
+
+
+def can_review_stopped(user: object, lead: object) -> bool:
+    """STOPPED review: authorized reactivation/reassignment."""
+    return can_reassign_caretaker(user, lead)
+
+
+def can_resolve_intake(user: object) -> bool:
+    """Global Unassigned is a cross-team identity decision, so EDITOR only.
+
+    A TEAM_LEAD is scoped to one team and cannot judge which team a
+    Team-unknown order belongs to.
+    """
+    return _is_usable(user) and user_role(user) == ROLE_EDITOR
+
+
+_PREDICATES.update(
+    {
+        "can_resolve_intake": can_resolve_intake,
+    }
+)
+_PREDICATE_MESSAGES.update(
+    {
+        "can_resolve_intake": MSG_SYSTEM_PAGE_BLOCKED,
+    }
+)
