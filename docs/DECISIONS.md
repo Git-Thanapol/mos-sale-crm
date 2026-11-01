@@ -39,3 +39,34 @@ Reference: full analysis in `docs/legacy/data-layer-report.md` and `docs/legacy/
 ## Resolved
 
 - [x] **Users CSV — bootstrap account provided.** `seed/users.csv`: `thanapolkpst@gmail.com, EDITOR, S0001, Thanapol, Max`. Role was initially given as ADMIN; changed to EDITOR on customer confirmation, since ADMIN cannot export customers/assign owners/delete orders/view Follow-up or System pages under the preserved-verbatim matrix (see "Preserved verbatim" below) and this is the one account actually driving day-to-day use. Additional users can be added later through the `/users` page (EDITOR-only) once the app exists — no need to collect a full roster up front. No Supabase password hash is carried over; this account gets a fresh admin-issued initial password on first run.
+
+## CRM V2 Lead surface (Plan 1) — pagination boundary
+
+The repo now has two pagination strategies on purpose, and both are correct
+for what they page.
+
+- **Offset (`crm.core.pagination.Page`)** stays in use for the legacy
+  follow-up list (`crm.followups.selectors.followup_page`) and the other
+  existing pages. It renders a numeric pager with a total page count, which
+  needs `COUNT(*)`, and those pages have shipped against it. Nothing here
+  changes them.
+- **Keyset (`crm.core.pagination.KeysetPage`)** is used by every new Lead
+  operational queue (`crm.leads.selectors`). CRM V2's
+  `06_IMPLEMENTATION_ACCEPTANCE_CRITERIA.md` section F requires "offset
+  pagination count = 0 for large operational lists", forbids unbounded
+  queries, and asks for stable cursor behaviour. A keyset queue therefore has
+  no total and no page numbers — it has "next" and nothing else, which is why
+  it cannot simply replace the numeric pager on the legacy list.
+
+The queues sort on `(last_order_at NULLS LAST, id)`. NULLS LAST makes the seek
+predicate asymmetric: from a row with a timestamp, what remains is later
+timestamps, the same timestamp with a higher id, or any null row; from a null
+row, only higher-id nulls remain. Cursors are opaque base64 so a caller cannot
+hand-build one and couple itself to that sort key, and a malformed cursor
+decodes to `None` (first page) rather than raising, because cursors live in
+URLs that get truncated and edited.
+
+Queues read the maintained columns on `Lead` (`last_order_at`, `total_orders`,
+`missed_channel_count`) instead of aggregating `crm_order` per row, per
+`03_INFRASTRUCTURE_REPLACEMENT_GUIDE.md`: "do not scan all Orders every time a
+Lead list is opened."

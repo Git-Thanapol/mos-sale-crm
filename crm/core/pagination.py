@@ -64,3 +64,56 @@ def clamp_page(value: int | str | None, total_pages: int) -> int:
     except (TypeError, ValueError):
         return 1
     return min(max(page, 1), max(total_pages, 1))
+
+
+# --- keyset pagination -------------------------------------------------------
+# The offset pager above stays for the legacy follow-up list. The Lead
+# operational queues use keyset instead, because
+# 06_IMPLEMENTATION_ACCEPTANCE_CRITERIA.md requires "offset pagination count =
+# 0 for large operational lists" and forbids per-page COUNT(*) on them. See
+# docs/DECISIONS.md for why both coexist.
+
+import base64
+import json
+from dataclasses import dataclass as _dataclass
+
+
+@_dataclass(frozen=True)
+class KeysetPage:
+    items: list
+    #: Opaque cursor for the next page, or None at the end.
+    next_cursor: str | None
+    has_more: bool
+
+
+def encode_cursor(values: tuple) -> str:
+    """Opaque, URL-safe cursor. Opaque so callers cannot build one by hand and
+    couple themselves to the sort key.
+    """
+    raw = json.dumps(list(values), separators=(",", ":"), default=str).encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+
+def decode_cursor(raw: str | None) -> list | None:
+    """Decode a cursor, or None when it is absent or unusable.
+
+    Never raises. A cursor travels in a querystring, where it gets truncated,
+    re-encoded and hand-edited; degrading to "start from the beginning" is
+    correct behaviour, not a swallowed error.
+    """
+    if not raw or not raw.strip():
+        return None
+    text = raw.strip()
+    padded = text + "=" * (-len(text) % 4)
+    try:
+        decoded = base64.urlsafe_b64decode(padded.encode("ascii"))
+        value = json.loads(decoded)
+    except Exception:
+        return None
+    if not isinstance(value, list) or len(value) != 2:
+        return None
+    if not isinstance(value[1], int) or isinstance(value[1], bool):
+        return None
+    if value[0] is not None and not isinstance(value[0], str):
+        return None
+    return value
