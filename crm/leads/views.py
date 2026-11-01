@@ -29,10 +29,11 @@ from crm.core.permissions import (
     can_review_stopped,
 )
 from crm.domain.enums import LEAD_LIFECYCLE_STATUSES, STOP_REASONS
-from crm.followcycles.models import Appointment
+from crm.followcycles.models import Appointment, FollowupCycle
 from crm.followcycles.services import (
     cancel_appointment,
     complete_appointment,
+    end_cycle,
     log_contact_attempt,
     mark_appointment_missed,
     set_appointment,
@@ -191,6 +192,29 @@ def add_note(request, lead_id: int):
     except ValueError:
         return HttpResponseBadRequest("note cannot be empty")
     messages.success(request, "บันทึกโน้ตแล้ว")
+    return redirect(_back(request))
+
+
+@login_required
+@require_POST
+def close_cycle(request, lead_id: int):
+    """End the lead's active follow-up cycle (prototype "ปิดรอบติดตาม").
+
+    Releases the ownership lock through the service; the lead's own lifecycle
+    status is untouched, unlike STOP.
+    """
+    lead = _lead(lead_id)
+    if not can_edit_lead(request.user, lead):
+        raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
+
+    cycle = None
+    if lead.current_cycle_id:
+        cycle = FollowupCycle.objects.filter(pk=lead.current_cycle_id, status="ACTIVE").first()
+    if cycle is None:
+        return HttpResponseBadRequest("no active follow-up cycle")
+
+    end_cycle(actor=request.user, cycle=cycle, reason="MANUAL_CLOSE")
+    messages.success(request, "ปิดรอบติดตามแล้ว")
     return redirect(_back(request))
 
 

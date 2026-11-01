@@ -26,6 +26,21 @@
     });
   }
 
+  // <dialog> openers/closers (used instead of window.confirm).
+  document.addEventListener("click", function (event) {
+    var opener = event.target.closest("[data-v2-open]");
+    if (opener) {
+      var dialog = document.getElementById(opener.getAttribute("data-v2-open"));
+      if (dialog && dialog.showModal) { dialog.showModal(); }
+      return;
+    }
+    var closer = event.target.closest("[data-v2-close]");
+    if (closer) {
+      var parent = closer.closest("dialog");
+      if (parent) { parent.close(); }
+    }
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("form[data-v2-filters]").forEach(init);
   });

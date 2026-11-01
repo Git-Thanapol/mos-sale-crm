@@ -13,15 +13,21 @@ from functools import wraps
 from django.contrib.auth.views import redirect_to_login
 from django.http import Http404
 from django.shortcuts import render
+from datetime import timedelta
+
 from django.utils import timezone
 
+from crm.accounts.models import User
 from crm.core.permissions import (
+    can_edit_lead,
+    can_reassign_caretaker,
     can_resolve_intake,
     can_review_any_lead,
     can_use_lead_workspace,
 )
 from crm.domain.last_order_age import REALLOCATION_REVIEW_DEFAULT_DAYS
 from crm.followcycles.models import FollowupCycle
+from crm.leads.models import Lead
 from crm.teams.models import Team
 from crm.leads import presenters
 from crm.leads.selectors import (
@@ -217,4 +223,41 @@ def global_unassigned(request):
             **pager_urls(request, page),
         },
     )
-lead_detail = customer_detail = customer_history = _not_built
+@lead_page(can_use_lead_workspace)
+def lead_detail(request, lead_id: int):
+    # Resolved through the scoped queryset, never a bare pk lookup, so an id in
+    # the URL cannot reach a lead the user may not see (404, not 403).
+    lead = (
+        Lead.objects.select_related("customer", "team", "caretaker")
+        .for_user(request.user)
+        .filter(pk=lead_id)
+        .first()
+    )
+    if lead is None:
+        raise Http404
+    can_edit = can_edit_lead(request.user, lead)
+    can_reassign = can_reassign_caretaker(request.user, lead)
+    caretakers = []
+    if can_reassign:
+        caretakers = list(
+            User.objects.filter(is_active=True).exclude(staff_code="").order_by("staff_name", "email")[:200]
+        )
+    return render(
+        request,
+        "leadui/lead_detail.html",
+        {
+            "lead": lead,
+            "row": decorate_rows([lead])[0],
+            "can_edit": can_edit,
+            "can_reassign": can_reassign,
+            "caretakers": caretakers,
+            "notes": list(lead.notes.order_by("-updated_at", "-id")[:10]),
+            "attempts": list(lead.contact_attempts.order_by("-attempted_at", "-id")[:10]),
+            "appointments": list(lead.appointments.order_by("-scheduled_at", "-id")[:10]),
+            "tomorrow": (timezone.now() + timedelta(hours=24)).isoformat(),
+            "next": request.get_full_path(),
+        },
+    )
+
+
+customer_detail = customer_history = _not_built

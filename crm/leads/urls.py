@@ -12,6 +12,7 @@ urlpatterns = [
     path("<int:lead_id>/appointment/", views.set_appointment_view, name="set_appointment"),
     path("<int:lead_id>/note/", views.add_note, name="add_note"),
     path("<int:lead_id>/lifecycle/", views.set_lifecycle, name="set_lifecycle"),
+    path("<int:lead_id>/close-cycle/", views.close_cycle, name="close_cycle"),
     path(
         "appointment/<int:appointment_id>/close/",
         views.close_appointment,

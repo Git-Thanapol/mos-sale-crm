@@ -98,3 +98,8 @@
 .v2 a.v2-btn.danger-button { background: #b63b3b; }
 .v2 a.link { color: #185f53; font-weight: 650; text-decoration: none; }
 .v2 span.link { color: #185f53; font-weight: 650; }
+
+/* Host adaptation: <dialog> replaces the prototype's window.confirm. */
+.v2 dialog { border: 1px solid #dce2e1; border-radius: 10px; padding: 18px; min-width: 360px; color: #1f2937; }
+.v2 dialog form { display: grid; gap: 8px; }
+.v2 dialog h2 { margin: 0 0 8px; }
