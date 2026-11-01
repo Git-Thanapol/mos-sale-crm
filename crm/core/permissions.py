@@ -395,3 +395,15 @@ def can_review_any_lead(user: object) -> bool:
     if user_role(user) == ROLE_EDITOR:
         return True
     return is_team_lead(user) and bool(team_scope(user))
+
+
+def can_use_lead_workspace(user: object) -> bool:
+    """Role-level gate for the CRM V2 lead pages (งานของฉัน and the detail
+    drill-downs): the prototype's TELESALE, TEAM_LEAD and ADMIN, which map to
+    this repo's พนักงาน, TEAM_LEAD and EDITOR. Repo ADMIN and the read-only
+    roles are deliberately outside it, exactly as for can_view_lead. Per-row
+    authority is still can_view_lead / the scoped queryset.
+    """
+    if not _is_usable(user):
+        return False
+    return user_role(user) in (ROLE_EDITOR, ROLE_TEAM_LEAD) or is_telesell(user)
