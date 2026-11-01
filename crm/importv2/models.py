@@ -31,7 +31,16 @@ CONFLICT_RESOLUTIONS = (
     "APPROVE_REVERSAL",
 )
 ROW_CLASSIFICATIONS = ("NEW_ORDER", "SAFE_UPDATE", "UNCHANGED", "STALE_INPUT", "CONFLICT", "INVALID")
-JOURNAL_ENTITIES = ("CUSTOMER", "ORDER", "ORDER_LINE", "LEAD", "INTAKE")
+JOURNAL_ENTITIES = (
+    "CUSTOMER",
+    "ORDER",
+    "ORDER_LINE",
+    "LEAD",
+    "INTAKE",
+    "OWNERSHIP_SEGMENT",
+    "LEAD_AUDIT",
+    "CYCLE",
+)
 JOURNAL_OPS = ("CREATE", "UPDATE", "DELETE")
 
 
@@ -154,7 +163,7 @@ class ImportJournalEntry(models.Model):
     batch = models.ForeignKey(ImportBatch, on_delete=models.CASCADE, related_name="journal")
     attempt = models.PositiveIntegerField()
     seq = models.PositiveIntegerField()
-    entity = models.CharField(max_length=16, choices=_choices(JOURNAL_ENTITIES))
+    entity = models.CharField(max_length=24, choices=_choices(JOURNAL_ENTITIES))
     entity_id = models.BigIntegerField()
     op = models.CharField(max_length=8, choices=_choices(JOURNAL_OPS))
     before = models.JSONField(null=True, blank=True)
