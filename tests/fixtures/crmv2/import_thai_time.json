@@ -1,0 +1,643 @@
+[
+  {
+    "name": "parseThaiDate/31/08/2569",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "31/08/2569"
+    },
+    "expected": {
+      "value": 1788109200000
+    }
+  },
+  {
+    "name": "parseThaiDate/31/08/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "31/08/2026"
+    },
+    "expected": {
+      "value": 1788109200000
+    }
+  },
+  {
+    "name": "parseThaiDate/1/1/2569",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "1/1/2569"
+    },
+    "expected": {
+      "value": 1767200400000
+    }
+  },
+  {
+    "name": "parseThaiDate/01-01-2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "01-01-2026"
+    },
+    "expected": {
+      "value": 1767200400000
+    }
+  },
+  {
+    "name": "parseThaiDate/29/02/2024",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "29/02/2024"
+    },
+    "expected": {
+      "value": 1709139600000
+    }
+  },
+  {
+    "name": "parseThaiDate/29/02/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "29/02/2026"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/31/04/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "31/04/2026"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/00/01/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "00/01/2026"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/32/01/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "32/01/2026"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/15/13/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "15/13/2026"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/15/00/2026",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "15/00/2026"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/1/1/0050",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "1/1/0050"
+    },
+    "expected": {
+      "value": -631177200000
+    }
+  },
+  {
+    "name": "parseThaiDate/1/1/2400",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "1/1/2400"
+    },
+    "expected": {
+      "value": 13569440400000
+    }
+  },
+  {
+    "name": "parseThaiDate/1/1/2401",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "1/1/2401"
+    },
+    "expected": {
+      "value": -3534390000000
+    }
+  },
+  {
+    "name": "parseThaiDate/ 26/10/2569 ",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": " 26/10/2569 "
+    },
+    "expected": {
+      "value": 1792947600000
+    }
+  },
+  {
+    "name": "parseThaiDate/",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": ""
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/   ",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "   "
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/26.10.2569",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "26.10.2569"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/2026-10-26",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "2026-10-26"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/26/10/26",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "26/10/26"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/abc",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "abc"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/26/10/2569 10:00",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "26/10/2569 10:00"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "parseThaiDate/26/10/๒๕๖๙",
+    "input": {
+      "fn": "parseThaiDate",
+      "text": "26/10/๒๕๖๙"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "excelSerial/1",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 1
+    },
+    "expected": {
+      "value": -2209075200000
+    }
+  },
+  {
+    "name": "excelSerial/2",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 2
+    },
+    "expected": {
+      "value": -2208988800000
+    }
+  },
+  {
+    "name": "excelSerial/59",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 59
+    },
+    "expected": {
+      "value": -2204064000000
+    }
+  },
+  {
+    "name": "excelSerial/60",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 60
+    },
+    "expected": {
+      "value": -2203977600000
+    }
+  },
+  {
+    "name": "excelSerial/61",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 61
+    },
+    "expected": {
+      "value": -2203891200000
+    }
+  },
+  {
+    "name": "excelSerial/25569",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 25569
+    },
+    "expected": {
+      "value": 0
+    }
+  },
+  {
+    "name": "excelSerial/45000",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 45000
+    },
+    "expected": {
+      "value": 1678838400000
+    }
+  },
+  {
+    "name": "excelSerial/45000.5",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 45000.5
+    },
+    "expected": {
+      "value": 1678881600000
+    }
+  },
+  {
+    "name": "excelSerial/45000.4999999",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 45000.4999999
+    },
+    "expected": {
+      "value": 1678881599991
+    }
+  },
+  {
+    "name": "excelSerial/46000.123456",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 46000.123456
+    },
+    "expected": {
+      "value": 1765249066598
+    }
+  },
+  {
+    "name": "excelSerial/0",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 0
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "excelSerial/-1",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": -1
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "excelSerial/0.5",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": 0.5
+    },
+    "expected": {
+      "value": -2209118400000
+    }
+  },
+  {
+    "name": "excelSerial/NaN",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": "NaN"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "excelSerial/Infinity",
+    "input": {
+      "fn": "excelSerialToMillis",
+      "serial": "Infinity"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/09:30",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "09:30"
+    },
+    "expected": {
+      "value": 1792981800000
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/9:05",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "9:05"
+    },
+    "expected": {
+      "value": 1792980300000
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/00:00",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "00:00"
+    },
+    "expected": {
+      "value": 1792947600000
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/23:59",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "23:59"
+    },
+    "expected": {
+      "value": 1793033940000
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/24:00",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "24:00"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/12:60",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "12:60"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/ 9:30 ",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": " 9:30 "
+    },
+    "expected": {
+      "value": 1792981800000
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/9.30",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": "9.30"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/nope/09:30",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "nope",
+      "hhmm": "09:30"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-02-30/09:30",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-02-30",
+      "hhmm": "09:30"
+    },
+    "expected": {
+      "value": 1772418600000
+    }
+  },
+  {
+    "name": "bangkokTimeOnDay/2026-10-26/",
+    "input": {
+      "fn": "bangkokTimeOnDay",
+      "dayKey": "2026-10-26",
+      "hhmm": ""
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "bangkokDayKey/0",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": 0
+    },
+    "expected": {
+      "value": "1970-01-01"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/0",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": 0
+    },
+    "expected": {
+      "value": -25200000
+    }
+  },
+  {
+    "name": "bangkokDayKey/1700000000000",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": 1700000000000
+    },
+    "expected": {
+      "value": "2023-11-15"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/1700000000000",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": 1700000000000
+    },
+    "expected": {
+      "value": 1699981200000
+    }
+  },
+  {
+    "name": "bangkokDayKey/1699974800000",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": 1699974800000
+    },
+    "expected": {
+      "value": "2023-11-14"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/1699974800000",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": 1699974800000
+    },
+    "expected": {
+      "value": 1699894800000
+    }
+  },
+  {
+    "name": "bangkokDayKey/1700061199999",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": 1700061199999
+    },
+    "expected": {
+      "value": "2023-11-15"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/1700061199999",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": 1700061199999
+    },
+    "expected": {
+      "value": 1699981200000
+    }
+  },
+  {
+    "name": "bangkokDayKey/1700061200000",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": 1700061200000
+    },
+    "expected": {
+      "value": "2023-11-15"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/1700061200000",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": 1700061200000
+    },
+    "expected": {
+      "value": 1699981200000
+    }
+  },
+  {
+    "name": "bangkokDayKey/-86400000",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": -86400000
+    },
+    "expected": {
+      "value": "1969-12-31"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/-86400000",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": -86400000
+    },
+    "expected": {
+      "value": -25200000
+    }
+  },
+  {
+    "name": "bangkokDayKey/4102444800000",
+    "input": {
+      "fn": "bangkokDayKey",
+      "ts": 4102444800000
+    },
+    "expected": {
+      "value": "2100-01-01"
+    }
+  },
+  {
+    "name": "startOfBangkokDay/4102444800000",
+    "input": {
+      "fn": "startOfBangkokDay",
+      "ts": 4102444800000
+    },
+    "expected": {
+      "value": 4102419600000
+    }
+  }
+]
