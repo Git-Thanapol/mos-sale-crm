@@ -1,4 +1,4 @@
-{# Lead detail + the per-lead action forms.
+{% comment %} Lead detail + the per-lead action forms.
 
    Every form posts to a crm.leads view that re-checks authorization
    server-side; rendering a form is a convenience, never the control
@@ -7,14 +7,14 @@
    page does not offer actions it will refuse.
 
    `next` carries the current querystring so an action returns to the same
-   filtered view; crm.leads.views._back validates it against this host. #}
+   filtered view; crm.leads.views._back validates it against this host. {% endcomment %}
 {% if lead_detail %}
   {% with row=lead_detail %}
     <div class="crm-card" id="lead-{{ row.lead.id }}" style="margin-top:16px;">
-      <h4 style="margin:0 0 12px;">
+      <h3 class="crm-section-title" style="margin:0 0 12px;">
         {{ row.lead.customer.customer_name|default:row.lead.customer.phone_key }}
         <span class="crm-muted" style="font-weight:normal;">· {{ row.lead.team.display_name }}</span>
-      </h4>
+      </h3>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
         <div><div class="crm-label">ผู้ดูแล</div><div>{{ row.lead.caretaker.staff_name|default:"ยังไม่มอบหมาย" }}</div></div>
@@ -72,7 +72,7 @@
             <input type="hidden" name="next" value="{{ detail_next }}">
             <div class="crm-label">สถานะ Lead</div>
             <select name="lifecycle_status" class="crm-select">
-              {% for value, label in lifecycle_options %}
+              {% for value, label in lifecycle_edit_options %}
                 <option value="{{ value }}" {% if row.lead.lifecycle_status == value %}selected{% endif %}>{{ label }}</option>
               {% endfor %}
             </select>
@@ -145,19 +145,22 @@
       {% if detail_cycles %}
         <div style="margin-top:16px;">
           <div class="crm-label">ประวัติรอบติดตาม</div>
-          <table class="crm-table">
-            <thead><tr><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th><th>เหตุผล</th></tr></thead>
-            <tbody>
-              {% for cycle in detail_cycles %}
-                <tr>
-                  <td>{{ cycle.started_at }}</td>
-                  <td>{{ cycle.ended_at|default:"-" }}</td>
-                  <td>{{ cycle.status }}</td>
-                  <td>{{ cycle.ended_reason|default:"-" }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="crm-table" style="--crm-grid-cols: 1.4fr 1.4fr 1fr 1.2fr;">
+            <div class="crm-table__header">
+              <div class="crm-table__cell">เริ่ม</div>
+              <div class="crm-table__cell">สิ้นสุด</div>
+              <div class="crm-table__cell">สถานะ</div>
+              <div class="crm-table__cell">เหตุผล</div>
+            </div>
+            {% for cycle in detail_cycles %}
+              <div class="crm-table__row">
+                <div class="crm-table__cell">{{ cycle.started_at }}</div>
+                <div class="crm-table__cell">{{ cycle.ended_at|default:"-" }}</div>
+                <div class="crm-table__cell">{{ cycle.status }}</div>
+                <div class="crm-table__cell">{{ cycle.ended_reason|default:"-" }}</div>
+              </div>
+            {% endfor %}
+          </div>
         </div>
       {% endif %}
     </div>

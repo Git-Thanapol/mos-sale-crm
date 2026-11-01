@@ -200,3 +200,17 @@ def test_an_editor_page_render_stays_within_a_query_budget(
     # ceiling is what stops a per-row query creeping into the row loop.
     with django_assert_max_num_queries(30):
         client.get(reverse("followups:list"))
+
+
+def test_no_template_comment_markers_leak_into_the_page(client, editor):
+    """Django's {# #} is SINGLE-LINE only.
+
+    A multi-line one is not a comment at all -- it renders verbatim, so
+    implementation notes written for maintainers appear on the page the
+    customer is looking at. Found by actually opening the page; every
+    substring assertion in this file passed while three blocks of internal
+    commentary were visible.
+    """
+    body = get_page(client, editor).content.decode()
+    for marker in ("{#", "#}", "{% comment %}", "{% endcomment %}"):
+        assert marker not in body, f"{marker!r} leaked into the rendered page"

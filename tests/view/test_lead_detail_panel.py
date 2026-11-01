@@ -254,3 +254,16 @@ def test_a_nonexistent_lead_id_does_not_error(client, editor):
 def test_a_nonnumeric_lead_id_does_not_error(client, editor):
     login(client, editor)
     assert client.get(reverse("followups:list"), {"lead_id": "abc"}).status_code == 200
+
+
+def test_the_lifecycle_dropdown_does_not_offer_a_value_the_server_refuses(client, editor, lead):
+    """STOPPED is rejected by leads:set_lifecycle with 400, so offering it in
+    the edit dropdown would be an option that can only ever fail. The stop
+    form beside it is the real path; the FILTER dropdown still lists it.
+    """
+    login(client, editor)
+    body = detail(client, lead.id)
+    form_block = body.split('leads:set_lifecycle' if 'leads:set_lifecycle' in body else '/lifecycle/')[1]
+    form_block = form_block.split("</form>")[0]
+    assert 'value="STOPPED"' not in form_block
+    assert 'value="FOLLOWING"' in form_block

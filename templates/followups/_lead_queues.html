@@ -1,9 +1,16 @@
-{# Section tabs + the keyset-paginated lead table.
+{% comment %}
+Section tabs + the keyset-paginated lead table.
 
-   There is no page-number pager here on purpose: these queues are keyset
-   paginated (no COUNT(*), acceptance criterion F), so there is a "next" and
-   nothing else. See docs/DECISIONS.md. #}
-<h4 style="margin:24px 0 8px;">จัดการ Lead</h4>
+Markup follows this repo's table convention: crm-table is a CSS GRID of
+crm-table__header / __row / __cell divs driven by --crm-grid-cols, not an HTML
+<table>. An earlier version used <table>/<thead>/<tr>, which inherited the grid
+display and rendered as unaligned plain text.
+
+There is no page-number pager here on purpose: these queues are keyset
+paginated (no COUNT(*), acceptance criterion F), so there is a "next" and
+nothing else. See docs/DECISIONS.md.
+{% endcomment %}
+<h3 class="crm-section-title" style="margin:24px 0 8px;">จัดการ Lead</h3>
 
 <div class="crm-pill-tabs">
   <a class="crm-pill{% if lead_section == 'queue' %} crm-pill--active{% endif %}"
@@ -26,80 +33,115 @@
   </p>
 {% endif %}
 
-<div class="crm-card">
-  <table class="crm-table">
-    <thead>
-      <tr>
-        <th>ลูกค้า</th>
-        <th>ทีม</th>
-        <th>ผู้ดูแล</th>
-        <th>สถานะ</th>
-        <th>ออเดอร์ล่าสุด</th>
-        <th>ตกหล่น</th>
-        <th>นัดติดตาม</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in lead_rows %}
-        <tr>
-          <td>
-            {{ row.lead.customer.customer_name|default:row.lead.customer.phone_key }}
-            {% if row.reallocation_candidate %}
-              <span class="crm-badge crm-badge--warn">ควรทบทวน</span>
+{% if not lead_rows %}
+  <div class="crm-card">ไม่พบ Lead ตามตัวกรอง</div>
+{% else %}
+  <div class="crm-table" style="--crm-grid-cols: 1.8fr 1fr 1.2fr 1.3fr 1.1fr 0.7fr 1fr 0.9fr;">
+    <div class="crm-table__header">
+      <div class="crm-table__cell">ลูกค้า</div>
+      <div class="crm-table__cell">ทีม</div>
+      <div class="crm-table__cell">ผู้ดูแล</div>
+      <div class="crm-table__cell">สถานะ</div>
+      <div class="crm-table__cell">ออเดอร์ล่าสุด</div>
+      <div class="crm-table__cell">ตกหล่น</div>
+      <div class="crm-table__cell">นัดติดตาม</div>
+      <div class="crm-table__cell"></div>
+    </div>
+    {% for row in lead_rows %}
+      <div class="crm-table__row">
+        <div class="crm-table__cell">
+          {{ row.lead.customer.customer_name|default:row.lead.customer.phone_key }}
+          {% if row.reallocation_candidate %}
+            <span class="crm-badge crm-badge--yellow">ควรทบทวน</span>
+          {% endif %}
+        </div>
+        <div class="crm-table__cell">{{ row.lead.team.display_name }}</div>
+        <div class="crm-table__cell">
+          {% if row.lead.caretaker %}
+            {{ row.lead.caretaker.staff_name|default:row.lead.caretaker.email }}
+          {% else %}
+            <span class="crm-muted">ยังไม่มอบหมาย</span>
+          {% endif %}
+        </div>
+        <div class="crm-table__cell">
+          {% if row.lead.lifecycle_status == "STOPPED" %}
+            <span class="crm-badge crm-badge--red">{{ row.lifecycle_label }}</span>
+            {% if row.stop_reason_label %}
+              <span class="crm-muted">{{ row.stop_reason_label }}</span>
             {% endif %}
-          </td>
-          <td>{{ row.lead.team.display_name }}</td>
-          <td>{{ row.lead.caretaker.staff_name|default:"ยังไม่มอบหมาย" }}</td>
-          <td>
-            {{ row.lifecycle_label }}
-            {% if row.lead.lifecycle_status == "STOPPED" and row.stop_reason_label %}
-              <span class="crm-muted">({{ row.stop_reason_label }})</span>
-            {% endif %}
-          </td>
-          <td>{{ row.last_order_age_label }}</td>
-          <td>{{ row.missed_channel_group }}</td>
-          <td>{{ row.computed_status_label|default:"-" }}</td>
-          <td><a href="?{{ lead_base_qs }}&lead_section={{ lead_section }}&lead_id={{ row.lead.id }}#lead-{{ row.lead.id }}">รายละเอียด</a></td>
-        </tr>
-      {% empty %}
-        <tr><td colspan="8" class="crm-muted">ไม่มีรายการ</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+          {% else %}
+            <span class="crm-badge crm-badge--gray">{{ row.lifecycle_label }}</span>
+          {% endif %}
+        </div>
+        <div class="crm-table__cell">{{ row.last_order_age_label }}</div>
+        <div class="crm-table__cell">
+          {% if row.lead.missed_channel_count %}
+            <span class="crm-badge crm-badge--orange">{{ row.missed_channel_group }}</span>
+          {% else %}
+            {{ row.missed_channel_group }}
+          {% endif %}
+        </div>
+        <div class="crm-table__cell">
+          {% if row.computed_status == "OVERDUE" %}
+            <span class="crm-badge crm-badge--red">{{ row.computed_status_label }}</span>
+          {% elif row.computed_status_label %}
+            <span class="crm-badge crm-badge--blue">{{ row.computed_status_label }}</span>
+          {% else %}
+            <span class="crm-muted">-</span>
+          {% endif %}
+        </div>
+        <div class="crm-table__cell">
+          <a href="?{{ lead_base_qs }}&lead_section={{ lead_section }}&lead_id={{ row.lead.id }}#lead-{{ row.lead.id }}">รายละเอียด</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 
   {% if lead_page.has_more %}
-    <a class="crm-btn" href="?{{ lead_base_qs }}&lead_section={{ lead_section }}&lead_cursor={{ lead_page.next_cursor }}">หน้าถัดไป</a>
+    <div style="margin-top:12px;">
+      <a class="crm-btn crm-btn--secondary"
+         href="?{{ lead_base_qs }}&lead_section={{ lead_section }}&lead_cursor={{ lead_page.next_cursor }}">หน้าถัดไป</a>
+    </div>
   {% endif %}
-</div>
+{% endif %}
 
 {% if may_resolve_intake and intake_page %}
-  <h4 style="margin:24px 0 8px;">Global Unassigned</h4>
+  <h3 class="crm-section-title" style="margin:24px 0 4px;">Global Unassigned</h3>
   <p class="crm-muted" style="margin:0 0 8px;">
     รายการที่ยังไม่รู้ทีม ยังไม่มี Lead จนกว่าจะเลือกทีม
   </p>
-  <div class="crm-card">
-    <table class="crm-table">
-      <thead><tr><th>ลูกค้า</th><th>ที่มา</th><th>เลขออเดอร์ต้นทาง</th><th>มอบหมายทีม</th></tr></thead>
-      <tbody>
-        {% for item in intake_page.items %}
-          <tr>
-            <td>{{ item.customer.customer_name|default:item.customer.phone_key }}</td>
-            <td>{{ item.source_kind }}</td>
-            <td>{{ item.source_order_id|default:"-" }}</td>
-            <td>
-              <form method="post" action="{% url 'leads:resolve_intake' item.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                <input type="text" name="team" class="crm-input" placeholder="รหัสทีม" required>
-                <button type="submit" class="crm-btn">มอบหมาย</button>
-              </form>
-            </td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="4" class="crm-muted">ไม่มีรายการ</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  {% if not intake_page.items %}
+    <div class="crm-card">ไม่มีรายการรอมอบหมาย</div>
+  {% else %}
+    <div class="crm-table" style="--crm-grid-cols: 2fr 1.4fr 1.4fr 2fr;">
+      <div class="crm-table__header">
+        <div class="crm-table__cell">ลูกค้า</div>
+        <div class="crm-table__cell">ที่มา</div>
+        <div class="crm-table__cell">เลขออเดอร์ต้นทาง</div>
+        <div class="crm-table__cell">มอบหมายทีม</div>
+      </div>
+      {% for item in intake_page.items %}
+        <div class="crm-table__row">
+          <div class="crm-table__cell">{{ item.customer.customer_name|default:item.customer.phone_key }}</div>
+          <div class="crm-table__cell">{{ item.source_kind }}</div>
+          <div class="crm-table__cell">{{ item.source_order_id|default:"-" }}</div>
+          <div class="crm-table__cell">
+            {# A select, not a free-text box: the team code is a closed set and a typo here is a wasted irreversible-ish action. #}
+            <form method="post" action="{% url 'leads:resolve_intake' item.id %}"
+                  style="display:flex;gap:8px;align-items:center;">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ detail_next }}">
+              <select name="team" class="crm-select" required>
+                <option value="">— เลือกทีม —</option>
+                {% for team in assignable_teams %}
+                  <option value="{{ team.code }}">{{ team.display_name|default:team.code }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="crm-btn crm-btn--secondary">มอบหมาย</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endif %}

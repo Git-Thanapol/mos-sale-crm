@@ -22,6 +22,7 @@ from crm.domain.enums import CONTACT_ATTEMPT_RESULTS, STOP_REASONS
 from crm.followcycles.models import Appointment
 from crm.followcycles.selectors import cycle_history
 from crm.leads.models import Lead
+from crm.teams.models import Team
 from crm.leads import presenters
 from crm.leads.selectors import (
     LeadQueueFilters,
@@ -171,6 +172,9 @@ def index(request):
                     .order_by("staff_name", "email")[:200]
                 )
     intake_page = global_unassigned_queue(request.user) if may_resolve_intake else None
+    # Closed set for the intake select: a typed team code is a typo waiting
+    # to happen on an action that creates a Lead.
+    assignable_teams = list(Team.objects.filter(active=True).order_by("code")) if may_resolve_intake else []
 
     lead_qs = request.GET.copy()
     lead_qs.pop("lead_cursor", None)
@@ -187,6 +191,7 @@ def index(request):
         "intake_page": intake_page,
         "may_review_leads": may_review,
         "may_resolve_intake": may_resolve_intake,
+        "assignable_teams": assignable_teams,
         "lead_detail": lead_detail,
         "detail_can_edit": detail_can_edit,
         "detail_can_review": detail_can_review,
@@ -203,6 +208,15 @@ def index(request):
             (value, presenters.STOP_REASON_LABELS.get(value, value)) for value in STOP_REASONS
         ],
         "lifecycle_options": list(presenters.LIFECYCLE_LABELS.items()),
+        # STOPPED is excluded from the EDIT control: it carries a reason and
+        # ends the follow-up cycle, so leads:set_lifecycle rejects it and the
+        # stop form beside it is the real path. Offering it would be an
+        # option the server always refuses. The FILTER dropdown keeps it.
+        "lifecycle_edit_options": [
+            (value, label)
+            for value, label in presenters.LIFECYCLE_LABELS.items()
+            if value != "STOPPED"
+        ],
         "summary": summary,
         "options": options,
         "priority_tabs": FOLLOWUP_PRIORITY_OPTIONS,

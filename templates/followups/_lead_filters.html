@@ -1,6 +1,6 @@
-{# Lead queue filters. Mirrors _filters.html so the page reads as one form
+{% comment %} Lead queue filters. Mirrors _filters.html so the page reads as one form
    family; Thai labels are inline literals, per docs/DECISIONS.md (USE_I18N is
-   off and UI strings live in templates). #}
+   off and UI strings live in templates). {% endcomment %}
 <form method="get" class="crm-card" style="margin-bottom:16px;">
   <input type="hidden" name="lead_section" value="{{ lead_section }}">
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
