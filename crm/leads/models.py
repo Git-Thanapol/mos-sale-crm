@@ -28,6 +28,7 @@ from django.db import models
 
 from crm.core.scoping import StaffScopedQuerySet
 from crm.domain.enums import (
+    AUDIT_ACTIONS,
     LEAD_LIFECYCLE_STATUSES,
     OWNERSHIP_POLICIES,
     ROUTING_STATES,
@@ -145,3 +146,78 @@ class Lead(models.Model):
         if not self.lead_key:
             self.lead_key = self.build_key(self.team.code, self.customer.customer_uid)
         super().save(*args, **kwargs)
+
+
+class OwnershipSegment(models.Model):
+    """One row per period a caretaker held a Lead.
+
+    The ownership baseline missed-channel counts from is this segment's
+    `started_at`, which is why a caretaker change resets that counter without
+    anything having to decrement it: the baseline moves and earlier orders fall
+    out of range.
+
+    At most one open segment per Lead, enforced by a partial unique index
+    rather than by convention — two open segments would make "the current
+    baseline" ambiguous and the counter non-deterministic.
+    """
+
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="ownership_segments")
+    caretaker = models.ForeignKey(
+        "accounts.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField(null=True, blank=True)
+    reason = models.CharField(max_length=32, blank=True)
+    created_by = models.ForeignKey(
+        "accounts.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "crm_ownership_segment"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["lead"],
+                condition=models.Q(ended_at__isnull=True),
+                name="ux_ownership_segment_open",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(ended_at__isnull=True)
+                | models.Q(ended_at__gte=models.F("started_at")),
+                name="chk_ownership_segment_period",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["lead", "-started_at"], name="ix_ownership_segment_lead"),
+        ]
+
+    def __str__(self) -> str:
+        return f"OwnershipSegment(lead={self.lead_id}, caretaker={self.caretaker_id})"
+
+
+class LeadAuditEvent(models.Model):
+    """Append-only record of the actions 08_SECURITY requires auditable.
+
+    `actor` is SET_NULL rather than CASCADE: a deleted user must not take the
+    audit trail with them, and `payload` keeps the actor id as text so the
+    record survives the row.
+    """
+
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="audit_events")
+    action = models.CharField(max_length=32, choices=[(v, v) for v in AUDIT_ACTIONS])
+    actor = models.ForeignKey(
+        "accounts.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    reason = models.CharField(max_length=255, blank=True)
+    payload = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "crm_lead_audit_event"
+        indexes = [
+            models.Index(fields=["lead", "-created_at"], name="ix_lead_audit_lead"),
+            models.Index(fields=["action", "-created_at"], name="ix_lead_audit_action"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.action}(lead={self.lead_id})"
