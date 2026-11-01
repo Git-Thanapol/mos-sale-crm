@@ -1,0 +1,1090 @@
+[
+  {
+    "name": "normalizeName/นางสาว สมหญิง ใจดี",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "นางสาว สมหญิง ใจดี"
+    },
+    "expected": {
+      "value": "สมหญิง ใจดี"
+    }
+  },
+  {
+    "name": "normalizeName/น.ส. สมหญิง ใจดี",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "น.ส. สมหญิง ใจดี"
+    },
+    "expected": {
+      "value": "สมหญิง ใจดี"
+    }
+  },
+  {
+    "name": "normalizeName/นาย สมชาย",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "นาย สมชาย"
+    },
+    "expected": {
+      "value": "สมชาย"
+    }
+  },
+  {
+    "name": "normalizeName/คุณ  สมชาย",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "คุณ  สมชาย"
+    },
+    "expected": {
+      "value": "สมชาย"
+    }
+  },
+  {
+    "name": "normalizeName/Mr. John  Smith",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "Mr. John  Smith"
+    },
+    "expected": {
+      "value": "john smith"
+    }
+  },
+  {
+    "name": "normalizeName/MRS Jane",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "MRS Jane"
+    },
+    "expected": {
+      "value": "jane"
+    }
+  },
+  {
+    "name": "normalizeName/dr.who",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "dr.who"
+    },
+    "expected": {
+      "value": "who"
+    }
+  },
+  {
+    "name": "normalizeName/Khun Somchai",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "Khun Somchai"
+    },
+    "expected": {
+      "value": "somchai"
+    }
+  },
+  {
+    "name": "normalizeName/สมชาย (ลูกค้า)",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "สมชาย (ลูกค้า)"
+    },
+    "expected": {
+      "value": "สมชาย ลูกค้า"
+    }
+  },
+  {
+    "name": "normalizeName/สมชาย-ใจดี_01",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "สมชาย-ใจดี_01"
+    },
+    "expected": {
+      "value": "สมชาย ใจดี 01"
+    }
+  },
+  {
+    "name": "normalizeName/null",
+    "input": {
+      "fn": "normalizeName",
+      "raw": null
+    },
+    "expected": {
+      "value": ""
+    }
+  },
+  {
+    "name": "normalizeName/undefined",
+    "input": {
+      "fn": "normalizeName",
+      "raw": null
+    },
+    "expected": {
+      "value": ""
+    }
+  },
+  {
+    "name": "normalizeName/   ",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "   "
+    },
+    "expected": {
+      "value": ""
+    }
+  },
+  {
+    "name": "normalizeName/นางสมศรี",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "นางสมศรี"
+    },
+    "expected": {
+      "value": "สมศรี"
+    }
+  },
+  {
+    "name": "normalizeName/นางสาวนางสมศรี",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "นางสาวนางสมศรี"
+    },
+    "expected": {
+      "value": "สมศรี"
+    }
+  },
+  {
+    "name": "normalizeName/ท่าน สมชาย",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "ท่าน สมชาย"
+    },
+    "expected": {
+      "value": "สมชาย"
+    }
+  },
+  {
+    "name": "normalizeName/Miss  Ann-Marie O'Neil",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "Miss  Ann-Marie O'Neil"
+    },
+    "expected": {
+      "value": "ann marie o neil"
+    }
+  },
+  {
+    "name": "normalizeName/คุณหญิง สมศรี",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "คุณหญิง สมศรี"
+    },
+    "expected": {
+      "value": "สมศรี"
+    }
+  },
+  {
+    "name": "normalizeName/ด.ช. เด็กชาย",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "ด.ช. เด็กชาย"
+    },
+    "expected": {
+      "value": "เด็กชาย"
+    }
+  },
+  {
+    "name": "normalizeName/ด.ญ. เด็กหญิง",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "ด.ญ. เด็กหญิง"
+    },
+    "expected": {
+      "value": "เด็กหญิง"
+    }
+  },
+  {
+    "name": "normalizeName/MR.",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "MR."
+    },
+    "expected": {
+      "value": ""
+    }
+  },
+  {
+    "name": "normalizeName/ms.  ",
+    "input": {
+      "fn": "normalizeName",
+      "raw": "ms.  "
+    },
+    "expected": {
+      "value": ""
+    }
+  },
+  {
+    "name": "similarity/สมชาย ใจดี/สมชาย ใจดี",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "สมชาย ใจดี",
+      "b": "สมชาย ใจดี"
+    },
+    "expected": {
+      "value": 1
+    }
+  },
+  {
+    "name": "similarity/นายสมชาย ใจดี/สมชาย ใจดี",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "นายสมชาย ใจดี",
+      "b": "สมชาย ใจดี"
+    },
+    "expected": {
+      "value": 1
+    }
+  },
+  {
+    "name": "similarity/สมชาย ใจดี/สมชาย ใจร้าย",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "สมชาย ใจดี",
+      "b": "สมชาย ใจร้าย"
+    },
+    "expected": {
+      "value": 0.5333333333333333
+    }
+  },
+  {
+    "name": "similarity/สมชาย/สมศรี",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "สมชาย",
+      "b": "สมศรี"
+    },
+    "expected": {
+      "value": 0.24
+    }
+  },
+  {
+    "name": "similarity/สมชาย ใจดี/ใจดี สมชาย",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "สมชาย ใจดี",
+      "b": "ใจดี สมชาย"
+    },
+    "expected": {
+      "value": 0.4
+    }
+  },
+  {
+    "name": "similarity//สมชาย",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "",
+      "b": "สมชาย"
+    },
+    "expected": {
+      "value": 0
+    }
+  },
+  {
+    "name": "similarity/สมชาย/",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "สมชาย",
+      "b": ""
+    },
+    "expected": {
+      "value": 0
+    }
+  },
+  {
+    "name": "similarity//",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "",
+      "b": ""
+    },
+    "expected": {
+      "value": 0
+    }
+  },
+  {
+    "name": "similarity/John Smith/john smith",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "John Smith",
+      "b": "john smith"
+    },
+    "expected": {
+      "value": 1
+    }
+  },
+  {
+    "name": "similarity/John Smith/Jon Smyth",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "John Smith",
+      "b": "Jon Smyth"
+    },
+    "expected": {
+      "value": 0.48
+    }
+  },
+  {
+    "name": "similarity/ก/ข",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "ก",
+      "b": "ข"
+    },
+    "expected": {
+      "value": 0
+    }
+  },
+  {
+    "name": "similarity/สมชาย ใจดี มาก/สมชาย ใจดี",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "สมชาย ใจดี มาก",
+      "b": "สมชาย ใจดี"
+    },
+    "expected": {
+      "value": 0.6952380952380952
+    }
+  },
+  {
+    "name": "classify/no-candidates",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย",
+        "phone": "0812345678",
+        "candidates": []
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "classify/exact-phone-same-name",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "AUTO_MATCH",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone + similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/exact-phone-similar-name",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "นายสมชาย ใจดี",
+        "phone": "+66812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "AUTO_MATCH",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone + similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/exact-phone-different-name",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "ประเสริฐ",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 0,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone but name differs"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/strong-name-no-phone",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0899999999",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": [
+          "strong name similarity without exact phone"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/near-phone-similar-name",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0812345679",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": false,
+        "phoneNear": true,
+        "reasons": [
+          "strong name similarity without exact phone"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/near-phone-different-name",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "ประเสริฐ",
+        "phone": "0812345679",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "classify/unrelated",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "ประเสริฐ",
+        "phone": "0600000000",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "classify/two-candidates-prefers-auto",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0899999999"
+            ]
+          },
+          {
+            "customerId": "c2",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "AUTO_MATCH",
+        "candidateCustomerId": "c2",
+        "nameScore": 1,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone + similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/two-review-picks-higher-name",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "ประเสริฐ",
+            "phones": [
+              "0812345678"
+            ]
+          },
+          {
+            "customerId": "c2",
+            "name": "สมชาย ใจร้าย",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c2",
+        "nameScore": 0.5333333333333333,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone but name differs"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/candidate-with-two-phones",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0899999999",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678",
+              "0899999999"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "AUTO_MATCH",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone + similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/blank-incoming-phone",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": [
+          "strong name similarity without exact phone"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/blank-everything",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "",
+        "phone": "",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "",
+            "phones": [
+              ""
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "classify/candidate-without-phone",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "สมชาย ใจดี",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "สมชาย ใจดี",
+            "phones": []
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 1,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": [
+          "strong name similarity without exact phone"
+        ]
+      }
+    }
+  },
+  {
+    "name": "similarity-band/similar",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "alpha bravo charlie delta echo",
+      "b": "alpha bravo charlie delta ecno"
+    },
+    "expected": {
+      "value": 0.8466666666666667
+    }
+  },
+  {
+    "name": "similarity-band/below-similar",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "alpha bravo charlie delta",
+      "b": "alpha bravo charlie delto"
+    },
+    "expected": {
+      "value": 0.816
+    }
+  },
+  {
+    "name": "similarity-band/strong",
+    "input": {
+      "fn": "nameSimilarity",
+      "a": "alpha bravo charlie delta echo foxtrot",
+      "b": "alpha bravo charlie delta echo foxtrat"
+    },
+    "expected": {
+      "value": 0.8699248120300753
+    }
+  },
+  {
+    "name": "classify/band/exact-phone-similar-name-auto",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delta ecno",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta echo",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "AUTO_MATCH",
+        "candidateCustomerId": "c1",
+        "nameScore": 0.8466666666666667,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone + similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/band/exact-phone-below-similar-review",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delto",
+        "phone": "0812345678",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 0.816,
+        "phoneExact": true,
+        "phoneNear": false,
+        "reasons": [
+          "exact normalized phone but name differs"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/band/no-phone-similar-not-strong-new",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delta ecno",
+        "phone": "0899999999",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta echo",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "classify/band/no-phone-strong-review",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delta echo foxtrat",
+        "phone": "0899999999",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta echo foxtrot",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 0.8699248120300753,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": [
+          "strong name similarity without exact phone"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/band/near-phone-similar-review",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delta ecno",
+        "phone": "0812345679",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta echo",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 0.8466666666666667,
+        "phoneExact": false,
+        "phoneNear": true,
+        "reasons": [
+          "phone differs by 1-2 digits with similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/band/near-phone-below-similar-new",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delto",
+        "phone": "0812345679",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "classify/band/two-digit-near-similar-review",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delta ecno",
+        "phone": "0812345699",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta echo",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "HUMAN_REVIEW",
+        "candidateCustomerId": "c1",
+        "nameScore": 0.8466666666666667,
+        "phoneExact": false,
+        "phoneNear": true,
+        "reasons": [
+          "phone differs by 1-2 digits with similar name"
+        ]
+      }
+    }
+  },
+  {
+    "name": "classify/band/three-digit-near-similar-new",
+    "input": {
+      "fn": "classifyIdentity",
+      "value": {
+        "name": "alpha bravo charlie delta ecno",
+        "phone": "0812345999",
+        "candidates": [
+          {
+            "customerId": "c1",
+            "name": "alpha bravo charlie delta echo",
+            "phones": [
+              "0812345678"
+            ]
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "kind": "NEW_CUSTOMER",
+        "candidateCustomerId": null,
+        "nameScore": 0,
+        "phoneExact": false,
+        "phoneNear": false,
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "blocks/AUTO_MATCH",
+    "input": {
+      "fn": "identityBlocksCommit",
+      "kind": "AUTO_MATCH"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "blocks/HUMAN_REVIEW",
+    "input": {
+      "fn": "identityBlocksCommit",
+      "kind": "HUMAN_REVIEW"
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "blocks/NEW_CUSTOMER",
+    "input": {
+      "fn": "identityBlocksCommit",
+      "kind": "NEW_CUSTOMER"
+    },
+    "expected": {
+      "value": false
+    }
+  }
+]

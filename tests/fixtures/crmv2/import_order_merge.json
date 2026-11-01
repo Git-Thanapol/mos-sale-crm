@@ -1,0 +1,2399 @@
+[
+  {
+    "name": "merge/blank-incoming",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "",
+          "shop": null,
+          "trackingNumber": "   "
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "UNCHANGED",
+            "before": "LINE",
+            "after": "",
+            "reason": "blank incoming value carries no new information"
+          },
+          {
+            "field": "shop",
+            "kind": "UNCHANGED",
+            "before": "main",
+            "after": null,
+            "reason": "blank incoming value carries no new information"
+          },
+          {
+            "field": "trackingNumber",
+            "kind": "UNCHANGED",
+            "before": "",
+            "after": "   ",
+            "reason": "blank incoming value carries no new information"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/identical",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "UNCHANGED",
+            "before": "LINE",
+            "after": "LINE",
+            "reason": "identical value"
+          },
+          {
+            "field": "total",
+            "kind": "UNCHANGED",
+            "before": 120,
+            "after": 120,
+            "reason": "identical value"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/fills-empty",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "trackingNumber": "TH123",
+          "carrier": "Kerry",
+          "address.subdistrict": "ในเมือง"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "trackingNumber": "TH123",
+          "carrier": "Kerry",
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "ในเมือง",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {
+            "trackingNumber": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "carrier": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "address.subdistrict": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "trackingNumber",
+            "kind": "SAFE_UPDATE",
+            "before": "",
+            "after": "TH123",
+            "reason": "fills an empty field"
+          },
+          {
+            "field": "carrier",
+            "kind": "SAFE_UPDATE",
+            "before": "",
+            "after": "Kerry",
+            "reason": "fills an empty field"
+          },
+          {
+            "field": "address.subdistrict",
+            "kind": "SAFE_UPDATE",
+            "before": "",
+            "after": "ในเมือง",
+            "reason": "fills an empty field"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/items-replaced",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "items": [
+            {
+              "sku": "B",
+              "qty": 2
+            }
+          ]
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "items": [
+            {
+              "sku": "B",
+              "qty": 2
+            }
+          ],
+          "fieldProvenance": {
+            "items": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "items",
+            "kind": "SAFE_UPDATE",
+            "before": [
+              {
+                "sku": "A",
+                "qty": 1
+              }
+            ],
+            "after": [
+              {
+                "sku": "B",
+                "qty": 2
+              }
+            ],
+            "reason": "source-derived line items replaced as a unit; totals remain field-merged"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/customer-id-change-conflict",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "customerId": "cust-2"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "customerId",
+            "kind": "CONFLICT",
+            "before": "cust-1",
+            "after": "cust-2",
+            "reason": "customerId changes require the identity merge flow, not an order upsert"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "customerId",
+            "kind": "CONFLICT",
+            "before": "cust-1",
+            "after": "cust-2",
+            "reason": "customerId changes require the identity merge flow, not an order upsert"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/customer-id-blank-ok",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "customerId": ""
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "customerId",
+            "kind": "UNCHANGED",
+            "before": "cust-1",
+            "after": "",
+            "reason": "same or blank customer id"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/customer-id-same-ok",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "customerId": "cust-1"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "customerId",
+            "kind": "UNCHANGED",
+            "before": "cust-1",
+            "after": "cust-1",
+            "reason": "same or blank customer id"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/status-forward",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "orderStatus": "SHIPPED",
+          "shippingStatus": "IN_TRANSIT"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "orderStatus": "SHIPPED",
+          "shippingStatus": "IN_TRANSIT",
+          "fieldProvenance": {
+            "orderStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "shippingStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "orderStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "WAITING_SHIPMENT",
+            "after": "SHIPPED",
+            "reason": "status transition WAITING_SHIPMENT -> SHIPPED classified FORWARD"
+          },
+          {
+            "field": "shippingStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "LABEL_CREATED",
+            "after": "IN_TRANSIT",
+            "reason": "status transition LABEL_CREATED -> IN_TRANSIT classified FORWARD"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/status-reversal-blocked",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "orderStatus": "PENDING_CONFIRMATION"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "orderStatus",
+            "kind": "EXPLICIT_REVERSAL_REQUIRED",
+            "before": "WAITING_SHIPMENT",
+            "after": "PENDING_CONFIRMATION",
+            "reason": "status transition WAITING_SHIPMENT -> PENDING_CONFIRMATION classified REVERSAL"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "orderStatus",
+            "kind": "EXPLICIT_REVERSAL_REQUIRED",
+            "before": "WAITING_SHIPMENT",
+            "after": "PENDING_CONFIRMATION",
+            "reason": "status transition WAITING_SHIPMENT -> PENDING_CONFIRMATION classified REVERSAL"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/status-reversal-allowed",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "orderStatus": "PENDING_CONFIRMATION"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": true
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "orderStatus": "PENDING_CONFIRMATION",
+          "fieldProvenance": {
+            "orderStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "orderStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "WAITING_SHIPMENT",
+            "after": "PENDING_CONFIRMATION",
+            "reason": "status transition WAITING_SHIPMENT -> PENDING_CONFIRMATION classified REVERSAL"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/status-cancellation",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "orderStatus": "CANCELLED",
+          "paymentStatus": "REFUNDED"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "orderStatus": "CANCELLED",
+          "paymentStatus": "REFUNDED",
+          "fieldProvenance": {
+            "orderStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "paymentStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "orderStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "WAITING_SHIPMENT",
+            "after": "CANCELLED",
+            "reason": "status transition WAITING_SHIPMENT -> CANCELLED classified CANCELLATION"
+          },
+          {
+            "field": "paymentStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "PAID",
+            "after": "REFUNDED",
+            "reason": "status transition PAID -> REFUNDED classified CANCELLATION"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/status-terminal",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "CANCELLED",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "orderStatus": "SHIPPED"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "orderStatus",
+            "kind": "CONFLICT",
+            "before": "CANCELLED",
+            "after": "SHIPPED",
+            "reason": "status transition CANCELLED -> SHIPPED classified TERMINAL"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "orderStatus",
+            "kind": "CONFLICT",
+            "before": "CANCELLED",
+            "after": "SHIPPED",
+            "reason": "status transition CANCELLED -> SHIPPED classified TERMINAL"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/shipping-invalid",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "shippingStatus": "NOT_SHIPPED"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "shippingStatus",
+            "kind": "CONFLICT",
+            "before": "LABEL_CREATED",
+            "after": "NOT_SHIPPED",
+            "reason": "status transition LABEL_CREATED -> NOT_SHIPPED classified INVALID"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "shippingStatus",
+            "kind": "CONFLICT",
+            "before": "LABEL_CREATED",
+            "after": "NOT_SHIPPED",
+            "reason": "status transition LABEL_CREATED -> NOT_SHIPPED classified INVALID"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/shipping-reversal-allowed",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "shippingStatus": "NOT_SHIPPED"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": true
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "shippingStatus": "NOT_SHIPPED",
+          "fieldProvenance": {
+            "shippingStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "shippingStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "LABEL_CREATED",
+            "after": "NOT_SHIPPED",
+            "reason": "status transition LABEL_CREATED -> NOT_SHIPPED classified REVERSAL"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/payment-reversal",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "paymentStatus": "UNPAID"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "paymentStatus",
+            "kind": "EXPLICIT_REVERSAL_REQUIRED",
+            "before": "PAID",
+            "after": "UNPAID",
+            "reason": "status transition PAID -> UNPAID classified REVERSAL"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "paymentStatus",
+            "kind": "EXPLICIT_REVERSAL_REQUIRED",
+            "before": "PAID",
+            "after": "UNPAID",
+            "reason": "status transition PAID -> UNPAID classified REVERSAL"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/newer-source",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1699999995000,
+            "precedence": 10
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "channel": "SHOPEE",
+          "fieldProvenance": {
+            "channel": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "SAFE_UPDATE",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "newer source version"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/older-source-stale",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1700000005000,
+            "precedence": 10
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "STALE_INPUT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "incoming source timestamp is older than the stored field provenance"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/same-version-conflict",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1700000000000,
+            "precedence": 10
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "CONFLICT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "same source version reports a different value"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "channel",
+            "kind": "CONFLICT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "same source version reports a different value"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/undated-no-advantage-stale",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1700000000000,
+            "precedence": 10
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": null,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "STALE_INPUT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "undated source with no precedence advantage cannot overwrite a dated value"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/undated-lower-precedence-stale",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1700000000000,
+            "precedence": 20
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": null,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "STALE_INPUT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "undated source with no precedence advantage cannot overwrite a dated value"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/undated-higher-precedence-accepted",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1700000000000,
+            "precedence": 5
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": null,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "channel": "SHOPEE",
+          "fieldProvenance": {
+            "channel": {
+              "sourceId": "file",
+              "sourceUpdatedAt": null,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "SAFE_UPDATE",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "no newer provenance stored; accepted"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/lower-precedence-conflict",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": null,
+            "precedence": 20
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "CONFLICT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "conflicting value from a lower-precedence source"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "channel",
+            "kind": "CONFLICT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "conflicting value from a lower-precedence source"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/lower-precedence-undated-both-conflict",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": null,
+            "precedence": 20
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": null,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "CONFLICT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "conflicting value from a lower-precedence source"
+          }
+        ],
+        "blocking": [
+          {
+            "field": "channel",
+            "kind": "CONFLICT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "conflicting value from a lower-precedence source"
+          }
+        ],
+        "hasBlocking": true
+      }
+    }
+  },
+  {
+    "name": "merge/no-provenance-accepted",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE",
+          "total": 150
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "channel": "SHOPEE",
+          "total": 150,
+          "fieldProvenance": {
+            "channel": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "total": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "SAFE_UPDATE",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "no newer provenance stored; accepted"
+          },
+          {
+            "field": "total",
+            "kind": "SAFE_UPDATE",
+            "before": 120,
+            "after": 150,
+            "reason": "no newer provenance stored; accepted"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/address-fields-merge",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "address.line": "9 ถนนใหม่",
+          "address.postalCode": "10200"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "address": {
+            "line": "9 ถนนใหม่",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10200"
+          },
+          "fieldProvenance": {
+            "address.line": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "address.postalCode": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "address.line",
+            "kind": "SAFE_UPDATE",
+            "before": "1 ถนน",
+            "after": "9 ถนนใหม่",
+            "reason": "no newer provenance stored; accepted"
+          },
+          {
+            "field": "address.postalCode",
+            "kind": "SAFE_UPDATE",
+            "before": "10100",
+            "after": "10200",
+            "reason": "no newer provenance stored; accepted"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/mixed",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "channel": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1700000000001,
+            "precedence": 10
+          },
+          "total": {
+            "sourceId": "old",
+            "sourceUpdatedAt": 1699999999999,
+            "precedence": 10
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "channel": "SHOPEE",
+          "total": 200,
+          "trackingNumber": "TH9",
+          "orderStatus": "SHIPPED"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "total": 200,
+          "trackingNumber": "TH9",
+          "orderStatus": "SHIPPED",
+          "fieldProvenance": {
+            "channel": {
+              "sourceId": "old",
+              "sourceUpdatedAt": 1700000000001,
+              "precedence": 10
+            },
+            "total": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "trackingNumber": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            },
+            "orderStatus": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "channel",
+            "kind": "STALE_INPUT",
+            "before": "LINE",
+            "after": "SHOPEE",
+            "reason": "incoming source timestamp is older than the stored field provenance"
+          },
+          {
+            "field": "total",
+            "kind": "SAFE_UPDATE",
+            "before": 120,
+            "after": 200,
+            "reason": "newer source version"
+          },
+          {
+            "field": "trackingNumber",
+            "kind": "SAFE_UPDATE",
+            "before": "",
+            "after": "TH9",
+            "reason": "fills an empty field"
+          },
+          {
+            "field": "orderStatus",
+            "kind": "SAFE_UPDATE",
+            "before": "WAITING_SHIPMENT",
+            "after": "SHIPPED",
+            "reason": "status transition WAITING_SHIPMENT -> SHIPPED classified FORWARD"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/no-fields",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {}
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {},
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {},
+        "decisions": [],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "merge/existing-provenance-preserved",
+    "input": {
+      "fn": "mergeOrder",
+      "existing": {
+        "orderId": "SO-1",
+        "customerId": "cust-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "caretakerAtOrderTime": "user-a",
+        "channel": "LINE",
+        "shop": "main",
+        "subtotal": 100,
+        "total": 120,
+        "trackingNumber": "",
+        "carrier": "",
+        "url": "",
+        "recipientName": "สมชาย",
+        "phone": "0812345678",
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "LABEL_CREATED",
+        "items": [
+          {
+            "sku": "A",
+            "qty": 1
+          }
+        ],
+        "address": {
+          "line": "1 ถนน",
+          "subdistrict": "",
+          "district": "เมือง",
+          "province": "กรุงเทพ",
+          "postalCode": "10100"
+        },
+        "fieldProvenance": {
+          "shop": {
+            "sourceId": "keep",
+            "sourceUpdatedAt": 1,
+            "precedence": 3
+          }
+        }
+      },
+      "incoming": {
+        "orderId": "SO-1",
+        "fields": {
+          "trackingNumber": "TH1"
+        },
+        "source": {
+          "sourceId": "file",
+          "sourceUpdatedAt": 1700000000000,
+          "precedence": 10
+        }
+      },
+      "allowReversal": false
+    },
+    "expected": {
+      "value": {
+        "orderId": "SO-1",
+        "updates": {
+          "trackingNumber": "TH1",
+          "fieldProvenance": {
+            "shop": {
+              "sourceId": "keep",
+              "sourceUpdatedAt": 1,
+              "precedence": 3
+            },
+            "trackingNumber": {
+              "sourceId": "file",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "decisions": [
+          {
+            "field": "trackingNumber",
+            "kind": "SAFE_UPDATE",
+            "before": "",
+            "after": "TH1",
+            "reason": "fills an empty field"
+          }
+        ],
+        "blocking": [],
+        "hasBlocking": false
+      }
+    }
+  },
+  {
+    "name": "summarize/empty",
+    "input": {
+      "fn": "summarizeDecisions",
+      "decisions": []
+    },
+    "expected": {
+      "value": {
+        "considered": 0,
+        "unchanged": 0,
+        "safeUpdate": 0,
+        "staleInput": 0,
+        "conflict": 0,
+        "reversalRequired": 0
+      }
+    }
+  },
+  {
+    "name": "summarize/mixed",
+    "input": {
+      "fn": "summarizeDecisions",
+      "decisions": [
+        {
+          "kind": "UNCHANGED"
+        },
+        {
+          "kind": "SAFE_UPDATE"
+        },
+        {
+          "kind": "SAFE_UPDATE"
+        },
+        {
+          "kind": "STALE_INPUT"
+        },
+        {
+          "kind": "CONFLICT"
+        },
+        {
+          "kind": "EXPLICIT_REVERSAL_REQUIRED"
+        }
+      ]
+    },
+    "expected": {
+      "value": {
+        "considered": 6,
+        "unchanged": 1,
+        "safeUpdate": 2,
+        "staleInput": 1,
+        "conflict": 1,
+        "reversalRequired": 1
+      }
+    }
+  }
+]
