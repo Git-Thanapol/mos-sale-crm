@@ -53,6 +53,21 @@
       });
   });
 
+  // Decision forms show only the payload fields of the chosen action (the
+  // prototype re-renders them from React state; without JS every field shows).
+  function syncDecisionForm(select) {
+    var form = select.closest("form");
+    form.querySelectorAll("[data-v2-for]").forEach(function (el) {
+      el.hidden = el.getAttribute("data-v2-for").split(" ").indexOf(select.value) === -1;
+    });
+  }
+  document.addEventListener("change", function (event) {
+    if (event.target.matches("select[data-v2-action]")) { syncDecisionForm(event.target); }
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("select[data-v2-action]").forEach(syncDecisionForm);
+  });
+
   // <dialog> openers/closers (used instead of window.confirm).
   document.addEventListener("click", function (event) {
     var opener = event.target.closest("[data-v2-open]");

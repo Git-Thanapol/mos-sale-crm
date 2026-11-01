@@ -20,6 +20,9 @@ urlpatterns = [
     # CRM V2 import: upload, preview, confirm/commit, conflicts, history.
     path("import/", imports.import_page, name="import"),
     path("import/upload/", imports.import_upload, name="import_upload"),
+    path("import/decisions/", imports.decisions_page, name="migration_decisions"),
+    path("import/decisions/<str:decision_id>/resolve/", imports.decision_resolve, name="decision_resolve"),
+    path("import/decisions/<str:decision_id>/reopen/", imports.decision_reopen, name="decision_reopen"),
     path("import/conflicts/", imports.conflicts_page, name="import_conflicts"),
     path("import/conflicts/<int:conflict_id>/resolve/", imports.conflict_resolve, name="conflict_resolve"),
     path("import/history/", imports.history_page, name="import_history"),

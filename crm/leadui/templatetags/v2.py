@@ -89,3 +89,24 @@ def order_state(order):
     from crm.leads.order_status import to_machine_status
 
     return to_machine_status(order.order_status) or order.order_status or "UNKNOWN"
+
+
+@register.filter
+def thcount(value):
+    """toLocaleString('th-TH') for a whole number: 8613 -> '8,613'."""
+    try:
+        return f"{int(value):,}"
+    except (TypeError, ValueError):
+        return _DASH
+
+
+@register.filter
+def ms_date(value):
+    """Epoch milliseconds as the Bangkok date the prototype's dateText prints
+    (`13/10/2569`, Buddhist year); a missing value is a dash."""
+    if value in (None, ""):
+        return _DASH
+    from datetime import timezone
+
+    local = datetime.fromtimestamp(int(value) / 1000, tz=timezone.utc).astimezone(BANGKOK_TZ)
+    return f"{local.day:02d}/{local.month:02d}/{local.year + 543}"

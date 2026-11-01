@@ -1,0 +1,88 @@
+{% extends "leadui/base_v2.html" %}
+{% load v2 %}
+{% block title %}Migration Decisions · Sales CRM{% endblock %}
+{% block v2_content %}
+<section class="decision-center">
+  <div class="page-title"><h1>Migration Decisions</h1><p>ตัดสินโดย Admin เท่านั้น · ทุกการตัดสินมีเหตุผลและประวัติ · ไม่มีการจับคู่อัตโนมัติ</p></div>
+  <form method="get" data-v2-filters>
+    <input type="hidden" name="status" value="{{ status }}">
+    <div class="tabs">{% for value, label, count in tabs %}<button type="submit" name="category" value="{{ value }}"{% if value == category %} class="active"{% endif %}>{{ label }}<span class="count">{{ count|thcount }}</span></button>{% endfor %}</div>
+  </form>
+  <form method="get" class="filters" data-v2-filters>
+    <input type="hidden" name="category" value="{{ category }}">
+    <select name="status" aria-label="status">{% for item in statuses %}<option value="{{ item }}"{% if item == status %} selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+    <select name="reason" aria-label="reason"><option value="">ทุกเหตุผล</option>{% for item in reasons %}<option value="{{ item }}"{% if item == reason %} selected{% endif %}>{{ item }}</option>{% endfor %}</select>
+    <span class="muted">ค้างตัดสินในหมวดนี้ {{ unresolved_here|thcount }} รายการ · แสดงทีละ {{ page_size }}</span>
+  </form>
+  {% if cards %}
+    <div class="decision-list">
+      {% for card in cards %}{% with d=card.decision %}
+      <article class="decision-card">
+        <header><span class="chip">{{ d.reason_code }}</span><span class="chip">{{ d.status }}</span><small>rev {{ d.revision }}</small></header>
+        {% if card.kind == "STAFF_ALIAS" %}
+          <div class="evidence">
+            <div><strong>{{ card.evidence.historicalDisplayValue }}</strong><small>พบ {{ card.evidence.frequency|thcount }} ออเดอร์</small></div>
+            <div class="muted">ทีมเดิม: {{ card.source_context }}</div>
+            <div>{% for c in card.evidence.exactCandidates %}<span class="chip">{{ c.userId }}{% if not c.active %} (ปิดใช้งาน){% endif %} · {% if c.basis == "EXACT_LEGACY_ALIAS" %}ชื่อเดิมตรงทุกตัว{% else %}ชื่อแสดงตรงทุกตัว{% endif %}</span>{% empty %}<span class="muted">ไม่มีผู้ใช้ที่ชื่อตรงทุกตัว — ระบบไม่เดาให้</span>{% endfor %}</div>
+          </div>
+        {% elif card.kind == "IDENTITY_REVIEW" %}
+          <div class="evidence">
+            <div><strong>{{ card.masked_phone }}</strong><small>{{ card.evidence.sourceOrderCount|thcount }} ออเดอร์ · {{ card.evidence.nameVariantTotal }} ชื่อที่ต่างกัน</small></div>
+            <ul class="variants">{% for v in card.variants %}<li>{{ v.name|default:"(ไม่มีชื่อ)" }} <small>{{ v.orderCount }} ออเดอร์ · {{ v.firstOrderAt|ms_date }}–{{ v.lastOrderAt|ms_date }}</small></li>{% endfor %}</ul>
+            {% if card.similarities %}<div class="muted">ความใกล้เคียงของชื่อ: {% for s in card.similarities %}{{ s.a }}↔{{ s.b }} {{ s.pct }}%{% if not forloop.last %} · {% endif %}{% endfor %}</div>{% endif %}
+            {% if card.evidence.candidates %}<div>ลูกค้าเดิมเบอร์เดียวกัน: {% for c in card.evidence.candidates %}<span class="chip">{{ c.customerId }}</span>{% endfor %}</div>{% endif %}
+          </div>
+        {% elif card.kind == "UNKNOWN_STATUS" %}
+          <div class="evidence">
+            <div><strong>{{ card.evidence.rawValue|default:"(ค่าว่าง)" }}</strong><small>{{ card.evidence.count|thcount }} ออเดอร์</small></div>
+            <div class="muted">ถ้าไม่ตัดสิน: {{ card.evidence.fallback.orderStatus }} / {{ card.evidence.fallback.paymentStatus }} / {{ card.evidence.fallback.shippingStatus }}</div>
+          </div>
+        {% elif card.kind == "NULL_DATE_ORDER" %}
+          <div class="evidence">
+            <div><strong>ออเดอร์ {{ card.evidence.sourceOrderId }}</strong><small>ไม่มีวันที่ในแหล่งข้อมูล</small></div>
+            <div class="muted">{{ card.evidence.itemCount }} รายการ · ยอด {{ card.evidence.total|default_if_none:"—" }} · {% if card.evidence.hasPhone %}มีเบอร์{% else %}ไม่มีเบอร์{% endif %} · สถานะเดิม {{ card.evidence.rawStatus|default:"(ว่าง)" }}</div>
+          </div>
+        {% endif %}
+        {% if d.status == "RESOLVED" and card.resolution %}
+          <div class="resolved">
+            <strong>{{ card.resolution_label }}</strong><small>{{ card.resolved_by }} · {{ card.resolution.reason }}</small>
+            <button type="button" class="secondary" data-v2-open="reopen-{{ d.id }}">เปิดใหม่</button>
+            <dialog id="reopen-{{ d.id }}">
+              <h2>เหตุผลที่เปิดการตัดสินใหม่</h2>
+              <form method="post" action="{% url 'leadui:decision_reopen' d.decision_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="revision" value="{{ d.revision }}">
+                <input type="hidden" name="next" value="{{ next }}">
+                <input type="text" name="reason" required minlength="3" placeholder="เหตุผล (บังคับ)">
+                <div class="actions"><button type="submit">เปิดใหม่</button><button type="button" class="secondary" data-v2-close>ยกเลิก</button></div>
+              </form>
+            </dialog>
+          </div>
+        {% else %}
+          <form class="decision-form" method="post" action="{% url 'leadui:decision_resolve' d.decision_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="revision" value="{{ d.revision }}">
+            <input type="hidden" name="evidence_hash" value="{{ d.evidence_hash }}">
+            <input type="hidden" name="next" value="{{ next }}">
+            <select name="action" aria-label="action" data-v2-action>{% for value, label in card.actions %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+            <span data-v2-for="MAP_TO_USER">{% if card.evidence.exactCandidates %}<select name="exact_user" aria-label="exact candidate"><option value="">เลือกผู้ใช้ที่ชื่อตรง</option>{% for c in card.evidence.exactCandidates %}<option value="{{ c.userId }}">{{ c.userId }}</option>{% endfor %}</select>{% endif %}<input name="userId" aria-label="userId" placeholder="userId ที่ตรวจสอบแล้ว"></span>
+            <span data-v2-for="MATCH_EXISTING"><select name="customerId" aria-label="candidate"><option value="">เลือกลูกค้าเบอร์เดียวกัน</option>{% for c in card.evidence.candidates %}<option value="{{ c.customerId }}">{{ c.customerId }}</option>{% endfor %}</select></span>
+            <span data-v2-for="MAP_TO_STATUS">
+              <select name="orderStatus" aria-label="orderStatus"><option value="">orderStatus</option>{% for v in order_statuses %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select>
+              <select name="paymentStatus" aria-label="paymentStatus"><option value="">paymentStatus</option>{% for v in payment_statuses %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select>
+              <select name="shippingStatus" aria-label="shippingStatus"><option value="">shippingStatus</option>{% for v in shipping_statuses %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select>
+            </span>
+            <span data-v2-for="SET_AUTHORITATIVE_DATE"><input name="orderedAt" aria-label="orderedAt" type="datetime-local"><input name="evidenceRef" aria-label="evidenceRef" placeholder="อ้างอิงหลักฐานอิสระ (เช่น เลขเอกสารขนส่ง)"></span>
+            <input name="reason" aria-label="reason" placeholder="เหตุผล (บังคับ)" required minlength="3">
+            <button type="submit">บันทึกการตัดสิน</button>
+          </form>
+        {% endif %}
+      </article>
+      {% endwith %}{% endfor %}
+    </div>
+  {% else %}
+    {% include "leadui/_state.html" with kind="empty" message="ไม่มีรายการในคิวนี้" %}
+  {% endif %}
+  <div class="pager">{% if previous_url %}<a class="v2-btn secondary" href="{{ previous_url }}">หน้าก่อน</a>{% endif %}{% if next_url %}<a class="v2-btn secondary" href="{{ next_url }}">หน้าถัดไป</a>{% endif %}</div>
+</section>
+{% endblock %}

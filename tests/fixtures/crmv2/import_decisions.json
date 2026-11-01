@@ -1,0 +1,7882 @@
+[
+  {
+    "name": "allowed/staff",
+    "input": {
+      "fn": "allowedActions",
+      "category": "STAFF_ALIAS",
+      "reasonCode": "NO_EXACT_CANDIDATE"
+    },
+    "expected": {
+      "value": [
+        "MAP_TO_USER",
+        "HISTORICAL_ONLY",
+        "DEFER"
+      ]
+    }
+  },
+  {
+    "name": "allowed/identity",
+    "input": {
+      "fn": "allowedActions",
+      "category": "IDENTITY_REVIEW",
+      "reasonCode": "NAME_CONFLICT"
+    },
+    "expected": {
+      "value": [
+        "MATCH_EXISTING",
+        "CREATE_NEW_CUSTOMER",
+        "KEEP_SEPARATE",
+        "DEFER"
+      ]
+    }
+  },
+  {
+    "name": "allowed/identity-blank-name",
+    "input": {
+      "fn": "allowedActions",
+      "category": "IDENTITY_REVIEW",
+      "reasonCode": "BLANK_NAME"
+    },
+    "expected": {
+      "value": [
+        "MATCH_EXISTING",
+        "CREATE_NEW_CUSTOMER",
+        "KEEP_SEPARATE",
+        "DEFER"
+      ]
+    }
+  },
+  {
+    "name": "allowed/identity-no-phone",
+    "input": {
+      "fn": "allowedActions",
+      "category": "IDENTITY_REVIEW",
+      "reasonCode": "NO_PHONE"
+    },
+    "expected": {
+      "value": [
+        "KEEP_SEPARATE",
+        "DEFER"
+      ]
+    }
+  },
+  {
+    "name": "allowed/status",
+    "input": {
+      "fn": "allowedActions",
+      "category": "UNKNOWN_STATUS",
+      "reasonCode": "UNKNOWN_VALUE"
+    },
+    "expected": {
+      "value": [
+        "MAP_TO_STATUS",
+        "ARCHIVE_ONLY",
+        "DEFER"
+      ]
+    }
+  },
+  {
+    "name": "allowed/date",
+    "input": {
+      "fn": "allowedActions",
+      "category": "NULL_DATE_ORDER",
+      "reasonCode": "NULL_DATE"
+    },
+    "expected": {
+      "value": [
+        "SET_AUTHORITATIVE_DATE",
+        "KEEP_BLOCKED",
+        "ARCHIVE_ONLY",
+        "DEFER"
+      ]
+    }
+  },
+  {
+    "name": "nextStatus/MAP_TO_USER",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "MAP_TO_USER"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/HISTORICAL_ONLY",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "HISTORICAL_ONLY"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/DEFER",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "DEFER"
+    },
+    "expected": {
+      "value": "DEFERRED"
+    }
+  },
+  {
+    "name": "nextStatus/MATCH_EXISTING",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "MATCH_EXISTING"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "CREATE_NEW_CUSTOMER"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/KEEP_SEPARATE",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "KEEP_SEPARATE"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/MAP_TO_STATUS",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "MAP_TO_STATUS"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/ARCHIVE_ONLY",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "ARCHIVE_ONLY"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "SET_AUTHORITATIVE_DATE"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/KEEP_BLOCKED",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "KEEP_BLOCKED"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "nextStatus/NOPE",
+    "input": {
+      "fn": "nextStatusFor",
+      "action": "NOPE"
+    },
+    "expected": {
+      "value": "RESOLVED"
+    }
+  },
+  {
+    "name": "mask/",
+    "input": {
+      "fn": "maskPhone",
+      "value": ""
+    },
+    "expected": {
+      "value": ""
+    }
+  },
+  {
+    "name": "mask/0812345678",
+    "input": {
+      "fn": "maskPhone",
+      "value": "0812345678"
+    },
+    "expected": {
+      "value": "******5678"
+    }
+  },
+  {
+    "name": "mask/081",
+    "input": {
+      "fn": "maskPhone",
+      "value": "081"
+    },
+    "expected": {
+      "value": "***"
+    }
+  },
+  {
+    "name": "mask/0812",
+    "input": {
+      "fn": "maskPhone",
+      "value": "0812"
+    },
+    "expected": {
+      "value": "****"
+    }
+  },
+  {
+    "name": "mask/08123",
+    "input": {
+      "fn": "maskPhone",
+      "value": "08123"
+    },
+    "expected": {
+      "value": "*8123"
+    }
+  },
+  {
+    "name": "mask/0",
+    "input": {
+      "fn": "maskPhone",
+      "value": "0"
+    },
+    "expected": {
+      "value": "*"
+    }
+  },
+  {
+    "name": "evidenceHash/staff",
+    "input": {
+      "fn": "evidenceHashOf",
+      "category": "STAFF_ALIAS",
+      "subjectKey": "subject-staff",
+      "evidence": {
+        "kind": "STAFF_ALIAS",
+        "historicalDisplayValue": "พนักงานเดิม 5",
+        "normalizedValue": "พนักงานเดิม 5",
+        "frequency": 200,
+        "sourceContext": {
+          "crm": 150,
+          "upsell": 50
+        },
+        "exactCandidates": [
+          {
+            "userId": "u1",
+            "active": true,
+            "basis": "EXACT_DISPLAY_NAME"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "762ad36ce91ac3cb503d4e3963cbf6c8b5a651232a6765177b7906e603784151"
+    }
+  },
+  {
+    "name": "decisionId/staff",
+    "input": {
+      "fn": "decisionIdFor",
+      "category": "STAFF_ALIAS",
+      "snapshot": "snap-1",
+      "subjectKey": "subject-staff"
+    },
+    "expected": {
+      "value": "dec_staff_alias_75e3886b6b103879643924a1f6383a5d"
+    }
+  },
+  {
+    "name": "evidenceHash/identity",
+    "input": {
+      "fn": "evidenceHashOf",
+      "category": "IDENTITY_REVIEW",
+      "subjectKey": "subject-identity",
+      "evidence": {
+        "kind": "IDENTITY_REVIEW",
+        "normalizedPhone": "0812345678",
+        "nameVariants": [
+          {
+            "name": "ก",
+            "normalizedName": "ก",
+            "orderCount": 2,
+            "firstOrderAt": 1,
+            "lastOrderAt": 2
+          }
+        ],
+        "nameVariantTotal": 1,
+        "similarities": [],
+        "sourceOrderCount": 2,
+        "sampleOrderIds": [
+          "SO-1"
+        ],
+        "candidates": [
+          {
+            "customerId": "c1",
+            "displayName": "ก",
+            "similarity": 0.9
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "b3876260581ec7d2592f68969f28918ae111819aa9b57e5f34093f28810d453e"
+    }
+  },
+  {
+    "name": "decisionId/identity",
+    "input": {
+      "fn": "decisionIdFor",
+      "category": "IDENTITY_REVIEW",
+      "snapshot": "snap-1",
+      "subjectKey": "subject-identity"
+    },
+    "expected": {
+      "value": "dec_identity_review_490e81654b4dc48be6ccc994eb7bea60"
+    }
+  },
+  {
+    "name": "evidenceHash/identity-blank-name",
+    "input": {
+      "fn": "evidenceHashOf",
+      "category": "IDENTITY_REVIEW",
+      "subjectKey": "subject-identity-blank-name",
+      "evidence": {
+        "kind": "IDENTITY_REVIEW",
+        "normalizedPhone": "0812345678",
+        "nameVariants": [
+          {
+            "name": "ก",
+            "normalizedName": "ก",
+            "orderCount": 2,
+            "firstOrderAt": 1,
+            "lastOrderAt": 2
+          }
+        ],
+        "nameVariantTotal": 1,
+        "similarities": [],
+        "sourceOrderCount": 2,
+        "sampleOrderIds": [
+          "SO-1"
+        ],
+        "candidates": [
+          {
+            "customerId": "c1",
+            "displayName": "ก",
+            "similarity": 0.9
+          }
+        ]
+      }
+    },
+    "expected": {
+      "value": "3f544386f07e5e33a5d70bc349ed42d3fe2968d5c62e53fc6f1acccc67cbf086"
+    }
+  },
+  {
+    "name": "decisionId/identity-blank-name",
+    "input": {
+      "fn": "decisionIdFor",
+      "category": "IDENTITY_REVIEW",
+      "snapshot": "snap-1",
+      "subjectKey": "subject-identity-blank-name"
+    },
+    "expected": {
+      "value": "dec_identity_review_f19ce09d2d47f8d72897054f5af54907"
+    }
+  },
+  {
+    "name": "evidenceHash/identity-no-phone",
+    "input": {
+      "fn": "evidenceHashOf",
+      "category": "IDENTITY_REVIEW",
+      "subjectKey": "subject-identity-no-phone",
+      "evidence": {
+        "kind": "IDENTITY_REVIEW",
+        "normalizedPhone": "",
+        "nameVariants": [
+          {
+            "name": "ก",
+            "normalizedName": "ก",
+            "orderCount": 2,
+            "firstOrderAt": 1,
+            "lastOrderAt": 2
+          }
+        ],
+        "nameVariantTotal": 1,
+        "similarities": [],
+        "sourceOrderCount": 2,
+        "sampleOrderIds": [
+          "SO-1"
+        ],
+        "candidates": []
+      }
+    },
+    "expected": {
+      "value": "fae3ffd3301306a2e0b52fd52ce15a8c4acb139875d8a5494aaf59061db3e117"
+    }
+  },
+  {
+    "name": "decisionId/identity-no-phone",
+    "input": {
+      "fn": "decisionIdFor",
+      "category": "IDENTITY_REVIEW",
+      "snapshot": "snap-1",
+      "subjectKey": "subject-identity-no-phone"
+    },
+    "expected": {
+      "value": "dec_identity_review_a5fe4e320472cbe4925dd83e7df46cae"
+    }
+  },
+  {
+    "name": "evidenceHash/status",
+    "input": {
+      "fn": "evidenceHashOf",
+      "category": "UNKNOWN_STATUS",
+      "subjectKey": "subject-status",
+      "evidence": {
+        "kind": "UNKNOWN_STATUS",
+        "rawValue": "แปลก",
+        "count": 3,
+        "sourceKind": "HX63_HISTORICAL",
+        "sampleOrderIds": [
+          "SO-1"
+        ],
+        "fallback": {
+          "orderStatus": "PENDING_CONFIRMATION",
+          "paymentStatus": "UNPAID",
+          "shippingStatus": "NOT_SHIPPED"
+        }
+      }
+    },
+    "expected": {
+      "value": "8abca584a72b430a2389e605aef809db0631c6c7298e5fefc602dbb2ed3f9c1d"
+    }
+  },
+  {
+    "name": "decisionId/status",
+    "input": {
+      "fn": "decisionIdFor",
+      "category": "UNKNOWN_STATUS",
+      "snapshot": "snap-1",
+      "subjectKey": "subject-status"
+    },
+    "expected": {
+      "value": "dec_unknown_status_a2534e753bb29b313d39610c13c79b94"
+    }
+  },
+  {
+    "name": "evidenceHash/date",
+    "input": {
+      "fn": "evidenceHashOf",
+      "category": "NULL_DATE_ORDER",
+      "subjectKey": "subject-date",
+      "evidence": {
+        "kind": "NULL_DATE_ORDER",
+        "sourceOrderId": "SO-9",
+        "sourceKind": "HX63_HISTORICAL",
+        "hasPhone": true,
+        "itemCount": 2,
+        "total": 100,
+        "rawStatus": "สำเร็จ"
+      }
+    },
+    "expected": {
+      "value": "bce26b4802ed5ede31cfbd14f0fba0fff9a841da5f05a9031341e0c81afa050b"
+    }
+  },
+  {
+    "name": "decisionId/date",
+    "input": {
+      "fn": "decisionIdFor",
+      "category": "NULL_DATE_ORDER",
+      "snapshot": "snap-1",
+      "subjectKey": "subject-date"
+    },
+    "expected": {
+      "value": "dec_null_date_order_5acd2f129c88e6200f27f2ff8d5792a4"
+    }
+  },
+  {
+    "name": "validate/reason/\"\"",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": ""
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "REASON_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/reason/\"ab\"",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "ab"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "REASON_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/reason/\"abc\"",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "abc"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/reason/\"   \"",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "   "
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "REASON_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/reason/\"  abc  \"",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "  abc  "
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/reason/\"ก\"",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "ก"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "REASON_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/STAFF_ALIAS/DEFER/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/STAFF_ALIAS/DEFER/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/STAFF_ALIAS/DEFER/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/STAFF_ALIAS/HISTORICAL_ONLY/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/STAFF_ALIAS/HISTORICAL_ONLY/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/STAFF_ALIAS/HISTORICAL_ONLY/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/IDENTITY_REVIEW/CREATE_NEW_CUSTOMER/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/IDENTITY_REVIEW/CREATE_NEW_CUSTOMER/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/IDENTITY_REVIEW/CREATE_NEW_CUSTOMER/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/IDENTITY_REVIEW/KEEP_SEPARATE/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/IDENTITY_REVIEW/KEEP_SEPARATE/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/IDENTITY_REVIEW/KEEP_SEPARATE/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/NULL_DATE_ORDER/KEEP_BLOCKED/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/NULL_DATE_ORDER/KEEP_BLOCKED/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/NULL_DATE_ORDER/KEEP_BLOCKED/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/UNKNOWN_STATUS/ARCHIVE_ONLY/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/UNKNOWN_STATUS/ARCHIVE_ONLY/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/UNKNOWN_STATUS/ARCHIVE_ONLY/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/NULL_DATE_ORDER/ARCHIVE_ONLY/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/NULL_DATE_ORDER/ARCHIVE_ONLY/undefined-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": null,
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/NULL_DATE_ORDER/ARCHIVE_ONLY/with-payload",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "PAYLOAD_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/MAP_TO_USER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "USER_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/MAP_TO_USER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/MAP_TO_USER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/MAP_TO_USER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/MAP_TO_USER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/MAP_TO_USER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/HISTORICAL_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity/HISTORICAL_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/HISTORICAL_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/HISTORICAL_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/HISTORICAL_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/HISTORICAL_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "HISTORICAL_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/DEFER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity/DEFER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/DEFER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/DEFER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/status/DEFER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/date/DEFER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "DEFER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/staff/MATCH_EXISTING",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/MATCH_EXISTING",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "CANDIDATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/MATCH_EXISTING",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "CANDIDATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/MATCH_EXISTING",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/MATCH_EXISTING",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/MATCH_EXISTING",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/CREATE_NEW_CUSTOMER",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/KEEP_SEPARATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/KEEP_SEPARATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/KEEP_SEPARATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/KEEP_SEPARATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/status/KEEP_SEPARATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/KEEP_SEPARATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/MAP_TO_STATUS",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/MAP_TO_STATUS",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/MAP_TO_STATUS",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/MAP_TO_STATUS",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/MAP_TO_STATUS",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "STATUS_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/MAP_TO_STATUS",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/ARCHIVE_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/ARCHIVE_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/ARCHIVE_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/ARCHIVE_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/ARCHIVE_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/date/ARCHIVE_ONLY",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "ARCHIVE_ONLY",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/staff/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/SET_AUTHORITATIVE_DATE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/staff/KEEP_BLOCKED",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/KEEP_BLOCKED",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/KEEP_BLOCKED",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/KEEP_BLOCKED",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/KEEP_BLOCKED",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/KEEP_BLOCKED",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "KEEP_BLOCKED",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/gate/staff/NOPE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "NOPE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity/NOPE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "NOPE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-blank-name/NOPE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "BLANK_NAME",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "NOPE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/identity-no-phone/NOPE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "NOPE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/status/NOPE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "NOPE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/gate/date/NOPE",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "NOPE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/u1",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": "u1"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "userId": "u1",
+        "userActiveAtApproval": true
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/inactive",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": "u2"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "userId": "u2",
+        "userActiveAtApproval": false
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/admin",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": "admin"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "USER_NOT_CARETAKER"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/team-lead",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": "lead"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "userId": "lead",
+        "userActiveAtApproval": true
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/ghost",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": "ghost"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "USER_NOT_FOUND"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": ""
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "USER_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/missing",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "USER_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_USER/number",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "STAFF_ALIAS",
+        "reasonCode": "NO_EXACT_CANDIDATE",
+        "evidence": {
+          "kind": "STAFF_ALIAS",
+          "historicalDisplayValue": "พนักงานเดิม 5",
+          "normalizedValue": "พนักงานเดิม 5",
+          "frequency": 200,
+          "sourceContext": {
+            "crm": 150,
+            "upsell": 50
+          },
+          "exactCandidates": [
+            {
+              "userId": "u1",
+              "active": true,
+              "basis": "EXACT_DISPLAY_NAME"
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MAP_TO_USER",
+        "payload": {
+          "userId": 5
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "USER_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MATCH_EXISTING/candidate",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {
+          "customerId": "c1"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "customerId": "c1"
+      }
+    }
+  },
+  {
+    "name": "validate/MATCH_EXISTING/stranger",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {
+          "customerId": "zzz"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "CANDIDATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MATCH_EXISTING/missing",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "CANDIDATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MATCH_EXISTING/number",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NAME_CONFLICT",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "0812345678",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": [
+            {
+              "customerId": "c1",
+              "displayName": "ก",
+              "similarity": 0.9
+            }
+          ]
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {
+          "customerId": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "CANDIDATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MATCH_EXISTING/no-phone-forbidden",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "MATCH_EXISTING",
+        "payload": {
+          "customerId": "c1"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/CREATE_NEW/no-phone-forbidden",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "CREATE_NEW_CUSTOMER",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "ACTION_NOT_ALLOWED"
+      }
+    }
+  },
+  {
+    "name": "validate/KEEP_SEPARATE/no-phone-ok",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "IDENTITY_REVIEW",
+        "reasonCode": "NO_PHONE",
+        "evidence": {
+          "kind": "IDENTITY_REVIEW",
+          "normalizedPhone": "",
+          "nameVariants": [
+            {
+              "name": "ก",
+              "normalizedName": "ก",
+              "orderCount": 2,
+              "firstOrderAt": 1,
+              "lastOrderAt": 2
+            }
+          ],
+          "nameVariantTotal": 1,
+          "similarities": [],
+          "sourceOrderCount": 2,
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "candidates": []
+        }
+      },
+      "request": {
+        "action": "KEEP_SEPARATE",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {}
+    }
+  },
+  {
+    "name": "validate/MAP_TO_STATUS/valid",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {
+          "orderStatus": "SHIPPED",
+          "paymentStatus": "PAID",
+          "shippingStatus": "IN_TRANSIT"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "SHIPPED",
+        "paymentStatus": "PAID",
+        "shippingStatus": "IN_TRANSIT"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_STATUS/missing-axis",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {
+          "orderStatus": "SHIPPED",
+          "paymentStatus": "PAID"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "STATUS_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_STATUS/bad-value",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {
+          "orderStatus": "NOPE",
+          "paymentStatus": "PAID",
+          "shippingStatus": "IN_TRANSIT"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "STATUS_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_STATUS/extra-key",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {
+          "orderStatus": "SHIPPED",
+          "paymentStatus": "PAID",
+          "shippingStatus": "IN_TRANSIT",
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "STATUS_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/MAP_TO_STATUS/empty",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "UNKNOWN_STATUS",
+        "reasonCode": "UNKNOWN_VALUE",
+        "evidence": {
+          "kind": "UNKNOWN_STATUS",
+          "rawValue": "แปลก",
+          "count": 3,
+          "sourceKind": "HX63_HISTORICAL",
+          "sampleOrderIds": [
+            "SO-1"
+          ],
+          "fallback": {
+            "orderStatus": "PENDING_CONFIRMATION",
+            "paymentStatus": "UNPAID",
+            "shippingStatus": "NOT_SHIPPED"
+          }
+        }
+      },
+      "request": {
+        "action": "MAP_TO_STATUS",
+        "payload": {},
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "STATUS_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/valid",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 1700000000000,
+          "evidenceRef": "ใบส่งของ 123"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "orderedAt": 1700000000000,
+        "evidenceRef": "ใบส่งของ 123"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/short-ref",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 1700000000000,
+          "evidenceRef": "ab"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/padded-ref",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 1700000000000,
+          "evidenceRef": "  abc  "
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "orderedAt": 1700000000000,
+        "evidenceRef": "abc"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/negative",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": -1,
+          "evidenceRef": "abc"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/fraction",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 1.5,
+          "evidenceRef": "abc"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/zero",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 0,
+          "evidenceRef": "abc"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "value": {
+        "orderedAt": 0,
+        "evidenceRef": "abc"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/missing-ref",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 5
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/extra-key",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 5,
+          "evidenceRef": "abc",
+          "x": 1
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "validate/SET_DATE/long-ref",
+    "input": {
+      "fn": "validateResolution",
+      "decision": {
+        "category": "NULL_DATE_ORDER",
+        "reasonCode": "NULL_DATE",
+        "evidence": {
+          "kind": "NULL_DATE_ORDER",
+          "sourceOrderId": "SO-9",
+          "sourceKind": "HX63_HISTORICAL",
+          "hasPhone": true,
+          "itemCount": 2,
+          "total": 100,
+          "rawStatus": "สำเร็จ"
+        }
+      },
+      "request": {
+        "action": "SET_AUTHORITATIVE_DATE",
+        "payload": {
+          "orderedAt": 5,
+          "evidenceRef": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "reason": "เหตุผลทดสอบ"
+      },
+      "users": {
+        "u1": {
+          "userId": "u1",
+          "role": "TELESALE",
+          "active": true
+        },
+        "u2": {
+          "userId": "u2",
+          "role": "TELESALE",
+          "active": false
+        },
+        "lead": {
+          "userId": "lead",
+          "role": "TEAM_LEAD",
+          "active": true
+        },
+        "admin": {
+          "userId": "admin",
+          "role": "ADMIN",
+          "active": true
+        }
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "DecisionValidationError",
+        "code": "AUTHORITATIVE_DATE_REQUIRED"
+      }
+    }
+  }
+]

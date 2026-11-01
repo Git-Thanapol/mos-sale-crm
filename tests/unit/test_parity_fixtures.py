@@ -30,6 +30,7 @@ def test_every_fixture_file_is_loadable():
     assert files == [
         "import_confirm",
         "import_conflict_scope",
+        "import_decisions",
         "import_hashing",
         "import_identity",
         "import_mapping",

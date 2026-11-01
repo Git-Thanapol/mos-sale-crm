@@ -297,3 +297,192 @@ def history_rollback(request, batch_uuid):
         else:
             messages.error(request, "Rollback ไม่ได้: มีข้อมูลที่ถูกแก้ไขหลังนำเข้า ไม่มีการเปลี่ยนแปลงใดๆ (ROLLBACK_FAILED)")
     return redirect(_back(request, reverse("leadui:import_history")))
+
+
+# --- Migration Decisions ----------------------------------------------------------------
+
+ACTION_LABELS = {
+    "MAP_TO_USER": "ผูกกับผู้ใช้ V2",
+    "HISTORICAL_ONLY": "เก็บเป็นประวัติเท่านั้น",
+    "DEFER": "เลื่อนการตัดสิน",
+    "MATCH_EXISTING": "รวมกับลูกค้าที่มีอยู่",
+    "CREATE_NEW_CUSTOMER": "สร้างลูกค้าใหม่ 1 ราย",
+    "KEEP_SEPARATE": "แยกตามชื่อ (ไม่รวม)",
+    "MAP_TO_STATUS": "กำหนดสถานะมาตรฐาน",
+    "ARCHIVE_ONLY": "เก็บเป็นประวัติ (ค่าเริ่มต้นเดิม)",
+    "SET_AUTHORITATIVE_DATE": "ใส่วันที่ที่ยืนยันแล้ว",
+    "KEEP_BLOCKED": "คงสถานะถูกกัน",
+}
+CATEGORY_LABELS = {
+    "STAFF_ALIAS": "ชื่อพนักงานเดิม",
+    "IDENTITY_REVIEW": "ตรวจตัวตนลูกค้า",
+    "UNKNOWN_STATUS": "สถานะที่ไม่รู้จัก",
+    "NULL_DATE_ORDER": "ออเดอร์ไม่มีวันที่",
+}
+DECISION_PAGE_SIZE = 25
+STATUS_PAYLOAD_KEYS = ("orderStatus", "paymentStatus", "shippingStatus")
+
+
+def mask_phone_value(national: str) -> str:
+    from crm.domain.migration_decisions import mask_phone
+
+    return mask_phone(national) if national else "ไม่มีเบอร์"
+
+
+def bangkok_input_to_millis(value: str) -> int | None:
+    """`YYYY-MM-DDTHH:mm` Bangkok wall clock to epoch millis, or None. No guessing."""
+    import re
+    from datetime import datetime
+
+    from crm.domain.bangkok import BANGKOK_TZ
+
+    match = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})", (value or "").strip())
+    if not match:
+        return None
+    try:
+        local = datetime(*(int(g) for g in match.groups()), tzinfo=BANGKOK_TZ)
+    except ValueError:
+        return None
+    return round(local.timestamp() * 1000)
+
+
+def _decision_view(decision):
+    from crm.importv2.services.decisions import offered_actions
+
+    evidence = decision.evidence or {}
+    resolution = decision.resolution or {}
+    return {
+        "decision": decision,
+        "evidence": evidence,
+        "kind": evidence.get("kind"),
+        "masked_phone": mask_phone_value(evidence.get("normalizedPhone", "")) if evidence.get("kind") == "IDENTITY_REVIEW" else "",
+        "source_context": " · ".join(
+            f"{team or '(ว่าง)'} {count}" for team, count in (evidence.get("sourceContext") or {}).items()
+        ),
+        "variants": (evidence.get("nameVariants") or [])[:6],
+        "similarities": [
+            {"a": s["a"] + 1, "b": s["b"] + 1, "pct": round(s["score"] * 100)}
+            for s in (evidence.get("similarities") or [])[:4]
+        ],
+        "actions": [(a, ACTION_LABELS.get(a, a)) for a in offered_actions(decision)],
+        "resolution": resolution,
+        "resolution_label": ACTION_LABELS.get(resolution.get("action"), resolution.get("action")),
+        "resolved_by": (resolution.get("resolvedBy") or ""),
+    }
+
+
+@lead_page(can_import_v2)
+def decisions_page(request):
+    from crm.domain.migration_decisions import DECISION_CATEGORIES, DECISION_REASON_FILTERS, DECISION_STATUSES
+    from crm.importv2.services import decisions as decision_service
+
+    category = request.GET.get("category") if request.GET.get("category") in DECISION_CATEGORIES else "STAFF_ALIAS"
+    status = request.GET.get("status") if request.GET.get("status") in DECISION_STATUSES else "OPEN"
+    reason = request.GET.get("reason") if request.GET.get("reason") in DECISION_REASON_FILTERS[category] else ""
+    trail = [c for c in (request.GET.get("trail") or "").split(",") if c][-20:]
+    cursor = request.GET.get("cursor") or None
+    page = decision_service.list_decisions(
+        request.user, category=category, status=status, reason_code=reason or None,
+        after_cursor=cursor, limit=DECISION_PAGE_SIZE,
+    )
+    counts = decision_service.summary(request.user)
+
+    def url(**changes):
+        query = request.GET.copy()
+        for key, value in changes.items():
+            if value in (None, ""):
+                query.pop(key, None)
+            else:
+                query[key] = value
+        encoded = query.urlencode()
+        return f"?{encoded}" if encoded else "?"
+
+    previous_url = ""
+    if cursor is not None or trail:
+        previous_url = url(cursor=trail[-1] if trail else None, trail=",".join(trail[:-1]) or None)
+    next_url = ""
+    if page.next_cursor:
+        next_url = url(cursor=page.next_cursor, trail=",".join([*trail, cursor] if cursor else trail) or None)
+    return render(
+        request,
+        "leadui/migration_decisions.html",
+        {
+            "category": category,
+            "status": status,
+            "reason": reason,
+            "tabs": [(c, CATEGORY_LABELS[c], counts[c]) for c in DECISION_CATEGORIES],
+            "statuses": DECISION_STATUSES,
+            "reasons": DECISION_REASON_FILTERS[category],
+            "unresolved_here": counts[category],
+            "page_size": DECISION_PAGE_SIZE,
+            "cards": [_decision_view(d) for d in page.items],
+            "previous_url": previous_url,
+            "next_url": next_url,
+            "next": request.get_full_path(),
+            "order_statuses": ("PENDING_CONFIRMATION", "WAITING_SHIPMENT", "SHIPPED", "DELIVERED", "CANCELLED", "COD_RETURNED"),
+            "payment_statuses": ("UNPAID", "PENDING_VERIFICATION", "PAID", "COD_PENDING", "COD_COLLECTED", "REFUNDED"),
+            "shipping_statuses": ("NOT_SHIPPED", "LABEL_CREATED", "PICKED_UP", "IN_TRANSIT", "DELIVERED", "FAILED", "RETURNING", "RETURNED"),
+        },
+    )
+
+
+def _decision_payload(request, action: str) -> dict:
+    post = request.POST
+    if action == "MAP_TO_USER":
+        return {"userId": (post.get("userId") or post.get("exact_user") or "").strip()}
+    if action == "MATCH_EXISTING":
+        return {"customerId": (post.get("customerId") or "").strip()}
+    if action == "MAP_TO_STATUS":
+        return {key: post.get(key, "") for key in STATUS_PAYLOAD_KEYS}
+    if action == "SET_AUTHORITATIVE_DATE":
+        return {
+            "orderedAt": bangkok_input_to_millis(post.get("orderedAt", "")),
+            "evidenceRef": (post.get("evidenceRef") or "").strip(),
+        }
+    return {}
+
+
+def _decision_refusal(error: ValueError) -> str:
+    text = str(error)
+    if text.startswith("CONCURRENT_MODIFICATION"):
+        return "ข้อมูลเปลี่ยนไปแล้ว — โหลดใหม่ก่อนตัดสิน"
+    if text.startswith("NOT_FOUND"):
+        return "ไม่พบรายการนี้"
+    return text
+
+
+@lead_page(can_import_v2)
+@require_POST
+def decision_resolve(request, decision_id: str):
+    from crm.importv2.services import decisions as decision_service
+
+    action = request.POST.get("action", "")
+    try:
+        decision_service.resolve_decision(
+            actor=request.user, decision_id=decision_id,
+            revision=int(request.POST.get("revision") or 0),
+            evidence_hash=request.POST.get("evidence_hash", ""),
+            action=action, payload=_decision_payload(request, action), reason=request.POST.get("reason", ""),
+        )
+    except ValueError as error:
+        messages.error(request, _decision_refusal(error))
+    else:
+        messages.success(request, f"บันทึกแล้ว: {ACTION_LABELS.get(action, action)}")
+    return redirect(_back(request, reverse("leadui:migration_decisions")))
+
+
+@lead_page(can_import_v2)
+@require_POST
+def decision_reopen(request, decision_id: str):
+    from crm.importv2.services import decisions as decision_service
+
+    try:
+        decision_service.reopen_decision(
+            actor=request.user, decision_id=decision_id,
+            revision=int(request.POST.get("revision") or 0), reason=request.POST.get("reason", ""),
+        )
+    except ValueError as error:
+        messages.error(request, _decision_refusal(error))
+    else:
+        messages.success(request, "เปิดการตัดสินใหม่แล้ว")
+    return redirect(_back(request, reverse("leadui:migration_decisions")))

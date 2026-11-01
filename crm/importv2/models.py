@@ -15,6 +15,7 @@ from django.db import models
 
 from crm.domain.enums import SOURCE_KINDS
 from crm.domain.import_state import IMPORT_BATCH_STATUSES
+from crm.domain.migration_decisions import DECISION_CATEGORIES, DECISION_STATUSES
 
 CONFLICT_KINDS = ("OWNERSHIP", "IDENTITY", "REACTIVATION", "MAPPING", "STALE", "REVERSAL", "STOPPED_TARGET")
 CONFLICT_SEVERITIES = ("BLOCKING", "WARNING")
@@ -193,3 +194,58 @@ class ImportOperation(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["batch", "operation_key"], name="ux_importop_batch_key"),
         ]
+
+
+class MigrationDecision(models.Model):
+    """One migration input that no exact rule can decide (Master Spec 15-16).
+
+    Loaded from the run-once HX63 planner (`load_migration_decisions`); only an
+    Admin resolves it, bound to the revision and evidence hash they reviewed.
+    """
+
+    decision_id = models.CharField(max_length=200, unique=True)
+    category = models.CharField(max_length=24, choices=_choices(DECISION_CATEGORIES))
+    status = models.CharField(max_length=12, choices=_choices(DECISION_STATUSES), default="OPEN")
+    reason_code = models.CharField(max_length=64)
+    #: Deterministic identity of the underlying input (e.g. normalized alias text).
+    subject_key = models.CharField(max_length=255)
+    source_snapshot_id = models.CharField(max_length=128)
+    evidence = models.JSONField()
+    evidence_hash = models.CharField(max_length=64)
+    revision = models.PositiveIntegerField(default=1)
+    resolution = models.JSONField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "crm_migration_decision"
+        indexes = [
+            models.Index(fields=["category", "status", "id"], name="ix_migdec_queue"),
+            models.Index(fields=["category", "status", "reason_code", "id"], name="ix_migdec_queue_reason"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.category}:{self.reason_code} r{self.revision} [{self.status}]"
+
+
+class MigrationDecisionAudit(models.Model):
+    """Append-only trail of every resolve and reopen."""
+
+    decision = models.ForeignKey(MigrationDecision, on_delete=models.CASCADE, related_name="audits")
+    from_status = models.CharField(max_length=12)
+    to_status = models.CharField(max_length=12)
+    action = models.CharField(max_length=32)
+    payload = models.JSONField(default=dict, blank=True)
+    reason = models.CharField(max_length=500)
+    resolved_by = models.ForeignKey(
+        "accounts.User", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    )
+    mapping_version = models.CharField(max_length=64)
+    evidence_hash = models.CharField(max_length=64)
+    revision_before = models.PositiveIntegerField()
+    revision_after = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "crm_migration_decision_audit"
+        indexes = [models.Index(fields=["decision", "-created_at"], name="ix_migdecaudit_decision")]

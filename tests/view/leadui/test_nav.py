@@ -47,6 +47,7 @@ def test_editor_sees_every_child():
         "นำเข้าข้อมูล",
         "แก้ Conflict",
         "ประวัตินำเข้า",
+        "Migration Decisions",
     ]
 
 

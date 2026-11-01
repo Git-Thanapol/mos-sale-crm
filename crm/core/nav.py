@@ -34,6 +34,7 @@ NAV_GROUPS: list[tuple] = [
                 ("นำเข้าข้อมูล", "leadui:import", perm.can_import_v2),
                 ("แก้ Conflict", "leadui:import_conflicts", perm.can_resolve_import_conflicts),
                 ("ประวัตินำเข้า", "leadui:import_history", perm.can_view_import_history),
+                ("Migration Decisions", "leadui:migration_decisions", perm.can_import_v2),
             ],
         ),
         ("เพิ่มคำสั่งซื้อ", "orders:new", perm.can_add_manual_order),

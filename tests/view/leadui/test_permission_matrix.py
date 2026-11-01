@@ -34,6 +34,12 @@ LIST_ROUTES = {
     "leadui:global_unassigned": {EDITOR: 200, TEAM_LEAD: 404, TELESALE: 404, ADMIN: 404, VIEWER: 404},
     "leadui:team_unassigned": {EDITOR: 200, TEAM_LEAD: 200, TELESALE: 404, ADMIN: 404, VIEWER: 404},
     "leadui:stopped_review": {EDITOR: 200, TEAM_LEAD: 200, TELESALE: 404, ADMIN: 404, VIEWER: 404},
+    # CRM V2 import screens: upload and decisions are EDITOR only; conflicts and
+    # history are also open to a team lead who holds a team scope.
+    "leadui:import": {EDITOR: 200, TEAM_LEAD: 404, TELESALE: 404, ADMIN: 404, VIEWER: 404},
+    "leadui:import_conflicts": {EDITOR: 200, TEAM_LEAD: 200, TELESALE: 404, ADMIN: 404, VIEWER: 404},
+    "leadui:import_history": {EDITOR: 200, TEAM_LEAD: 200, TELESALE: 404, ADMIN: 404, VIEWER: 404},
+    "leadui:migration_decisions": {EDITOR: 200, TEAM_LEAD: 404, TELESALE: 404, ADMIN: 404, VIEWER: 404},
 }
 
 #: Pages for one lead / customer. Keys of the inner dict are the fixtures below:
@@ -48,8 +54,14 @@ ROW_EXPECTATIONS = {
 
 #: Sidebar children each role should be offered.
 SIDEBAR = {
-    EDITOR: {"leadui:my_work", "leadui:global_unassigned", "leadui:team_unassigned", "leadui:stopped_review"},
-    TEAM_LEAD: {"leadui:my_work", "leadui:team_unassigned", "leadui:stopped_review"},
+    EDITOR: set(LIST_ROUTES),
+    TEAM_LEAD: {
+        "leadui:my_work",
+        "leadui:team_unassigned",
+        "leadui:stopped_review",
+        "leadui:import_conflicts",
+        "leadui:import_history",
+    },
     TELESALE: {"leadui:my_work"},
     ADMIN: set(),
     VIEWER: set(),
