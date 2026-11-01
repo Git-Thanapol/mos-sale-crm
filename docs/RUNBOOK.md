@@ -175,3 +175,82 @@ here should be executed without that.
    wasn't completed in the 2026-07-26 hardening pass (session hit its
    8-hour hard expiry mid-check). Re-click these before go-live; they are
    pre-existing UI paths from earlier phases, not new-code risk.
+
+## CRM V2 Lead surface — backfill and the HX63 tooling
+
+### Backfilling Leads from existing customers
+
+After migrating, seed the teams and then build the Lead rows:
+
+```bash
+docker compose exec web python manage.py seed_teams
+docker compose exec web python manage.py backfill_leads --dry-run --team-code CRM_TEAM
+docker compose exec web python manage.py backfill_leads --team-code CRM_TEAM
+```
+
+Always run `--dry-run` first; it reports counts and writes nothing.
+
+What it does, per customer:
+
+- **With a `staff_code`** → a `Lead` with an open ownership segment. The team
+  comes from that caretaker's open `TeamAssignment` when there is one,
+  otherwise from `--team-code`. A `staff_code` matching no user leaves the lead
+  `TEAM_UNASSIGNED` rather than inventing a caretaker.
+- **Without a `staff_code`** → an `IntakeItem` in the Global Unassigned queue.
+  That is D019: the customer exists, the team is unknown, so there is no Lead
+  yet. It is deliberately not given a placeholder team.
+
+It is idempotent and processes 1000 rows per transaction, so it is safe to
+re-run and safe to interrupt on the ~216k-row table.
+
+**Missed-channel starts at zero.** The backfill opens the ownership baseline at
+migration time, so orders predating it are not retroactively counted. This
+mirrors D023, which fixes the HX63 baseline at the snapshot instant for the
+same reason: a migrated lead must not arrive blaming a caretaker for
+marketplace orders that predate the rule being enforced. Counting accrues from
+cutover onward.
+
+### HX63 migration tooling (one-shot, not a service)
+
+The CRM V2 migration, backup and cutover pipeline stays TypeScript. Its plan
+hash and reconciliation digest are certified by the prototype's test suite, and
+after cutover it never runs again — re-porting it to Python would discard that
+evidence for nothing.
+
+It runs under a compose profile, so `docker compose up` never starts it:
+
+```bash
+PROTO_DIR=/path/to/customer-crm-v2-codex \
+  docker compose --profile hx63 run --rm hx63 tools/run-hx63-migration.ts
+```
+
+The prototype is mounted read-only, so a run cannot modify the reference
+implementation it is certified against. `docker compose ps` must never show an
+`hx63` container.
+
+**Plan 3 owns the actual migration run.** It is blocked on human decisions that
+`07_MIGRATION_AND_DATA_REQUIREMENTS.md` forbids guessing: 10 staff aliases,
+8,613 identity reviews, 1 unknown status affecting 120 orders, 1 null-date
+order, and the fifth source sample.
+
+### Verifying a from-empty install
+
+Do **not** run `docker compose down -v` to test this. On a working machine that
+destroys the development database. Use a throwaway compose project instead, so
+only its volumes are created and removed:
+
+Pass `-f compose.yaml` so `compose.override.yaml` is excluded: the override
+publishes 5432 and 8000, and a second project trying to bind them fails with
+`port is already allocated` while the normal stack is up.
+
+The `web` container already runs migrations on boot (`RUN_MIGRATIONS=1`), so
+do not also call `migrate` immediately after `up` — both racing to create
+`django_migrations` fails with a `pg_class_relname_nsp_index` unique violation.
+Wait for the container to be healthy and go straight to seeding.
+
+```bash
+docker compose -f compose.yaml -p crmverify up -d        # migrates on boot
+docker compose -f compose.yaml -p crmverify exec -T web python manage.py seed_teams
+docker compose -f compose.yaml -p crmverify exec -T web python -m pytest tests/unit tests/db tests/view
+docker compose -f compose.yaml -p crmverify down -v   # removes ONLY crmverify_* volumes
+```
