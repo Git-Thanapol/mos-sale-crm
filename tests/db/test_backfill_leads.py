@@ -141,24 +141,58 @@ def test_backfill_does_not_count_pre_existing_orders_as_missed_channel():
     assert Lead.objects.get(customer=customer).missed_channel_count == 0
 
 
-def test_an_order_after_the_backfill_does_count():
+def test_an_order_dated_the_backfill_day_does_count():
+    """The baseline is the Bangkok DAY START, not the instant.
+
+    The previous version of this test used an order dated tomorrow, which
+    cannot occur, and so proved the opposite boundary: with a timezone.now()
+    baseline every order dated TODAY fell BEFORE_BASELINE and the backfill
+    silently discarded cutover-day orders.
+    """
     customer = make_customer(_uid="0000001", staff_code="S0001")
     make_user(email="s1@example.com", staff_code="S0001")
+    make_order(customer=customer, closer=None, ordered_at=timezone.now())
     call_command("backfill_leads", team_code="CRM_TEAM")
     lead = Lead.objects.get(customer=customer)
-
-    make_order(customer=customer, closer=None, ordered_at=timezone.now() + timedelta(days=1))
     assert recompute_lead_missed_channel(lead=lead) == 1
 
 
-def test_an_order_closed_by_the_caretaker_after_backfill_leaves_it_at_zero():
+def test_an_order_dated_yesterday_is_still_before_the_baseline():
+    customer = make_customer(_uid="0000002", staff_code="S0001")
+    make_user(email="s1@example.com", staff_code="S0001")
+    make_order(customer=customer, closer=None, ordered_at=timezone.now() - timedelta(days=1))
+    call_command("backfill_leads", team_code="CRM_TEAM")
+    assert recompute_lead_missed_channel(lead=Lead.objects.get(customer=customer)) == 0
+
+
+def test_the_hx63_baseline_option_counts_from_the_snapshot_instead():
+    customer = make_customer(_uid="0000003", staff_code="S0001")
+    make_user(email="s1@example.com", staff_code="S0001")
+    make_order(customer=customer, closer=None, ordered_at=timezone.now() - timedelta(days=1))
+    call_command(
+        "backfill_leads",
+        team_code="CRM_TEAM",
+        hx63_baseline=(timezone.now() - timedelta(days=30)).isoformat(),
+    )
+    assert Lead.objects.get(customer=customer).missed_channel_count == 1
+
+
+def test_an_order_closed_by_the_caretaker_leaves_it_at_zero():
     customer = make_customer(_uid="0000001", staff_code="S0001")
     user = make_user(email="s1@example.com", staff_code="S0001")
+    make_order(customer=customer, closer=user, ordered_at=timezone.now())
+    call_command("backfill_leads", team_code="CRM_TEAM")
+    assert recompute_lead_missed_channel(lead=Lead.objects.get(customer=customer)) == 0
+
+
+def test_an_inactive_user_does_not_win_a_shared_staff_code():
+    customer = make_customer(_uid="0000004", staff_code="S0001")
+    active = make_user(email="active@example.com", staff_code="S0001")
+    make_user(email="gone@example.com", staff_code="S0001", is_active=False)
     call_command("backfill_leads", team_code="CRM_TEAM")
     lead = Lead.objects.get(customer=customer)
-
-    make_order(customer=customer, closer=user, ordered_at=timezone.now() + timedelta(days=1))
-    assert recompute_lead_missed_channel(lead=lead) == 0
+    assert lead.caretaker_id == active.id
+    assert lead.routing_state == "ASSIGNED"
 
 
 def test_an_unknown_fallback_team_is_rejected_before_writing_anything():
@@ -176,3 +210,42 @@ def test_a_customer_already_holding_a_lead_is_left_alone():
     call_command("backfill_leads", team_code="CRM_TEAM")
     assert Lead.objects.filter(customer=customer).count() == 1
     assert Lead.objects.get(customer=customer).id == existing.id
+
+
+def test_resolve_to_assigns_unowned_customers_to_a_team_instead_of_intake():
+    # I2: on the real database 216309 of 216455 customers have no staff_code,
+    # and the default path queues every one as a hand-resolve intake row.
+    make_customer(_uid="0000010", staff_code="")
+    make_customer(_uid="0000011", staff_code="")
+    call_command("backfill_leads", team_code="CRM_TEAM", resolve_to="UPSELL_TEAM")
+    assert IntakeItem.objects.count() == 0
+    assert Lead.objects.count() == 2
+    assert {lead.team.code for lead in Lead.objects.all()} == {"UPSELL_TEAM"}
+    assert all(lead.routing_state == "TEAM_UNASSIGNED" for lead in Lead.objects.all())
+
+
+def test_resolve_to_rejects_an_unknown_team_before_writing():
+    make_customer(_uid="0000012", staff_code="")
+    with pytest.raises(Exception):
+        call_command("backfill_leads", team_code="CRM_TEAM", resolve_to="NO_SUCH")
+    assert Lead.objects.count() == 0
+    assert IntakeItem.objects.count() == 0
+
+
+def test_the_intake_path_is_still_idempotent_under_bulk_create():
+    for i in range(5):
+        make_customer(_uid=f"002000{i}", staff_code="")
+    call_command("backfill_leads", team_code="CRM_TEAM")
+    call_command("backfill_leads", team_code="CRM_TEAM")
+    assert IntakeItem.objects.count() == 5
+
+
+def test_a_dry_run_reports_the_owned_unowned_split(capsys):
+    make_customer(_uid="0000020", staff_code="S0001")
+    make_customer(_uid="0000021", staff_code="")
+    make_customer(_uid="0000022", staff_code="")
+    call_command("backfill_leads", team_code="CRM_TEAM", dry_run=True)
+    out = capsys.readouterr().out
+    assert "leads created 1" in out
+    assert "intake created 2" in out
+    assert Lead.objects.count() == 0

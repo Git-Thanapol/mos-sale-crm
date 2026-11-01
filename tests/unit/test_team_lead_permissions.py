@@ -68,11 +68,19 @@ def test_team_lead_may_reassign_within_scope_but_not_outside(make_user):
     assert can_reassign_caretaker(lead_user, lead("UPSELL_TEAM")) is False
 
 
-def test_telesale_can_edit_their_own_lead_but_not_reassign_it(make_user):
+def test_telesale_never_reassigns_a_caretaker(make_user):
+    """Role-level fact, assertable without a database.
+
+    A telesale's POSITIVE access also depends on team membership, which lives
+    in TeamAssignment and so needs real rows -- that half is covered by
+    tests/db/test_telesale_team_scope.py. Here we pin only the part that is
+    pure: no telesale reassigns ownership, on any lead, ever
+    (08_SECURITY: "No ownership/admin/import authority").
+    """
     telesell = make_user(role="พนักงาน", staff_code="S0001")
     own = lead("CRM_TEAM", staff_code="S0001")
-    assert can_edit_lead(telesell, own) is True
     assert can_reassign_caretaker(telesell, own) is False
+    assert can_reassign_caretaker(telesell, lead("CRM_TEAM", staff_code="S0002")) is False
 
 
 def test_telesale_cannot_touch_another_staff_members_lead(make_user):

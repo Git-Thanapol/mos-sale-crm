@@ -10,12 +10,18 @@ from crm.core.permissions import (
     can_edit_customer_lead,
     can_export_customers,
     can_manage_all,
+    can_edit_lead,
+    can_reassign_caretaker,
     can_resolve_intake,
     can_review_any_lead,
     can_view_followup_owner_filter,
     require_permission,
 )
+from crm.accounts.models import User
 from crm.domain.enums import CONTACT_ATTEMPT_RESULTS, STOP_REASONS
+from crm.followcycles.models import Appointment
+from crm.followcycles.selectors import cycle_history
+from crm.leads.models import Lead
 from crm.leads import presenters
 from crm.leads.selectors import (
     LeadQueueFilters,
@@ -127,6 +133,43 @@ def index(request):
         lead_page = lead_queue(request.user, filters=lead_filters, after_cursor=lead_cursor)
 
     lead_rows = [presenters.decorate(lead) for lead in lead_page.items]
+
+    # The detail panel. Resolved from the scoped queue rather than by a bare
+    # pk lookup, so ?lead_id= cannot reach a lead the user may not see.
+    lead_detail = None
+    detail_can_edit = detail_can_review = False
+    detail_cycles: list = []
+    detail_appointments: list = []
+    detail_caretaker_options: list = []
+    requested_lead_id = (request.GET.get("lead_id") or "").strip()
+    if not requested_lead_id.isdigit():
+        # A non-numeric lead_id reaches the ORM as a pk and raises
+        # ValueError("Field 'id' expected a number"), which is a 500 on a
+        # hand-edited querystring. Treated as "no lead requested".
+        requested_lead_id = ""
+    if requested_lead_id:
+        detail_lead = (
+            Lead.objects.select_related("customer", "team", "caretaker")
+            .for_user(request.user)
+            .filter(pk=requested_lead_id)
+            .first()
+        )
+        if detail_lead is not None:
+            lead_detail = presenters.decorate(detail_lead)
+            detail_can_edit = can_edit_lead(request.user, detail_lead)
+            detail_can_review = can_reassign_caretaker(request.user, detail_lead)
+            detail_cycles = cycle_history(request.user, detail_lead)
+            detail_appointments = list(
+                Appointment.objects.filter(lead=detail_lead, status="SCHEDULED").order_by(
+                    "scheduled_at"
+                )
+            )
+            if detail_can_review:
+                detail_caretaker_options = list(
+                    User.objects.filter(is_active=True)
+                    .exclude(staff_code="")
+                    .order_by("staff_name", "email")[:200]
+                )
     intake_page = global_unassigned_queue(request.user) if may_resolve_intake else None
 
     lead_qs = request.GET.copy()
@@ -144,6 +187,13 @@ def index(request):
         "intake_page": intake_page,
         "may_review_leads": may_review,
         "may_resolve_intake": may_resolve_intake,
+        "lead_detail": lead_detail,
+        "detail_can_edit": detail_can_edit,
+        "detail_can_review": detail_can_review,
+        "detail_cycles": detail_cycles,
+        "detail_appointments": detail_appointments,
+        "detail_caretaker_options": detail_caretaker_options,
+        "detail_next": request.get_full_path(),
         "age_preset_options": presenters.age_preset_options(),
         "contact_result_options": [
             (value, presenters.CONTACT_RESULT_LABELS.get(value, value))

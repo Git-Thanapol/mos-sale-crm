@@ -164,13 +164,26 @@ def test_access_arrays_default_to_empty_lists():
 
 
 def test_scoping_hides_another_staff_members_lead():
-    from types import SimpleNamespace
+    # A telesale is scoped by staff_code AND the lead's team (see
+    # tests/db/test_telesale_team_scope.py for why), so the user needs a real
+    # row with an open TeamAssignment rather than a SimpleNamespace.
+    from django.utils import timezone
+
+    from crm.accounts.models import User
+    from crm.teams.models import TeamAssignment
 
     mine = make_customer(_uid="0000001", staff_code="S0001")
     theirs = make_customer(_uid="0000002", staff_code="S0002")
-    make_lead(customer=mine)
-    make_lead(customer=theirs)
-    telesell = SimpleNamespace(role="พนักงาน", staff_code="S0001")
+    make_lead(customer=mine, team_code="CRM_TEAM")
+    make_lead(customer=theirs, team_code="CRM_TEAM")
+
+    telesell = User.objects.create(
+        email="ts@example.com", role="พนักงาน", staff_code="S0001", must_change_password=False
+    )
+    TeamAssignment.objects.create(
+        user=telesell, team_code="CRM_TEAM", effective_from=timezone.now()
+    )
+
     visible = Lead.objects.for_user(telesell)
     assert [lead.customer_id for lead in visible] == [mine.id]
 
@@ -179,4 +192,5 @@ def test_scoping_fails_closed_for_staff_without_a_staff_code():
     from types import SimpleNamespace
 
     make_lead(customer=make_customer(_uid="0000001", staff_code="S0001"))
-    assert Lead.objects.for_user(SimpleNamespace(role="พนักงาน", staff_code="")).count() == 0
+    nobody = SimpleNamespace(role="พนักงาน", staff_code="", pk=None, is_active=True)
+    assert Lead.objects.for_user(nobody).count() == 0

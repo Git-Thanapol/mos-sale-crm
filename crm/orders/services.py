@@ -156,6 +156,14 @@ def save_order_for_customer(
         "url", "address", "province", "city", "postal_code", "updated_at",
     ])
 
+    # Keep the CRM V2 Lead surface current. A no-op until backfill_leads has
+    # created Leads, and it never raises into this path: the order is the
+    # authoritative record and must not be lost because a derived counter
+    # failed to refresh.
+    from crm.leads.sync import sync_leads_for_order
+
+    sync_leads_for_order(actor=actor, order=order)
+
     return SaveOrderResult(order=order, lines_created=created, lines_merged=merged)
 
 

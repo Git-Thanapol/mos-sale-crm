@@ -213,3 +213,51 @@ def set_appointment(*, actor, lead: Lead, scheduled_at, note: str = "") -> Appoi
         payload={"appointment_id": appointment.id, "scheduled_at": scheduled_at.isoformat()},
     )
     return appointment
+
+
+def _refresh_next_follow_at(lead: Lead) -> None:
+    """Point the lead at its soonest still-SCHEDULED appointment, or nothing.
+
+    Called after every appointment state change. Without it next_follow_at is
+    sticky forever, and because ProtectionSummary.active_appointment is derived
+    from it, one appointment ever set would exclude the lead from reallocation
+    review permanently.
+    """
+    soonest = (
+        Appointment.objects.filter(lead=lead, status="SCHEDULED")
+        .order_by("scheduled_at")
+        .values_list("scheduled_at", flat=True)
+        .first()
+    )
+    lead.next_follow_at = soonest
+    lead.save(update_fields=["next_follow_at", "updated_at"])
+
+
+def _close_appointment(*, actor, appointment: Appointment, status: str) -> Appointment:
+    if appointment.status != "SCHEDULED":
+        raise ValueError(f"APPOINTMENT_ALREADY_CLOSED:{appointment.status}")
+    appointment.status = status
+    appointment.save(update_fields=["status"])
+    _refresh_next_follow_at(appointment.lead)
+    LeadAuditEvent.objects.create(
+        lead=appointment.lead,
+        action="APPOINTMENT_SET",
+        actor=actor if isinstance(actor, User) else None,
+        payload={"appointment_id": appointment.id, "status": status},
+    )
+    return appointment
+
+
+@transaction.atomic
+def complete_appointment(*, actor, appointment: Appointment) -> Appointment:
+    return _close_appointment(actor=actor, appointment=appointment, status="DONE")
+
+
+@transaction.atomic
+def cancel_appointment(*, actor, appointment: Appointment) -> Appointment:
+    return _close_appointment(actor=actor, appointment=appointment, status="CANCELLED")
+
+
+@transaction.atomic
+def mark_appointment_missed(*, actor, appointment: Appointment) -> Appointment:
+    return _close_appointment(actor=actor, appointment=appointment, status="MISSED")

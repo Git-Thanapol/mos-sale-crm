@@ -116,4 +116,15 @@ def decode_cursor(raw: str | None) -> list | None:
         return None
     if value[0] is not None and not isinstance(value[0], str):
         return None
+    if value[0] is not None:
+        # Shape validation is not enough: base64 of ["not-a-date", 5] passes
+        # every check above and then raises in the caller's fromisoformat,
+        # which is a 500 on a hand-edited querystring. Parse it here so the
+        # "never raises" contract actually holds.
+        from datetime import datetime
+
+        try:
+            datetime.fromisoformat(value[0])
+        except ValueError:
+            return None
     return value

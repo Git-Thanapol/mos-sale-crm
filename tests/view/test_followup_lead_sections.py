@@ -51,6 +51,18 @@ def telesell_s1():
     return make_user(email="ts1@example.com", role=ROLE_TELESELL, staff_code="S0001")
 
 
+def _put_in_team(user, team_code):
+    """A telesale is scoped by staff_code AND the lead's team, so acting on a
+    lead needs a real membership row. See tests/db/test_telesale_team_scope.py.
+    """
+    from crm.teams.models import TeamAssignment
+
+    make_team(team_code)
+    TeamAssignment.objects.create(
+        user=user, team_code=team_code, effective_from=timezone.now()
+    )
+
+
 def get_page(client, user, **params):
     login(client, user)
     return client.get(reverse("followups:list"), params)
@@ -138,6 +150,7 @@ def test_a_telesale_requesting_a_review_section_falls_back_to_their_queue(client
 
 def test_logging_a_contact_attempt_from_the_page_does_not_change_lifecycle(client, telesell_s1):
     lead = make_lead(customer=make_customer(_uid="0000005", staff_code="S0001"))
+    _put_in_team(telesell_s1, "CRM_TEAM")
     login(client, telesell_s1)
     response = client.post(
         reverse("leads:log_attempt", args=[lead.id]), {"result": "NO_ANSWER", "note": ""}
@@ -150,6 +163,7 @@ def test_logging_a_contact_attempt_from_the_page_does_not_change_lifecycle(clien
 
 def test_adding_a_note_from_the_page_updates_the_cached_copy(client, telesell_s1):
     lead = make_lead(customer=make_customer(_uid="0000006", staff_code="S0001"))
+    _put_in_team(telesell_s1, "CRM_TEAM")
     login(client, telesell_s1)
     client.post(reverse("leads:add_note", args=[lead.id]), {"body": "โทรแล้ว"})
     lead.refresh_from_db()

@@ -134,7 +134,18 @@ def deactivate_user(request, user_id: int):
     if user.is_active:
         user.is_active = False
         user.save(update_fields=["is_active", "updated_at"])
-        messages.success(request, "ปิดใช้งาน user แล้ว")
+        # 08_SECURITY: a disabled user must not retain caretaker authority.
+        # Without this, their leads keep routing_state=ASSIGNED and never
+        # surface in Team Unassigned, so nobody picks up the work.
+        from crm.leads.services import reconcile_lead_access
+
+        rerouted = reconcile_lead_access(actor=request.user, user=user)
+        if rerouted:
+            messages.success(
+                request, f"ปิดใช้งาน user แล้ว และย้าย Lead {rerouted} รายการไปที่ทีม"
+            )
+        else:
+            messages.success(request, "ปิดใช้งาน user แล้ว")
     return redirect("accounts:user_list")
 
 

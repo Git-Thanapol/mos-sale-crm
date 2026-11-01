@@ -72,10 +72,20 @@ def _staff_code_to_user_id() -> dict[str, str]:
     return mapping
 
 
-def recompute_lead_missed_channel(*, lead: Lead, hx63_baseline: datetime | None = None) -> int:
-    """Recompute, persist and return the lead's missed-channel count."""
+def recompute_lead_missed_channel(
+    *,
+    lead: Lead,
+    hx63_baseline: datetime | None = None,
+    closer_ids: dict[str, str] | None = None,
+) -> int:
+    """Recompute, persist and return the lead's missed-channel count.
+
+    `closer_ids` lets a batch caller build the staff_code map once. Without it
+    this scans the whole User table per call, which is one full scan per lead
+    inside a loop.
+    """
     baseline = _baseline_for(lead, hx63_baseline)
-    closer_ids = _staff_code_to_user_id()
+    closer_ids = closer_ids if closer_ids is not None else _staff_code_to_user_id()
 
     orders: list[MissedChannelOrder] = []
     unmapped: set[str] = set()

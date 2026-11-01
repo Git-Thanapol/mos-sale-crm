@@ -14,10 +14,12 @@ account, which is exactly what 08_SECURITY forbids.
 
 from __future__ import annotations
 
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.utils import timezone
 
 from crm.accounts.models import User
+from crm.core.permissions import MSG_LEAD_OUT_OF_SCOPE
 from crm.domain.access import derive_lead_access
 from crm.domain.ownership import (
     OwnershipDecision,
@@ -225,3 +227,118 @@ def reassign_caretaker(*, actor, lead: Lead, caretaker: User | None, reason: str
         audit_reason=reason,
         active_user_ids=_active_user_ids(),
     )
+
+
+@transaction.atomic
+def stop_lead(*, actor, lead: Lead, reason: str) -> Lead:
+    """Move a lead to STOPPED, audited, with its cycle and lock released.
+
+    STOPPED is a lifecycle state that always carries a reason
+    (02_LOCKED_BUSINESS_RULES.md). Permission is re-checked here and not only
+    at the route, per the plan's Global Constraints.
+
+    The cycle is ended with reason STOPPED and its lock cleared: a stopped
+    lead holding an ACTIVE cycle with lock_active would keep ownership pinned
+    under LATEST_ORDER_WITH_LOCK on work nobody is doing.
+    """
+    from crm.core.permissions import can_review_stopped
+    from crm.domain.enums import STOP_REASONS
+
+    if not can_review_stopped(actor, lead):
+        raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
+    if reason not in STOP_REASONS:
+        raise ValueError(f"UNKNOWN_STOP_REASON:{reason}")
+
+    previous = lead.lifecycle_status
+    now = timezone.now()
+
+    # Imported here: crm.followcycles imports crm.leads.models, so a
+    # module-level import would be circular.
+    from crm.followcycles.models import FollowupCycle
+
+    for cycle in FollowupCycle.objects.select_for_update().filter(lead=lead, status="ACTIVE"):
+        cycle.status = "ENDED"
+        cycle.ended_at = now
+        cycle.ended_reason = "STOPPED"
+        cycle.lock_active = False
+        cycle.save(update_fields=["status", "ended_at", "ended_reason", "lock_active"])
+
+    lead.lifecycle_status = "STOPPED"
+    lead.stopped_reason = reason
+    lead.stopped_at = now
+    lead.current_cycle_id = None
+    lead.save(
+        update_fields=[
+            "lifecycle_status",
+            "stopped_reason",
+            "stopped_at",
+            "current_cycle_id",
+            "updated_at",
+        ]
+    )
+
+    LeadAuditEvent.objects.create(
+        lead=lead,
+        action="STATUS_CHANGE",
+        actor=actor if isinstance(actor, User) else None,
+        reason=reason,
+        payload={"from": previous, "to": "STOPPED", "stopped_reason": reason},
+    )
+    return lead
+
+
+@transaction.atomic
+def reactivate_lead(*, actor, lead: Lead, reason: str) -> Lead:
+    """Return a STOPPED lead to FOLLOWING, audited.
+
+    Reactivation is an authorized human decision: a STOPPED lead is never
+    silently revived (see crm.domain.ownership.evaluate_stopped_reactivation,
+    which is what the order path consults).
+    """
+    from crm.core.permissions import can_review_stopped
+
+    if not can_review_stopped(actor, lead):
+        raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
+    if lead.lifecycle_status != "STOPPED":
+        raise ValueError("LEAD_NOT_STOPPED")
+
+    previous = lead.lifecycle_status
+    lead.lifecycle_status = "FOLLOWING"
+    lead.stopped_reason = ""
+    lead.stopped_at = None
+    lead.save(
+        update_fields=["lifecycle_status", "stopped_reason", "stopped_at", "updated_at"]
+    )
+
+    LeadAuditEvent.objects.create(
+        lead=lead,
+        action="STATUS_CHANGE",
+        actor=actor if isinstance(actor, User) else None,
+        reason=reason,
+        payload={"from": previous, "to": "FOLLOWING"},
+    )
+    return lead
+
+
+@transaction.atomic
+def reconcile_lead_access(*, actor=None, user: User) -> int:
+    """Re-route and re-scope every lead this user caretakes.
+
+    Called when a user is deactivated. 08_SECURITY requires a disabled or
+    resigned user to lose caretaker authority immediately; without this, the
+    lead keeps routing_state=ASSIGNED and the resigned person's work never
+    reaches the Team Unassigned queue, so nobody picks it up.
+    """
+    affected = 0
+    for lead in Lead.objects.select_related("team").filter(caretaker=user):
+        _apply_caretaker(
+            actor=actor,
+            lead=lead,
+            caretaker=user,
+            started_at=lead.ownership_started_at or timezone.now(),
+            reason="USER_DEACTIVATED",
+            audit_reason=f"user {user.pk} deactivated",
+            active_user_ids=_active_user_ids(),
+        )
+        affected += 1
+    return affected

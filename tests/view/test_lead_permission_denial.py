@@ -125,8 +125,12 @@ def test_a_viewer_cannot_add_a_note(client):
     assert client.post(reverse("leads:add_note", args=[lead.id]), {"body": "x"}).status_code == 403
 
 
-def test_telesale_in_team_a_cannot_reach_the_same_customers_team_b_lead(client):
-    # Review Focus #4 -- one customer, two teams.
+def test_team_lead_in_team_a_cannot_reach_the_same_customers_team_b_lead(client):
+    # Review Focus #4 for TEAM_LEAD. The telesale case -- the role the plan's
+    # Review Focus #4 actually names -- is covered by
+    # tests/db/test_telesale_team_scope.py and by the view test below. This
+    # test was previously named for the telesale while building a TEAM_LEAD,
+    # so it reported green over a path it never exercised.
     customer = make_customer(_uid="0000007", staff_code="S0001")
     team_a_lead = make_lead(customer=customer, team_code="CRM_TEAM")
     team_b_lead = make_lead(customer=customer, team_code="UPSELL_TEAM")
@@ -141,6 +145,37 @@ def test_telesale_in_team_a_cannot_reach_the_same_customers_team_b_lead(client):
 
     response = client.post(reverse("leads:add_note", args=[team_b_lead.id]), {"body": "x"})
     assert response.status_code == 403
+
+
+def test_telesale_cannot_post_to_the_same_customers_other_team_lead(client, telesell_s1):
+    # Review Focus #4, the role it names, through the HTTP surface.
+    from django.utils import timezone
+
+    from crm.teams.models import TeamAssignment
+
+    customer = make_customer(_uid="0000020", staff_code="S0001")
+    make_team("CRM_TEAM")
+    make_team("UPSELL_TEAM")
+    own = make_lead(customer=customer, team_code="CRM_TEAM")
+    other = make_lead(customer=customer, team_code="UPSELL_TEAM")
+    TeamAssignment.objects.create(
+        user=telesell_s1, team_code="CRM_TEAM", effective_from=timezone.now()
+    )
+    login(client, telesell_s1)
+
+    assert client.post(reverse("leads:add_note", args=[own.id]), {"body": "ok"}).status_code in (
+        302,
+        303,
+    )
+    assert (
+        client.post(reverse("leads:add_note", args=[other.id]), {"body": "leak"}).status_code == 403
+    )
+    assert (
+        client.post(
+            reverse("leads:log_attempt", args=[other.id]), {"result": "NO_ANSWER"}
+        ).status_code
+        == 403
+    )
 
 
 def test_telesale_cannot_resolve_intake(client, telesell_s1):

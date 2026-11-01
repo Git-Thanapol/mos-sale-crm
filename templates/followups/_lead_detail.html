@@ -1,0 +1,165 @@
+{# Lead detail + the per-lead action forms.
+
+   Every form posts to a crm.leads view that re-checks authorization
+   server-side; rendering a form is a convenience, never the control
+   (08_SECURITY: "Hidden buttons are not security controls"). Each form is
+   still only drawn when the matching predicate passes for THIS lead, so the
+   page does not offer actions it will refuse.
+
+   `next` carries the current querystring so an action returns to the same
+   filtered view; crm.leads.views._back validates it against this host. #}
+{% if lead_detail %}
+  {% with row=lead_detail %}
+    <div class="crm-card" id="lead-{{ row.lead.id }}" style="margin-top:16px;">
+      <h4 style="margin:0 0 12px;">
+        {{ row.lead.customer.customer_name|default:row.lead.customer.phone_key }}
+        <span class="crm-muted" style="font-weight:normal;">· {{ row.lead.team.display_name }}</span>
+      </h4>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+        <div><div class="crm-label">ผู้ดูแล</div><div>{{ row.lead.caretaker.staff_name|default:"ยังไม่มอบหมาย" }}</div></div>
+        <div><div class="crm-label">สถานะ</div><div>{{ row.lifecycle_label }}{% if row.stop_reason_label %} ({{ row.stop_reason_label }}){% endif %}</div></div>
+        <div><div class="crm-label">ออเดอร์ล่าสุด</div><div>{{ row.last_order_age_label }}</div></div>
+        <div><div class="crm-label">ตกหล่นช่องทางอื่น</div><div>{{ row.missed_channel_group }}</div></div>
+        <div><div class="crm-label">การมอบหมาย</div><div>{{ row.routing_label }}</div></div>
+        <div><div class="crm-label">นัดติดตาม</div><div>{{ row.computed_status_label|default:"-" }}</div></div>
+        <div><div class="crm-label">จำนวนออเดอร์</div><div>{{ row.lead.total_orders }}</div></div>
+        <div><div class="crm-label">ไม่รับสายต่อเนื่อง</div><div>{{ row.lead.no_answer_streak }}</div></div>
+      </div>
+
+      {% if row.lead.latest_note %}
+        <div style="margin-bottom:16px;">
+          <div class="crm-label">โน้ตล่าสุด</div>
+          <div>{{ row.lead.latest_note }}</div>
+        </div>
+      {% endif %}
+
+      {% if detail_can_edit %}
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+
+          <form method="post" action="{% url 'leads:add_note' row.lead.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ detail_next }}">
+            <div class="crm-label">เพิ่มโน้ต</div>
+            <textarea name="body" class="crm-input" rows="2" required></textarea>
+            <button type="submit" class="crm-btn">บันทึกโน้ต</button>
+          </form>
+
+          <form method="post" action="{% url 'leads:log_attempt' row.lead.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ detail_next }}">
+            <div class="crm-label">ผลการติดต่อ</div>
+            <select name="result" class="crm-select">
+              {% for value, label in contact_result_options %}
+                <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+            <input type="text" name="note" class="crm-input" placeholder="หมายเหตุ">
+            <button type="submit" class="crm-btn">บันทึกผลติดต่อ</button>
+          </form>
+
+          <form method="post" action="{% url 'leads:set_appointment' row.lead.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ detail_next }}">
+            <div class="crm-label">นัดติดตาม (เวลาไทย)</div>
+            <input type="datetime-local" name="scheduled_at" class="crm-input" required>
+            <input type="text" name="note" class="crm-input" placeholder="หมายเหตุ">
+            <button type="submit" class="crm-btn">บันทึกนัด</button>
+          </form>
+
+          <form method="post" action="{% url 'leads:set_lifecycle' row.lead.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ detail_next }}">
+            <div class="crm-label">สถานะ Lead</div>
+            <select name="lifecycle_status" class="crm-select">
+              {% for value, label in lifecycle_options %}
+                <option value="{{ value }}" {% if row.lead.lifecycle_status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="crm-btn">บันทึกสถานะ</button>
+          </form>
+
+          {% if detail_appointments %}
+            <div>
+              <div class="crm-label">นัดที่ค้างอยู่</div>
+              {% for appointment in detail_appointments %}
+                <form method="post" action="{% url 'leads:close_appointment' appointment.id %}" style="margin-bottom:4px;">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ detail_next }}">
+                  <span>{{ appointment.scheduled_at }}</span>
+                  <button type="submit" name="status" value="DONE" class="crm-btn">เสร็จแล้ว</button>
+                  <button type="submit" name="status" value="MISSED" class="crm-btn">ไม่มาตามนัด</button>
+                  <button type="submit" name="status" value="CANCELLED" class="crm-btn">ยกเลิกนัด</button>
+                </form>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+        </div>
+      {% else %}
+        <p class="crm-muted">ไม่มีสิทธิ์แก้ไข Lead รายนี้</p>
+      {% endif %}
+
+      {% if detail_can_review %}
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px;">
+          <form method="post" action="{% url 'leads:reassign' row.lead.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ detail_next }}">
+            <div class="crm-label">เปลี่ยนผู้ดูแล</div>
+            <select name="caretaker" class="crm-select">
+              <option value="">— ไม่มีผู้ดูแล (ส่งกลับทีม) —</option>
+              {% for candidate in detail_caretaker_options %}
+                <option value="{{ candidate.id }}" {% if row.lead.caretaker_id == candidate.id %}selected{% endif %}>
+                  {{ candidate.staff_name|default:candidate.email }}
+                </option>
+              {% endfor %}
+            </select>
+            <input type="text" name="reason" class="crm-input" placeholder="เหตุผล">
+            <button type="submit" class="crm-btn">บันทึกผู้ดูแล</button>
+          </form>
+
+          {% if row.lead.lifecycle_status == "STOPPED" %}
+            <form method="post" action="{% url 'leads:reactivate' row.lead.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ detail_next }}">
+              <div class="crm-label">เปิดติดตามอีกครั้ง</div>
+              <input type="text" name="reason" class="crm-input" placeholder="เหตุผล">
+              <button type="submit" class="crm-btn">เปิดติดตาม</button>
+            </form>
+          {% else %}
+            <form method="post" action="{% url 'leads:stop' row.lead.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ detail_next }}">
+              <div class="crm-label">หยุดติดตาม</div>
+              <select name="reason" class="crm-select">
+                {% for value, label in stop_reason_options %}
+                  <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="crm-btn">หยุดติดตาม</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if detail_cycles %}
+        <div style="margin-top:16px;">
+          <div class="crm-label">ประวัติรอบติดตาม</div>
+          <table class="crm-table">
+            <thead><tr><th>เริ่ม</th><th>สิ้นสุด</th><th>สถานะ</th><th>เหตุผล</th></tr></thead>
+            <tbody>
+              {% for cycle in detail_cycles %}
+                <tr>
+                  <td>{{ cycle.started_at }}</td>
+                  <td>{{ cycle.ended_at|default:"-" }}</td>
+                  <td>{{ cycle.status }}</td>
+                  <td>{{ cycle.ended_reason|default:"-" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  {% endwith %}
+{% endif %}

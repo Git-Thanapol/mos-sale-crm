@@ -241,6 +241,25 @@ def team_scope(user: object) -> frozenset[str]:
     return frozenset(clean(code) for code in getattr(user, "team_scope", []) or [] if clean(code))
 
 
+def current_team_codes(user: object) -> frozenset[str]:
+    """Team codes the user currently belongs to, from their open assignment.
+
+    Read fresh rather than cached on the user, and restricted to assignments
+    with no effective_to, so an expired membership grants nothing.
+    """
+    if not _is_usable(user) or getattr(user, "pk", None) is None:
+        return frozenset()
+    from crm.teams.models import TeamAssignment
+
+    return frozenset(
+        code.strip()
+        for code in TeamAssignment.objects.filter(
+            user_id=user.pk, effective_to__isnull=True
+        ).values_list("team_code", flat=True)
+        if code and code.strip()
+    )
+
+
 def _lead_team_code(lead: object) -> str:
     """The LEAD's own team.
 
@@ -259,7 +278,23 @@ def can_view_lead(user: object, lead: object) -> bool:
         return True
     if is_team_lead(user):
         return _lead_team_code(lead) in team_scope(user)
-    return can_edit_customer_lead(user, getattr(lead, "customer", None))
+
+    # Telesale. Ownership in the legacy schema is per-CUSTOMER
+    # (Customer.staff_code), and one customer can hold a Lead in several
+    # teams -- so comparing staff_code alone matches EVERY team's lead for
+    # that customer. 06 section B makes "Telesale cannot access another Team's
+    # protected Lead" an acceptance item, so the lead's own team has to count.
+    #
+    # Being the caretaker is kept as an independent path: that lead is the
+    # user's own work regardless of team membership, and with TeamAssignment
+    # sparse in this deployment team-only scoping would hide work from the
+    # person doing it.
+    if getattr(lead, "caretaker_id", None) is not None and getattr(user, "pk", None) is not None:
+        if str(lead.caretaker_id) == str(user.pk):
+            return True
+    if not can_edit_customer_lead(user, getattr(lead, "customer", None)):
+        return False
+    return _lead_team_code(lead) in current_team_codes(user)
 
 
 def can_edit_lead(user: object, lead: object) -> bool:

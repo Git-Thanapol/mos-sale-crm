@@ -114,9 +114,16 @@ def test_inserting_a_row_between_pages_does_not_repeat_a_row(editor):
 
 
 def test_telesell_queue_is_scoped_to_their_own_staff_code():
+    from crm.teams.models import TeamAssignment
+
     make_leads(2, staff_code="S0001")
     make_leads(2, staff_code="S0002", uid_offset=100)
     telesell = make_user(email="ts@example.com", role=ROLE_TELESELL, staff_code="S0001")
+    # Scoping is staff_code AND the lead's team, so membership is part of the
+    # realistic setup now.
+    TeamAssignment.objects.create(
+        user=telesell, team_code="CRM_TEAM", effective_from=timezone.now()
+    )
     page = lead_queue(telesell, limit=50)
     assert page.items
     assert all(lead.customer.staff_code == "S0001" for lead in page.items)
