@@ -1,0 +1,548 @@
+[
+  {
+    "name": "0_7/at-min-0d",
+    "input": {
+      "lastOrderAt": 1793509200000,
+      "preset": "0_7",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "0_7/at-max-7d",
+    "input": {
+      "lastOrderAt": 1792904400000,
+      "preset": "0_7",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "0_7/above-max-8d",
+    "input": {
+      "lastOrderAt": 1792818000000,
+      "preset": "0_7",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "0_7/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "0_7",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "8_15/at-min-8d",
+    "input": {
+      "lastOrderAt": 1792818000000,
+      "preset": "8_15",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "8_15/below-min-7d",
+    "input": {
+      "lastOrderAt": 1792904400000,
+      "preset": "8_15",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "8_15/at-max-15d",
+    "input": {
+      "lastOrderAt": 1792213200000,
+      "preset": "8_15",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "8_15/above-max-16d",
+    "input": {
+      "lastOrderAt": 1792126800000,
+      "preset": "8_15",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "8_15/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "8_15",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "16_30/at-min-16d",
+    "input": {
+      "lastOrderAt": 1792126800000,
+      "preset": "16_30",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "16_30/below-min-15d",
+    "input": {
+      "lastOrderAt": 1792213200000,
+      "preset": "16_30",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "16_30/at-max-30d",
+    "input": {
+      "lastOrderAt": 1790917200000,
+      "preset": "16_30",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "16_30/above-max-31d",
+    "input": {
+      "lastOrderAt": 1790830800000,
+      "preset": "16_30",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "16_30/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "16_30",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "31_45/at-min-31d",
+    "input": {
+      "lastOrderAt": 1790830800000,
+      "preset": "31_45",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "31_45/below-min-30d",
+    "input": {
+      "lastOrderAt": 1790917200000,
+      "preset": "31_45",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "31_45/at-max-45d",
+    "input": {
+      "lastOrderAt": 1789621200000,
+      "preset": "31_45",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "31_45/above-max-46d",
+    "input": {
+      "lastOrderAt": 1789534800000,
+      "preset": "31_45",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "31_45/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "31_45",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "46_60/at-min-46d",
+    "input": {
+      "lastOrderAt": 1789534800000,
+      "preset": "46_60",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "46_60/below-min-45d",
+    "input": {
+      "lastOrderAt": 1789621200000,
+      "preset": "46_60",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "46_60/at-max-60d",
+    "input": {
+      "lastOrderAt": 1788325200000,
+      "preset": "46_60",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "46_60/above-max-61d",
+    "input": {
+      "lastOrderAt": 1788238800000,
+      "preset": "46_60",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "46_60/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "46_60",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "61_90/at-min-61d",
+    "input": {
+      "lastOrderAt": 1788238800000,
+      "preset": "61_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "61_90/below-min-60d",
+    "input": {
+      "lastOrderAt": 1788325200000,
+      "preset": "61_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "61_90/at-max-90d",
+    "input": {
+      "lastOrderAt": 1785733200000,
+      "preset": "61_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "61_90/above-max-91d",
+    "input": {
+      "lastOrderAt": 1785646800000,
+      "preset": "61_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "61_90/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "61_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "OVER_90/at-min-91d",
+    "input": {
+      "lastOrderAt": 1785646800000,
+      "preset": "OVER_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "OVER_90/below-min-90d",
+    "input": {
+      "lastOrderAt": 1785733200000,
+      "preset": "OVER_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "OVER_90/far-above-min-1091d",
+    "input": {
+      "lastOrderAt": 1699246800000,
+      "preset": "OVER_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "OVER_90/no-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "OVER_90",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "NO_ORDER/null",
+    "input": {
+      "lastOrderAt": null,
+      "preset": "NO_ORDER",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "NO_ORDER/recent",
+    "input": {
+      "lastOrderAt": 1793250000000,
+      "preset": "NO_ORDER",
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "custom-inside-15d",
+    "input": {
+      "lastOrderAt": 1792213200000,
+      "preset": null,
+      "minDays": 10,
+      "maxDays": 20,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "custom-at-min-10d",
+    "input": {
+      "lastOrderAt": 1792645200000,
+      "preset": null,
+      "minDays": 10,
+      "maxDays": 20,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "custom-at-max-20d",
+    "input": {
+      "lastOrderAt": 1791781200000,
+      "preset": null,
+      "minDays": 10,
+      "maxDays": 20,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "custom-below-9d",
+    "input": {
+      "lastOrderAt": 1792731600000,
+      "preset": null,
+      "minDays": 10,
+      "maxDays": 20,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "custom-above-21d",
+    "input": {
+      "lastOrderAt": 1791694800000,
+      "preset": null,
+      "minDays": 10,
+      "maxDays": 20,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": false
+    }
+  },
+  {
+    "name": "custom-open-ended-365d",
+    "input": {
+      "lastOrderAt": 1761973200000,
+      "preset": null,
+      "minDays": 30,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  },
+  {
+    "name": "no-filter/null-last-order",
+    "input": {
+      "lastOrderAt": null,
+      "preset": null,
+      "minDays": null,
+      "maxDays": null,
+      "now": 1793509200000
+    },
+    "expected": {
+      "matches": true
+    }
+  }
+]
