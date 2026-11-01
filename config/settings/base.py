@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "crm.orders",
     "crm.online_orders",
     "crm.followups",
+    "crm.leads",
     "crm.catalog",
     "crm.imports",
     "crm.reporting",
