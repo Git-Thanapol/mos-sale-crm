@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Deploys the CRM to a remote host over SSH: backup -> git pull -> build ->
 # up -d (migrate/collectstatic happen automatically inside docker/entrypoint.sh
-# on the web container's boot, gated by RUN_MIGRATIONS=1) -> health check.
+# on the web container's boot, gated by RUN_MIGRATIONS=1) -> nginx reload ->
+# health check.
 #
 # Config comes from environment variables, or scripts/deploy.env if present
 # (gitignored — never commit real host/path values):
@@ -47,19 +48,37 @@ if [ "$AHEAD" != "0" ]; then
   exit 1
 fi
 
-echo "==> [1/5] Backing up remote database..."
+echo "==> [1/6] Backing up remote database..."
 remote "scripts/backup.sh"
 
-echo "==> [2/5] Pulling latest code on $DEPLOY_HOST..."
+echo "==> [2/6] Pulling latest code on $DEPLOY_HOST..."
 remote "git fetch --all --prune && git pull --ff-only"
 
-echo "==> [3/5] Building images..."
+echo "==> [3/6] Building images..."
 remote "$COMPOSE build"
 
-echo "==> [4/5] Bringing up containers (migrate + collectstatic run automatically on web boot)..."
+echo "==> [4/6] Bringing up containers (migrate + collectstatic run automatically on web boot)..."
 remote "$COMPOSE up -d"
 
-echo "==> [5/5] Health check..."
+echo "==> [5/6] Waiting for web, then reloading nginx..."
+# nginx resolves the "web" upstream only when it (re)loads, and a recreated web
+# container can get a new IP: without this reload nginx answers 502 until restarted.
+# Up to 3 minutes because migrations run before gunicorn starts listening.
+WEB_READY=0
+for _ in $(seq 1 90); do
+  if remote "$COMPOSE exec -T web python -c 'import socket; socket.create_connection((\"localhost\", 8000), 2)'" 2>/dev/null; then
+    WEB_READY=1
+    break
+  fi
+  sleep 2
+done
+if [ "$WEB_READY" != "1" ]; then
+  echo "web did not start listening on port 8000 — check 'docker compose logs web' on remote." >&2
+  exit 1
+fi
+remote "$COMPOSE exec -T nginx nginx -s reload"
+
+echo "==> [6/6] Health check..."
 sleep 5
 STATUS="$(remote "$COMPOSE ps --format '{{.Service}} {{.State}}'")"
 echo "$STATUS"
