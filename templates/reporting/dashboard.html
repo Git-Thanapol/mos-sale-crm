@@ -20,8 +20,8 @@
 <form method="get" class="crm-card" style="margin-bottom:16px;">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
     <div class="crm-form-group">
-      <label class="crm-label">ช่วงเวลา</label>
-      <select name="range" class="crm-select" onchange="this.form.submit()">
+      <label class="crm-label" for="report-range">ช่วงเวลา</label>
+      <select id="report-range" name="range" class="crm-select" onchange="this.form.submit()">
         {% for r in range_options %}
           <option value="{{ r }}" {% if range_label == r %}selected{% endif %}>{{ r }}</option>
         {% endfor %}
@@ -29,8 +29,8 @@
     </div>
     {% if is_manager %}
     <div class="crm-form-group">
-      <label class="crm-label">ผู้ดูแล</label>
-      <select name="owner" class="crm-select" onchange="this.form.submit()">
+      <label class="crm-label" for="report-owner">ผู้ดูแล</label>
+      <select id="report-owner" name="owner" class="crm-select" onchange="this.form.submit()">
         <option value="ทั้งหมด" {% if owner_filter == "ทั้งหมด" %}selected{% endif %}>ทั้งหมด</option>
         {% for o in owner_options %}
           <option value="{{ o }}" {% if owner_filter == o %}selected{% endif %}>{{ o }}</option>
@@ -43,37 +43,37 @@
   </div>
   {% if range_label == "เลือกวันเดียว" %}
     <div class="crm-form-group">
-      <label class="crm-label">เลือกวันที่</label>
-      <input class="crm-input" type="date" name="single_date" value="{{ start_date|date:'Y-m-d' }}">
+      <label class="crm-label" for="report-single-date">เลือกวันที่</label>
+      <input id="report-single-date" class="crm-input" type="date" name="single_date" value="{{ start_date|date:'Y-m-d' }}">
     </div>
   {% elif range_label == "เลือกช่วงวันที่" %}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
       <div class="crm-form-group">
-        <label class="crm-label">ตั้งแต่วันที่</label>
-        <input class="crm-input" type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+        <label class="crm-label" for="report-start-date">ตั้งแต่วันที่</label>
+        <input id="report-start-date" class="crm-input" type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
       </div>
       <div class="crm-form-group">
-        <label class="crm-label">ถึงวันที่</label>
-        <input class="crm-input" type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+        <label class="crm-label" for="report-end-date">ถึงวันที่</label>
+        <input id="report-end-date" class="crm-input" type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
       </div>
     </div>
   {% endif %}
   <button type="submit" class="crm-btn crm-btn--primary">แสดงรายงาน</button>
 </form>
 
-<h5>NEW ORDER</h5>
+<h2 class="crm-subhead">NEW ORDER</h2>
 <div class="crm-kpi-row">
   {% include "components/_kpi_card.html" with label="ยอดขาย NEW ORDER" value=summary.NEW_ORDER.sales_amount|thai_amount %}
   {% include "components/_kpi_card.html" with label="จำนวนออเดอร์ NEW ORDER" value=summary.NEW_ORDER.order_count|thai_int %}
   {% include "components/_kpi_card.html" with label="ค่าเฉลี่ยต่อออเดอร์" value=summary.NEW_ORDER.aov|thai_amount %}
 </div>
-<h5>UPSELL</h5>
+<h2 class="crm-subhead">UPSELL</h2>
 <div class="crm-kpi-row">
   {% include "components/_kpi_card.html" with label="ยอดขาย UPSELL" value=summary.UPSELL.sales_amount|thai_amount %}
   {% include "components/_kpi_card.html" with label="จำนวนออเดอร์ UPSELL" value=summary.UPSELL.order_count|thai_int %}
   {% include "components/_kpi_card.html" with label="ค่าเฉลี่ยต่อออเดอร์" value=summary.UPSELL.aov|thai_amount %}
 </div>
-<h5>รวม</h5>
+<h2 class="crm-subhead">รวม</h2>
 <div class="crm-kpi-row">
   {% include "components/_kpi_card.html" with label="ยอดขายรวม" value=summary.TOTAL.sales_amount|thai_amount %}
   {% include "components/_kpi_card.html" with label="จำนวนออเดอร์รวม" value=summary.TOTAL.order_count|thai_int %}
