@@ -31,4 +31,6 @@ urlpatterns = [
     path("import/<uuid:batch_uuid>/confirm/", imports.import_confirm, name="import_confirm"),
     path("import/<uuid:batch_uuid>/commit/", imports.import_commit, name="import_commit"),
     path("import/<uuid:batch_uuid>/rollback/", imports.history_rollback, name="history_rollback"),
+    path("import/<uuid:batch_uuid>/retry-rollback/", imports.history_retry_rollback, name="history_retry_rollback"),
+    path("import/<uuid:batch_uuid>/cancel/", imports.import_cancel, name="import_cancel"),
 ]

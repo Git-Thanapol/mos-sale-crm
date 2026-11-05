@@ -17,13 +17,33 @@
           <form method="post" action="{% url 'leadui:history_rollback' batch.batch_id %}">
             {% csrf_token %}
             <input type="hidden" name="operation_key" value="{{ row.operation_key }}">
-            <input type="text" name="reason" placeholder="เหตุผล">
+            <input type="text" name="reason" placeholder="เหตุผล" aria-label="เหตุผลที่ Rollback" required minlength="3">
             <div class="actions">
               <button type="submit" class="danger-button">Rollback</button>
               <button type="button" class="secondary" data-v2-close>ยกเลิก</button>
             </div>
           </form>
         </dialog>
+      {% endif %}
+      {% if row.can_retry %}
+        <button type="button" class="danger-button" data-v2-open="retry-{{ batch.id }}">Retry rollback</button>
+        <dialog id="retry-{{ batch.id }}">
+          <h2>Retry rollback {{ batch.batch_id|stringformat:"s"|slice:":8" }}?</h2>
+          <p>ตรวจสอบและแก้ข้อมูลที่ Rollback แจ้งแล้วเท่านั้น (Admin)</p>
+          <form method="post" action="{% url 'leadui:history_retry_rollback' batch.batch_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="operation_key" value="{{ row.operation_key }}">
+            <input type="text" name="reason" placeholder="เหตุผล / สิ่งที่ตรวจสอบแล้ว" aria-label="เหตุผลที่ Retry rollback" required minlength="3">
+            <div class="actions"><button type="submit" class="danger-button">Retry rollback</button><button type="button" class="secondary" data-v2-close>ยกเลิก</button></div>
+          </form>
+        </dialog>
+      {% endif %}
+      {% if row.can_cancel %}
+        <form method="post" action="{% url 'leadui:import_cancel' batch.batch_id %}">{% csrf_token %}
+          <input type="hidden" name="operation_key" value="{{ row.operation_key }}-cancel">
+          <input type="hidden" name="next" value="{% url 'leadui:import_history' %}">
+          <input type="text" name="reason" placeholder="เหตุผล" aria-label="เหตุผลที่ยกเลิก" required minlength="3"><button type="submit" class="secondary">Cancel</button>
+        </form>
       {% endif %}</td>
     </tr>{% endwith %}{% endfor %}
     </tbody></table></div>

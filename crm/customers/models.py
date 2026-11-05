@@ -22,12 +22,13 @@ class Customer(models.Model):
     # customerId that is not the phone: phone_key is DERIVED from phone1/phone2
     # (crm.core.identity.phone_key), so it changes when a phone changes and
     # cannot be what a Lead, an ownership segment or an audit row points at.
-    # phone_key keeps its UNIQUE constraint for now — relaxing it belongs to
-    # the import engine (Plan 2), which is the code that needs the
-    # HUMAN_REVIEW path for phone collisions. Nothing new keys off phone_key.
+    # phone_key is NOT unique (migration 0006, client request): two customers
+    # may share a phone when identity is unconfirmed. It is a lookup key only;
+    # callers that want "the" customer for a key take the lowest id
+    # (crm.customers.services.get_or_create_by_phone_key).
     customer_uid = models.UUIDField(unique=True, editable=False, default=uuid4)
 
-    phone_key = models.CharField(max_length=64, unique=True)
+    phone_key = models.CharField(max_length=64, db_index=True)
     phone1 = models.CharField(max_length=32, blank=True)
     phone2 = models.CharField(max_length=32, blank=True)
     customer_name = models.CharField(max_length=255, blank=True)

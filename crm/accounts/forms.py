@@ -8,9 +8,13 @@ OWNER_PLACEHOLDER = "ไม่เลือก owner mapping"
 
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
-        label="อีเมล", widget=forms.EmailInput(attrs={"autofocus": True, "class": "crm-input"})
+        label="อีเมล",
+        widget=forms.EmailInput(attrs={"autofocus": True, "class": "crm-input", "autocomplete": "username"}),
     )
-    password = forms.CharField(label="รหัสผ่าน", widget=forms.PasswordInput(attrs={"class": "crm-input"}))
+    password = forms.CharField(
+        label="รหัสผ่าน",
+        widget=forms.PasswordInput(attrs={"class": "crm-input", "autocomplete": "current-password"}),
+    )
 
 
 class ForcePasswordChangeForm(PasswordChangeForm):

@@ -23,9 +23,16 @@ def find_or_create_customer(phone1: str, phone2: str, defaults: dict) -> tuple[C
     without duplicating the phone_key computation.
     """
     key = compute_phone_key(phone1, phone2, None)
-    return Customer.objects.get_or_create(
-        phone_key=key, defaults={"phone1": phone1, "phone2": phone2, **defaults}
-    )
+    return get_or_create_by_phone_key(key, {"phone1": phone1, "phone2": phone2, **defaults})
+
+
+def get_or_create_by_phone_key(key: str, defaults: dict) -> tuple[Customer, bool]:
+    """phone_key is not unique, so `get_or_create` would raise
+    MultipleObjectsReturned once two customers share a phone. Take the oldest."""
+    customer = Customer.objects.filter(phone_key=key).order_by("id").first()
+    if customer is not None:
+        return customer, False
+    return Customer.objects.create(phone_key=key, **defaults), True
 
 
 def save_follow_marker(user, customer: Customer, status: str) -> Followup:
@@ -40,23 +47,50 @@ def save_follow_marker(user, customer: Customer, status: str) -> Followup:
 
 
 @transaction.atomic
-def assign_owner(user, customer: Customer, owner_display: str, staff_code: str) -> int:
-    """Owner and staff_code are always written together (invariant 4) —
-    and cascaded to every existing Order/Followup row for this customer so
-    row-level scoping (which reads Order's OWN staff_code, not a join
-    through customer) stays consistent after reassignment. The legacy
-    equivalent (assign_owner_to_order_record) updated every crm_data_imports
-    row sharing this customer's phone number for the same reason.
+def assign_owner(user, customer: Customer, owner_display: str, staff_code: str, reason: str = "") -> int:
+    """Customer-level owner assignment, routed through the Lead ownership path.
+
+    Ownership lives on the Lead (08_SECURITY: server-mediated, baseline +
+    access + audit + missed-channel together), so this reassigns EVERY lead of
+    the customer via crm.leads.services.reassign_caretaker (manual=True:
+    active target, lead-holding role in the lead team, reason required, row
+    lock, version bump, segment, audit). A customer with no lead is refused.
+    All-or-nothing: any lead rejecting the target rolls the whole thing back.
+
+    Customer.staff_code / owner_display and the denormalised Order/Followup
+    copies (row scoping reads them) are then synced as a CONSEQUENCE, never as
+    the source of truth.
     """
+    from crm.accounts.models import User
+    from crm.leads.services import reassign_caretaker
+
     if not can_assign_customer_owner(user):
         raise PermissionDenied("ไม่มีสิทธิ์มอบหมายผู้ดูแล")
+    if not (reason or "").strip():
+        raise ValueError("กรุณาระบุเหตุผลในการมอบหมายผู้ดูแล")
 
+    target = User.objects.filter(staff_code=(staff_code or "").strip(), is_active=True).first()
+    if not (staff_code or "").strip() or target is None:
+        raise ValueError("ไม่พบผู้ดูแลที่ใช้งานอยู่ตาม staff_code ที่เลือก")
+
+    leads = list(customer.leads.select_related("team").order_by("id"))
+    if not leads:
+        raise ValueError("ลูกค้ารายนี้ยังไม่มี Lead จึงมอบหมายผู้ดูแลไม่ได้")
+
+    for lead in leads:
+        reassign_caretaker(
+            actor=user, lead=lead, caretaker=target, reason=reason.strip(), manual=True
+        )
+
+    owner_display = owner_display or target.staff_name or ""
     customer.owner_display = owner_display
-    customer.staff_code = staff_code
+    customer.staff_code = target.staff_code
     customer.save(update_fields=["owner_display", "staff_code", "updated_at"])
 
-    updated = customer.orders.update(owner_display=owner_display, staff_code=staff_code)
-    Followup.objects.filter(customer=customer).update(owner_display=owner_display, staff_code=staff_code)
+    updated = customer.orders.update(owner_display=owner_display, staff_code=target.staff_code)
+    Followup.objects.filter(customer=customer).update(
+        owner_display=owner_display, staff_code=target.staff_code
+    )
     return updated + 1  # +1 for the customer row itself, matching the legacy "N rows updated" message
 
 

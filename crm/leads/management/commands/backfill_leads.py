@@ -29,6 +29,7 @@ from crm.domain.bangkok import day_start, epoch_day
 from crm.domain.ownership import derive_routing
 from crm.intake.services import upsert_intake
 from crm.leads.models import Lead, OwnershipSegment
+from crm.leads.order_status import HX63_SNAPSHOT_BASELINE
 from crm.leads.recompute import recompute_lead_missed_channel
 from crm.teams.models import Team, TeamAssignment
 
@@ -68,6 +69,16 @@ class Command(BaseCommand):
             ),
         )
         parser.add_argument(
+            "--no-migrated-baseline",
+            dest="no_migrated_baseline",
+            action="store_true",
+            help=(
+                "Do not stamp Lead.migrated_baseline_at. By default every "
+                "backfilled lead gets the HX63 snapshot baseline (D023) so "
+                "all later recomputes keep counting from it."
+            ),
+        )
+        parser.add_argument(
             "--dry-run",
             dest="dry_run",
             action="store_true",
@@ -87,6 +98,7 @@ class Command(BaseCommand):
                 raise CommandError(f"unknown --resolve-to team {options['resolve_to']!r}")
 
         self.hx63_baseline = None
+        self.stamp_baseline = not options.get("no_migrated_baseline")
         if options.get("hx63_baseline"):
             from datetime import datetime
 
@@ -272,6 +284,11 @@ class Command(BaseCommand):
                         "routing_state": routing.routing_state,
                         "ownership_policy": team.ownership_policy,
                         "ownership_started_at": now,
+                        "migrated_baseline_at": (
+                            (self.hx63_baseline or HX63_SNAPSHOT_BASELINE)
+                            if self.stamp_baseline
+                            else None
+                        ),
                         "last_order_at": last_order_at,
                         "total_orders": rollup.get("order_total", 0) or 0,
                         "access_team_ids": access["access_team_ids"],
@@ -291,10 +308,8 @@ class Command(BaseCommand):
                 # baseline. From the backfill's own baseline the answer is 0
                 # for every lead by construction, so calling it otherwise is a
                 # full order-history read per lead to store a zero.
-                if self.hx63_baseline is not None:
-                    recompute_lead_missed_channel(
-                        lead=lead, hx63_baseline=self.hx63_baseline
-                    )
+                if lead.migrated_baseline_at is not None and (rollup.get("order_total") or 0) > 0:
+                    recompute_lead_missed_channel(lead=lead)
             created_leads += 1
 
         if intake_batch:

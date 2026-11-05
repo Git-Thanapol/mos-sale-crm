@@ -89,3 +89,34 @@ def order_history(customer: Customer, after_cursor: str | None = None) -> Keyset
             (last.order_date.isoformat() if last.order_date else None, last.id)
         )
     return KeysetPage(items=items, next_cursor=next_cursor, has_more=has_more)
+
+
+def caretaker_candidates(lead: Lead, limit: int = 200) -> list:
+    """Users the server would accept as this lead caretaker: active, holding a
+    lead-holding role, and belonging to the LEAD team (open TeamAssignment for
+    a telesale, team in scope for a TEAM_LEAD). Mirrors
+    crm.leads.services.validate_caretaker_target."""
+    from crm.accounts.models import User
+    from crm.core.permissions import is_team_lead, is_telesell, team_scope
+    from crm.teams.models import TeamAssignment
+
+    code = lead.team.code
+    member_ids = set(
+        TeamAssignment.objects.filter(team_code=code, effective_to__isnull=True).values_list(
+            "user_id", flat=True
+        )
+    )
+    users = (
+        User.objects.filter(is_active=True)
+        .filter(Q(pk__in=member_ids) | Q(team_scope__contains=[code]))
+        .order_by("staff_name", "email")
+    )
+    out = []
+    for user in users:
+        if (is_telesell(user) and user.pk in member_ids) or (
+            is_team_lead(user) and code in team_scope(user)
+        ):
+            out.append(user)
+            if len(out) >= limit:
+                break
+    return out

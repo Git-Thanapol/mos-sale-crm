@@ -21,7 +21,7 @@
 }
 
 .crm-table__header .crm-table__cell {
-  background: var(--c-accent);
+  background: var(--c-accent-strong);
   color: var(--c-accent-ink);
   font-weight: 700;
   position: sticky;

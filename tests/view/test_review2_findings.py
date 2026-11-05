@@ -217,7 +217,8 @@ def test_a_viewer_who_is_caretaker_cannot_post_either(client):
         customer=make_customer(_uid="0000008", staff_code="S0001"), caretaker=viewer
     )
     login(client, viewer)
-    assert client.post(reverse("leads:add_note", args=[lead.id]), {"body": "x"}).status_code == 403
+    # Out of scope for a viewer: 404 (no existence oracle), still no mutation.
+    assert client.post(reverse("leads:add_note", args=[lead.id]), {"body": "x"}).status_code == 404
 
 
 def test_a_telesale_caretaker_is_still_allowed():

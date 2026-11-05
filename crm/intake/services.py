@@ -9,7 +9,7 @@ from crm.accounts.models import User
 from crm.domain.access import derive_lead_access
 from crm.domain.enums import SOURCE_KINDS
 from crm.intake.models import IntakeItem
-from crm.leads.models import Lead, LeadAuditEvent
+from crm.leads.models import Lead, LeadAuditEvent, OwnershipSegment
 from crm.teams.models import Team
 
 
@@ -45,8 +45,15 @@ def resolve_intake_to_team(*, actor, intake: IntakeItem, team: Team) -> Lead:
     intakes for the same customer converge on one Lead rather than creating a
     second. Creates it otherwise.
     """
-    if intake.status != "GLOBAL_UNASSIGNED":
-        raise ValueError(f"INTAKE_ALREADY_RESOLVED:{intake.status}")
+    # Lock the intake row and re-read its status INSIDE the transaction: two
+    # editors resolving the same intake concurrently must not both pass the
+    # check on a stale in-memory object and create two audit trails.
+    locked = IntakeItem.objects.select_for_update().select_related("customer").get(pk=intake.pk)
+    intake.refresh_from_db()
+    if locked.status != "GLOBAL_UNASSIGNED":
+        raise ValueError(f"INTAKE_ALREADY_RESOLVED:{locked.status}")
+    if not team.active:
+        raise ValueError(f"TEAM_INACTIVE:{team.code}")
 
     lead, created = Lead.objects.get_or_create(
         team=team,
@@ -58,11 +65,25 @@ def resolve_intake_to_team(*, actor, intake: IntakeItem, team: Team) -> Lead:
         },
     )
     if created:
-        # No caretaker yet: the team owns it until someone is assigned.
+        # No caretaker yet: the team owns it until someone is assigned. A new
+        # Lead also gets its initial open OwnershipSegment (caretaker null) and
+        # ownership_started_at, as backfill does: the missed-channel baseline
+        # is "the open segment", and a lead with none falls back to created_at.
+        now = timezone.now()
         access = derive_lead_access(team.code, None, frozenset())
         lead.access_team_ids = access["access_team_ids"]
         lead.access_user_ids = access["access_user_ids"]
-        lead.save(update_fields=["access_team_ids", "access_user_ids", "updated_at"])
+        lead.ownership_started_at = now
+        lead.save(
+            update_fields=["access_team_ids", "access_user_ids", "ownership_started_at", "updated_at"]
+        )
+        OwnershipSegment.objects.create(
+            lead=lead,
+            caretaker=None,
+            started_at=now,
+            reason="INTAKE_CONVERTED",
+            created_by=actor if isinstance(actor, User) else None,
+        )
 
     intake.status = "CONVERTED"
     intake.assigned_team = team

@@ -4,6 +4,8 @@ Run via: docker compose exec -T web python -m pytest tests/view/leadui/test_cust
 """
 
 import re
+
+from crm.leadui.labels_th import th_label
 from datetime import date, timedelta
 
 import pytest
@@ -128,7 +130,7 @@ def test_lead_links_are_one_per_visible_lead(client, editor, customer):
     for lead, team, chip in ((first, "CRM Team", "FOLLOWING"), (second, "Upsell Team", "NEW")):
         assert re.search(
             r'<a class="list-button v2-link-row" href="%s"><span>%s</span><span class="chip neutral">%s</span></a>'
-            % (re.escape(reverse("leadui:lead_detail", args=[lead.id])), team, chip),
+            % (re.escape(reverse("leadui:lead_detail", args=[lead.id])), team, th_label(chip)),
             body,
         ), team
 
@@ -202,7 +204,7 @@ def test_history_returns_a_section_of_rows_and_audits_once(client, editor, custo
     assert event.actor_id == editor.id and event.payload["kind"] == "ORDER_HISTORY_VIEW"
 
 
-def test_history_pages_by_keyset_and_audits_only_the_first_request(client, editor, customer):
+def test_history_pages_by_keyset_and_audits_every_request(client, editor, customer):
     orders(customer, 30)
     login(client, editor)
     first = client.get(history_url(customer)).content.decode()
@@ -212,7 +214,7 @@ def test_history_pages_by_keyset_and_audits_only_the_first_request(client, edito
     second = client.get(more).content.decode()
     assert second.count('class="history-row"') == 5
     assert "โหลดเพิ่ม" not in second and "<section" not in second
-    assert audits(customer).count() == 1
+    assert audits(customer).count() == 2  # every page is audited
     seen = re.findall(r"<strong>(SO-[^<]+)</strong>", first + second)
     assert len(seen) == 30 and len(set(seen)) == 30
 

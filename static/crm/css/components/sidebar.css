@@ -26,7 +26,7 @@
 .crm-sidebar__item:hover { background: var(--c-accent-weak); }
 
 .crm-sidebar__item--active {
-  background: var(--c-accent);
+  background: var(--c-accent-strong);
   color: var(--c-accent-ink);
   font-weight: 600;
 }
@@ -55,7 +55,32 @@
 .crm-sidebar__subitem:hover { background: var(--c-accent-weak); }
 
 .crm-sidebar__subitem--active {
-  background: var(--c-accent);
+  background: var(--c-accent-strong);
   color: var(--c-accent-ink);
   font-weight: 600;
 }
+
+/* Arrow beside a parent item: shows or hides its sub-menu (_sidebar.html). */
+.crm-sidebar__row { display: flex; align-items: center; gap: var(--space-1); margin-bottom: 2px; }
+.crm-sidebar__row .crm-sidebar__item { flex: 1; min-width: 0; margin-bottom: 0; }
+
+.crm-sidebar .crm-sidebar__sub-toggle {
+  flex: none;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--c-ink-2);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.crm-sidebar__sub-toggle:hover { background: var(--c-accent-weak); color: var(--c-ink); }
+.crm-sidebar__sub-toggle span { display: inline-block; transition: transform .15s ease; }
+.crm-sidebar__sub-toggle[aria-expanded="false"] span { transform: rotate(-90deg); }

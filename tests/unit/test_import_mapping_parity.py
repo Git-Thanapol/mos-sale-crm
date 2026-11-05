@@ -17,7 +17,14 @@ from crm.domain import mapping, status_map, thai_time
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "tests" / "fixtures" / "crmv2"
-PROFILES = {p["profileId"]: p for p in json.loads((ROOT / "crm" / "importv2" / "profiles.json").read_text("utf-8"))}
+# Only version 1 of each profile is prototype-generated (the fixtures were produced
+# by executing the prototype); later versions (litedetailorder@2, Nov 2026) are
+# hand-added for the client's new exports and are covered by tests/db/test_importv2_nov2026_sources.py.
+PROFILES = {
+    p["profileId"]: p
+    for p in json.loads((ROOT / "crm" / "importv2" / "profiles.json").read_text("utf-8"))
+    if p["version"] == 1
+}
 
 pytestmark = pytest.mark.unit
 

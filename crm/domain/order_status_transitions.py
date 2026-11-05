@@ -34,6 +34,9 @@ def classify_order_status_transition(current: str, incoming: str, allow_reversal
         return "CANCELLATION"
     if current_negative:
         return "TERMINAL"
+    if incoming not in _ORDER_RANK or current not in _ORDER_RANK:
+        # An unmapped status is never ranked or guessed: block it explicitly.
+        return "INVALID"
     if _ORDER_RANK[incoming] > _ORDER_RANK[current]:
         return "FORWARD"
     return "REVERSAL"
@@ -57,6 +60,8 @@ _SHIPPING_FORWARD = {
 def classify_shipping_transition(current: str, incoming: str, allow_reversal: bool = False) -> str:
     if current == incoming:
         return "SAME"
+    if current not in _SHIPPING_FORWARD or incoming not in _SHIPPING_FORWARD:
+        return "INVALID"
     if incoming in _SHIPPING_FORWARD[current]:
         # RETURNING/RETURNED are exceptional outcomes, not normal progress.
         return "CANCELLATION" if incoming in ("RETURNING", "RETURNED") else "FORWARD"
@@ -83,6 +88,8 @@ def classify_payment_transition(current: str, incoming: str, allow_reversal: boo
         return "SAME" if current == "REFUNDED" else "CANCELLATION"
     if current == "REFUNDED":
         return "TERMINAL"
+    if incoming not in _PAYMENT_RANK or current not in _PAYMENT_RANK:
+        return "INVALID"
     return "FORWARD" if _PAYMENT_RANK[incoming] > _PAYMENT_RANK[current] else "REVERSAL"
 
 

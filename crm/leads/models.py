@@ -80,6 +80,13 @@ class Lead(models.Model):
     next_follow_at = models.DateTimeField(null=True, blank=True)
 
     missed_channel_count = models.PositiveIntegerField(default=0)
+    #: D023: for an HX63-migrated Lead, missed-channel counting never starts
+    #: before this instant (the HX63 snapshot). Persisted so every later
+    #: recompute keeps it, not just the one backfill run that was given a flag.
+    migrated_baseline_at = models.DateTimeField(null=True, blank=True)
+    #: Optimistic-lock counter. Bumped by every service write that changes
+    #: ownership/lifecycle; a stale form (older version) is rejected.
+    version = models.PositiveIntegerField(default=1)
     no_answer_streak = models.PositiveIntegerField(default=0)
 
     stopped_reason = models.CharField(

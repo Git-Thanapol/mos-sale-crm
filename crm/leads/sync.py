@@ -39,7 +39,7 @@ def sync_leads_for_order(*, actor, order, open_new_cycle: bool = True) -> int:
     from crm.followcycles.models import FollowupCycle
     from crm.followcycles.services import open_cycle
     from crm.leads.recompute import recompute_lead_missed_channel
-    from crm.leads.services import apply_order_to_lead
+    from crm.leads.services import apply_order_to_lead, order_facts
 
     leads = list(
         Lead.objects.select_related("team", "caretaker").filter(customer_id=order.customer_id)
@@ -48,6 +48,9 @@ def sync_leads_for_order(*, actor, order, open_new_cycle: bool = True) -> int:
         return 0
 
     from django.db import transaction
+
+    # Resolve the closer ONCE per order, not once per lead (was an N+1 User query).
+    facts = order_facts(order)
 
     touched = 0
     for lead in leads:
@@ -63,7 +66,7 @@ def sync_leads_for_order(*, actor, order, open_new_cycle: bool = True) -> int:
                     lead=lead, status="ACTIVE", lock_active=True
                 ).exists()
                 apply_order_to_lead(
-                    actor=actor, lead=lead, order=order, lock_active=lock_active
+                    actor=actor, lead=lead, order=order, lock_active=lock_active, facts=facts
                 )
                 _refresh_order_rollups(lead=lead, order=order)
                 recompute_lead_missed_channel(lead=lead)

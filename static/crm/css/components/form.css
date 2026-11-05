@@ -22,7 +22,7 @@
   text-decoration: none;
 }
 
-.crm-btn--primary { background: var(--c-accent); color: var(--c-accent-ink); }
-.crm-btn--secondary { background: var(--c-accent-weak); color: var(--c-accent); }
+.crm-btn--primary { background: var(--c-accent-strong); color: var(--c-accent-ink); }
+.crm-btn--secondary { background: var(--c-accent-weak); color: var(--c-accent-text); }
 
 .crm-error { color: var(--c-danger); font-size: 13px; margin-top: var(--space-1); }

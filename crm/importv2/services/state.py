@@ -48,16 +48,31 @@ def transition(
     reason: str = "",
     blocking_conflicts_open: int | None = None,
     confirmed_by=None,
+    admin_retry: bool = False,
 ) -> bool:
     """Move the batch, raising ImportTransitionError when the machine forbids it.
 
     Returns True when the status actually changed (a self-transition only
     appends a history entry). Saves the batch.
+
+    `admin_retry` unlocks exactly one edge the pure machine (crm.domain) does
+    not have: ROLLBACK_FAILED -> ROLLING_BACK, the Admin's "retry rollback"
+    after reconciling by hand. Remove it once crm.domain.import_state allows
+    that edge itself.
     """
     batch.refresh_from_db(
         fields=["status", "transition_history", "attempt_count", "confirmed_by", "confirmed_at", "committed_at", "rolled_back_at"]
     )
     now = round(dj_timezone.now().timestamp() * 1000)
+    if admin_retry and batch.status == "ROLLBACK_FAILED" and to_status == "ROLLING_BACK":
+        batch.transition_history = [
+            *(batch.transition_history or []),
+            {"from": "ROLLBACK_FAILED", "to": "ROLLING_BACK", "at": now,
+             "actor": _label(actor) or "system", "reason": reason},
+        ]
+        batch.status = "ROLLING_BACK"
+        batch.save()
+        return True
     context = {
         "actor": _label(actor) or "system",
         "at": now,

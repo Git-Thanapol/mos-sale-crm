@@ -11,7 +11,10 @@ the parity fixtures pin those reasons. Do not reorder to "simplify".
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections.abc import Iterable
 from datetime import datetime
+
+from crm.domain.enums import ORDER_STATUSES, is_order_terminal_negative
 
 
 @dataclass(frozen=True)
@@ -199,3 +202,49 @@ def evaluate_stopped_reactivation(
         same_caretaker_as_before=closer is not None and closer == prior_caretaker_user_id,
         team_code=order.closer_team_code,
     )
+
+
+def is_order_eligible_for_ownership(
+    order_status: str | None,
+    ordered_at: datetime | None,
+    ownership_started_at: datetime | None,
+) -> bool:
+    """Should this order be shown to `resolve_ownership` at all?
+
+    `resolve_ownership` is parity-pinned and evaluates exactly one order, so
+    invalid and stale orders have to be dropped by the caller BEFORE it runs:
+
+    - a CANCELLED / COD_RETURNED order is not a sale and must not move a
+      lead (an unknown or unmapped status is treated the same, never guessed);
+    - an order dated before `ownership_started_at` (the instant of the order
+      that decided the current ownership segment) is stale; re-importing old
+      history must not roll a lead back to an earlier closer.
+    An order exactly at the segment start is kept (not earlier).
+    """
+    if ordered_at is None:
+        return False
+    if order_status is None or order_status not in ORDER_STATUSES:
+        return False
+    if is_order_terminal_negative(order_status):
+        return False
+    if ownership_started_at is not None and ordered_at < ownership_started_at:
+        return False
+    return True
+
+
+def filter_ownership_orders(
+    orders: Iterable[tuple[OwnershipOrderFacts, str | None]],
+    ownership_started_at: datetime | None,
+) -> list[OwnershipOrderFacts]:
+    """Keep eligible `(facts, order_status)` pairs, oldest first.
+
+    Call-site contract: feed each returned order to `resolve_ownership` in
+    order, advancing `ownership_started_at` to `decision.new_segment_started_at`
+    whenever `decision.changed`.
+    """
+    kept = [
+        facts
+        for facts, status in orders
+        if is_order_eligible_for_ownership(status, facts.ordered_at, ownership_started_at)
+    ]
+    return sorted(kept, key=lambda f: (f.ordered_at, f.order_id))

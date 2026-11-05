@@ -2,54 +2,100 @@
 {% load v2 %}
 {% block title %}นำเข้าข้อมูล · Sales CRM{% endblock %}
 {% block v2_content %}
-  {% include "leadui/_page_title.html" with title="นำเข้าข้อมูล" subtitle="ไม่มี business write ก่อน Confirm; Batch Business Date ต้องยืนยันสำหรับ Tele" %}
-  <div class="stepper">{% for step in steps %}<div class="step"><span>{{ forloop.counter }}</span>{{ step }}</div>{% endfor %}</div>
-  <section class="detail-card">
-    <div class="lead-heading">
-      <div>
-        <h2>{{ batch.file_name|default:"ยังไม่ได้เลือกไฟล์" }}</h2>
-        <p>{% if batch %}{{ batch.mapping_profile_id }}@{{ batch.mapping_profile_version }} · {{ batch.row_count }} rows · อัปโหลดโดย {{ batch.uploaded_by.email|default:"—" }}{% else %}เลือกไฟล์ .xlsx หรือ .csv เพื่อเริ่ม{% endif %}</p>
-      </div>
-      {% if batch %}{% v2_chip batch.status %}{% endif %}
+  {% include "leadui/_page_title.html" with title="นำเข้าข้อมูล" subtitle="ข้อมูลจริงจะเปลี่ยนตอนกด Commit เท่านั้น อัปโหลดซ้ำหรือมาอัปโหลดทีหลังได้" %}
+
+  <div class="upload-slots">
+    {% for slot in slots %}
+      <section class="upload-slot{% if slot.selected %} selected{% endif %}" id="slot-{{ slot.kind }}">
+        <h2><span class="slot-number">{{ slot.number }}</span>{{ slot.title }}</h2>
+        <p>{{ slot.provides }}</p>
+        {% if slot.batch %}
+          <p class="slot-file">{{ slot.batch.file_name }} · {{ slot.batch.row_count|thcount }} แถว</p>
+          <p>{% v2_chip slot.batch.status %}{% if not slot.selected %} <a href="?batch={{ slot.batch.batch_id }}">ดูไฟล์นี้</a>{% endif %}</p>
+        {% else %}
+          <p class="slot-file">ยังไม่ได้เลือกไฟล์</p>
+        {% endif %}
+        {% if slot.hint %}<p><span class="chip neutral">{{ slot.hint }}</span></p>{% endif %}
+        <form method="post" action="{% url 'leadui:import_upload' %}" enctype="multipart/form-data" data-v2-autosubmit>
+          {% csrf_token %}
+          <input type="hidden" name="slot" value="{{ slot.kind }}">
+          <label>{% if slot.batch %}อัปโหลดไฟล์ใหม่{% else %}เลือกไฟล์{% endif %} (.xlsx / .csv)<input type="file" name="file" accept=".xlsx,.csv" aria-label="เลือกไฟล์ {{ slot.title }}"></label>
+          <noscript><button type="submit">อัปโหลด</button></noscript>
+        </form>
+      </section>
+    {% endfor %}
+  </div>
+
+  <section class="detail-card next-step">
+    <div class="stepper five">{% for stage in stages %}<div class="step {{ stage.state }}"><span>{{ stage.number }}</span>{{ stage.label }}</div>{% endfor %}</div>
+    {% if batch %}<p class="next-step-file">{{ batch.file_name }} · {{ batch.mapping_profile_id }}@{{ batch.mapping_profile_version }} · อัปโหลดโดย {{ batch.uploaded_by.email|default:"—" }} {% v2_chip batch.status %}</p>{% endif %}
+    <h2>{{ step.title }}</h2>
+    <p>{{ step.help }}</p>
+    {% if needs_batch_date %}
+      <form method="post" action="{% url 'leadui:import_date' batch.batch_id %}" data-v2-autosubmit>
+        {% csrf_token %}
+        <label>Batch Business Date (Asia/Bangkok)<input type="date" name="batch_business_date" aria-label="Batch Business Date" value="{{ batch_date }}"></label>
+      </form>
+    {% endif %}
+    <div class="actions">
+      {% if step.action == "preview" %}
+        <form method="post" action="{% url 'leadui:import_preview' batch.batch_id %}">{% csrf_token %}<button type="submit">{{ step.label }}</button></form>
+      {% elif step.action == "conflicts" %}
+        <a class="v2-btn" href="{% url 'leadui:import_conflicts' %}?batch={{ batch.batch_id }}">{{ step.label }}</a>
+      {% elif step.action == "confirm" %}
+        <form method="post" action="{% url 'leadui:import_confirm' batch.batch_id %}">
+          {% csrf_token %}
+          <input type="hidden" name="preview_hash" value="{{ batch.preview_hash }}">
+          <input type="hidden" name="operation_key" value="{{ operation_key }}-confirm">
+          <button type="submit">{{ step.label }}</button>
+        </form>
+      {% elif step.action == "commit" %}
+        <form method="post" action="{% url 'leadui:import_commit' batch.batch_id %}">
+          {% csrf_token %}
+          <input type="hidden" name="operation_key" value="{{ operation_key }}-commit">
+          <button type="submit">{{ step.label }}</button>
+        </form>
+      {% elif step.action == "next_file" %}
+        <a class="v2-btn" href="#slot-LITE_DETAIL_ORDER">{{ step.label }}</a>
+      {% endif %}
+      {% if can_repreview %}
+        <form method="post" action="{% url 'leadui:import_preview' batch.batch_id %}">{% csrf_token %}<button type="submit" class="secondary">สร้าง Preview ใหม่</button></form>
+      {% endif %}
+      {% if batch %}<a class="next-step-link" href="{% url 'leadui:import_history' %}">ประวัตินำเข้า</a>{% endif %}
     </div>
+    {% if can_cancel %}
+      <details class="next-step-more">
+        <summary>ยกเลิก Batch</summary>
+        <form method="post" action="{% url 'leadui:import_cancel' batch.batch_id %}">
+          {% csrf_token %}
+          <input type="hidden" name="operation_key" value="{{ operation_key }}-cancel">
+          <input type="text" name="reason" placeholder="เหตุผลที่ยกเลิก" required minlength="3" aria-label="เหตุผลที่ยกเลิก">
+          <div class="actions">
+            <button type="submit" class="secondary">Cancel Batch</button>
+            <button type="submit" name="restage" value="1" class="secondary">Cancel + สร้าง Batch ใหม่จากไฟล์เดิม</button>
+          </div>
+        </form>
+      </details>
+    {% endif %}
+  </section>
+
+  <section class="detail-card">
+    <div class="metric-grid">
+      <div><strong>{{ aggregate.newCustomers|default:0 }}</strong><span>ลูกค้าใหม่</span></div>
+      <div><strong>{{ aggregate.newOrders|default:0 }}</strong><span>ออเดอร์ใหม่</span></div>
+      <div><strong>{{ aggregate.safeUpdates|default:0 }}</strong><span>อัปเดต</span></div>
+      <div><strong>{{ aggregate.conflicts|default:0 }}</strong><span>ข้อขัดแย้ง</span></div>
+    </div>
+    {% for issue in blocks %}<div class="state-box error"><strong>{{ issue.code|th }}</strong><span>{{ issue.message }}</span></div>{% endfor %}
+    {% for issue in warnings %}<div class="callout">{{ issue.code|th }}: {{ issue.message }}</div>{% endfor %}
+  </section>
+
+  <details class="other-upload"{% if other_file %} open{% endif %}>
+    <summary>นำเข้าไฟล์ประเภทอื่น</summary>
     <form method="post" action="{% url 'leadui:import_upload' %}" enctype="multipart/form-data" data-v2-autosubmit>
       {% csrf_token %}
       <label>เลือกไฟล์นำเข้า (.xlsx / .csv)<input type="file" name="file" accept=".xlsx,.csv" aria-label="เลือกไฟล์นำเข้า"></label>
       <noscript><button type="submit">อัปโหลด</button></noscript>
     </form>
-    <div class="metric-grid">
-      <div><strong>{{ aggregate.newCustomers|default:0 }}</strong><span>ลูกค้าใหม่</span></div>
-      <div><strong>{{ aggregate.newOrders|default:0 }}</strong><span>ออเดอร์ใหม่</span></div>
-      <div><strong>{{ aggregate.safeUpdates|default:0 }}</strong><span>อัปเดต</span></div>
-      <div><strong>{{ aggregate.conflicts|default:0 }}</strong><span>Conflict</span></div>
-    </div>
-    {% for issue in blocks %}<div class="state-box error"><strong>{{ issue.code }}</strong><span>{{ issue.message }}</span></div>{% endfor %}
-    {% for issue in warnings %}<div class="callout">{{ issue.code }}: {{ issue.message }}</div>{% endfor %}
-    {% if batch %}
-      <form method="post" action="{% url 'leadui:import_date' batch.batch_id %}" data-v2-autosubmit>
-        {% csrf_token %}
-        <label>Batch Business Date (Asia/Bangkok)<input type="date" name="batch_business_date" aria-label="Batch Business Date" value="{{ batch_date }}"></label>
-      </form>
-    {% else %}
-      <label>Batch Business Date (Asia/Bangkok)<input type="date" aria-label="Batch Business Date" disabled></label>
-    {% endif %}
-    <div class="actions">
-      {% if batch %}
-        <form method="post" action="{% url 'leadui:import_preview' batch.batch_id %}">{% csrf_token %}<button type="submit">สร้าง Preview</button></form>
-        <form method="post" action="{% url 'leadui:import_confirm' batch.batch_id %}">
-          {% csrf_token %}
-          <input type="hidden" name="preview_hash" value="{{ batch.preview_hash }}">
-          <input type="hidden" name="operation_key" value="{{ operation_key }}-confirm">
-          <button type="submit">Confirm</button>
-        </form>
-        <form method="post" action="{% url 'leadui:import_commit' batch.batch_id %}">
-          {% csrf_token %}
-          <input type="hidden" name="operation_key" value="{{ operation_key }}-commit">
-          <button type="submit">Commit</button>
-        </form>
-      {% else %}
-        <button type="button" disabled>สร้าง Preview</button><button type="button" disabled>Confirm</button><button type="button" disabled>Commit</button>
-      {% endif %}
-    </div>
-  </section>
+  </details>
 {% endblock %}

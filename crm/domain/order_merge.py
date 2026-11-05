@@ -148,6 +148,18 @@ def merge_order(existing: dict, incoming: dict, allow_reversal: bool = False) ->
             continue
 
         if field in STATUS_ORDER_FIELDS:
+            # Stale check first: a status from an older source must never
+            # overwrite a newer one, even when it looks like a forward move.
+            status_incoming_at = source.get("sourceUpdatedAt")
+            status_existing_at = (existing_provenance.get(field) or {}).get("sourceUpdatedAt")
+            if (
+                status_incoming_at is not None
+                and status_existing_at is not None
+                and status_incoming_at < status_existing_at
+            ):
+                record(field, "STALE_INPUT", before, after,
+                       "incoming source timestamp is older than the stored field provenance")
+                continue
             verdict = _STATUS_CLASSIFIER[field](before, after, allow_reversal)
             record(
                 field, _verdict_kind(verdict, allow_reversal), before, after,

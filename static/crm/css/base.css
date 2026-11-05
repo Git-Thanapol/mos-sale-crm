@@ -1,30 +1,12 @@
 /* TODO(Phase 1 follow-up): vendor NotoSansThai-{Regular,SemiBold,Bold}.woff2
    into static/crm/fonts/ before Phase 7 cutover — self-hosted only, no
    Google Fonts (the no-online-services rule applies to the browser too).
-   Until then the font-family stack below falls back to the OS's Thai-capable
-   system font, which is why "Noto Sans Thai" is listed first but not @font-face'd
-   yet: no broken network request, just an early fallback. */
-@font-face {
-  font-family: "Noto Sans Thai";
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url("../fonts/NotoSansThai-Regular.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Noto Sans Thai";
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  src: url("../fonts/NotoSansThai-SemiBold.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Noto Sans Thai";
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  src: url("../fonts/NotoSansThai-Bold.woff2") format("woff2");
-}
+   Until the files exist, "Noto Sans Thai" is listed first in the font stack
+   but deliberately NOT @font-face'd: declaring it pointed at missing files
+   made every page fire three 404s. Restore the three @font-face rules
+   (weights 400/600/700, font-display: swap, src ../fonts/NotoSansThai-*.woff2)
+   in the same commit that adds the files. Until then the stack falls back to
+   the OS's Thai-capable system font. */
 
 * { box-sizing: border-box; }
 
@@ -45,6 +27,50 @@ body {
 
 a { color: inherit; }
 
+/* Keyboard focus (WCAG 2.4.7). Only :focus-visible, so mouse clicks stay clean. */
+:focus-visible {
+  outline: 2px solid var(--c-accent-strong);
+  outline-offset: 2px;
+}
+
+/* Skip link (WCAG 2.4.1): off-screen until it receives keyboard focus. */
+.crm-skip-link {
+  position: absolute;
+  left: var(--space-2);
+  top: -64px;
+  z-index: 1000;
+  padding: var(--space-2) var(--space-4);
+  min-height: 24px;
+  background: var(--c-accent-strong);
+  color: var(--c-accent-ink);
+  border-radius: var(--r-input);
+  text-decoration: none;
+}
+.crm-skip-link:focus { top: var(--space-2); }
+
+/* <main> is a skip-link target; do not draw a ring when it is focused by it. */
+main:focus { outline: none; }
+
+/* Text for screen readers only. */
+.crm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Sub-heading under a page/section title (replaces bare <h5>). */
+.crm-subhead {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  margin: var(--space-4) 0 var(--space-2);
+}
+
 .crm-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -60,7 +86,7 @@ a { color: inherit; }
 .crm-eyebrow {
   font-size: var(--fs-eyebrow);
   font-weight: 700;
-  color: var(--c-accent);
+  color: var(--c-accent-text);
   text-transform: uppercase; /* ASCII eyebrow only, e.g. "CRM Core" — never on Thai text */
   letter-spacing: .04em;
   margin: 0 0 var(--space-2);

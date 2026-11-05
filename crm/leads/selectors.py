@@ -283,8 +283,35 @@ def _apply_sort(qs: QuerySet, sort: str, after_cursor: str | None, now: datetime
     return _seek(qs, after_cursor).order_by("last_order_at", "id")
 
 
+#: rank, next_follow_at, id, and the snapshot instant the ranks were computed at.
+WORK_CURSOR_KINDS = ("int", "datetime?", "int", "datetime?")
+
+
+def _split_work_cursor(after_cursor: str | None) -> tuple[str | None, datetime | None]:
+    """Split a WORK_PRIORITY cursor into (seek cursor, bound `now`).
+
+    workRank depends on "today" and age filters depend on `now`; recomputing
+    both per request lets rows change rank between pages (skips/duplicates
+    around midnight Bangkok). The first page's instant therefore travels in the
+    cursor. A cursor of the wrong shape (another sort, hand-edited, no
+    snapshot) is ignored: the caller starts from the first page.
+    """
+    parts = decode_cursor_parts(after_cursor, WORK_CURSOR_KINDS)
+    if parts is None:
+        return None, None
+    rank, follow, last_id, snapshot = parts
+    if snapshot is None or snapshot.tzinfo is None:
+        return None, None
+    return encode_cursor((rank, follow.isoformat() if follow else None, last_id)), snapshot
+
+
 def _page(
-    qs: QuerySet, limit: int, *, key=lambda row: row.last_order_at, sort: str | None = None
+    qs: QuerySet,
+    limit: int,
+    *,
+    key=lambda row: row.last_order_at,
+    sort: str | None = None,
+    now: datetime | None = None,
 ) -> KeysetPage:
     """Fetch limit+1 rows to learn whether more exist, without a COUNT(*)."""
     limit = _clamp_limit(limit)
@@ -296,8 +323,9 @@ def _page(
         last = items[-1]
         if sort == "WORK_PRIORITY":
             follow = last.next_follow_at
+            snapshot = (now or timezone.now()).isoformat()
             next_cursor = encode_cursor(
-                (last.work_rank, follow.isoformat() if follow else None, last.id)
+                (last.work_rank, follow.isoformat() if follow else None, last.id, snapshot)
             )
         else:
             value = key(last)
@@ -305,17 +333,28 @@ def _page(
     return KeysetPage(items=items, next_cursor=next_cursor, has_more=has_more)
 
 
+def _lead_queue_and_now(
+    user, filters: LeadQueueFilters, after_cursor: str | None, limit: int, *, now=None
+) -> tuple[QuerySet, datetime]:
+    """The seek query plus the instant it was computed at.
+
+    For WORK_PRIORITY the instant is taken from the cursor when it carries one,
+    so every page of one traversal ranks against the same `now`.
+    """
+    if filters.sort == "WORK_PRIORITY":
+        after_cursor, snapshot = _split_work_cursor(after_cursor)
+        now = now or snapshot
+    qs = Lead.objects.select_related("customer", "team", "caretaker").for_user(user)
+    now = now or timezone.now()
+    qs = _apply_filters(qs, filters, now)
+    return _apply_sort(qs, filters.sort, after_cursor, now), now
+
+
 def _lead_queue_queryset(
     user, filters: LeadQueueFilters, after_cursor: str | None, limit: int, *, now=None
 ) -> QuerySet:
     """The seek query, exposed so tests can assert no OFFSET reaches the SQL."""
-    qs = (
-        Lead.objects.select_related("customer", "team", "caretaker")
-        .for_user(user)
-    )
-    now = now or timezone.now()
-    qs = _apply_filters(qs, filters, now)
-    return _apply_sort(qs, filters.sort, after_cursor, now)
+    return _lead_queue_and_now(user, filters, after_cursor, limit, now=now)[0]
 
 
 def lead_queue(
@@ -325,9 +364,8 @@ def lead_queue(
     after_cursor: str | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
-    return _page(
-        _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
-    )
+    qs, now = _lead_queue_and_now(user, filters, after_cursor, limit)
+    return _page(qs, limit, sort=filters.sort, now=now)
 
 
 def my_work_queue(
@@ -337,7 +375,7 @@ def my_work_queue(
     after_cursor: str | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> KeysetPage:
-    """Acceptance item A "My Work", scoped as the prototype's pageMyWork does.
+    """Acceptance item A "My Work", scoped as the prototype pageMyWork does.
 
     A telesale (TELESALE) sees only leads they are caretaker of: the caretaker
     is pinned to `user` HERE, server-side, and any caretaker arriving from a
@@ -348,9 +386,8 @@ def my_work_queue(
     """
     if is_telesell(user):
         filters = replace(filters, caretaker_user_id=str(getattr(user, "pk", "") or ""))
-    return _page(
-        _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
-    )
+    qs, now = _lead_queue_and_now(user, filters, after_cursor, limit)
+    return _page(qs, limit, sort=filters.sort, now=now)
 
 
 def team_unassigned_queue(
@@ -370,10 +407,9 @@ def team_unassigned_queue(
         team_code=getattr(team, "code", "") or filters.team_code,
         exclude_stopped=True,
     )
-    qs = _lead_queue_queryset(user, filters, after_cursor, limit).filter(
-        routing_state="TEAM_UNASSIGNED"
-    )
-    return _page(qs, limit, sort=filters.sort)
+    qs, now = _lead_queue_and_now(user, filters, after_cursor, limit)
+    qs = qs.filter(routing_state="TEAM_UNASSIGNED")
+    return _page(qs, limit, sort=filters.sort, now=now)
 
 
 def stopped_review_queue(
@@ -389,9 +425,8 @@ def stopped_review_queue(
     filtered on lifecycle_status and never on routing_state.
     """
     filters = replace(filters, lifecycle_status="STOPPED", exclude_stopped=False)
-    return _page(
-        _lead_queue_queryset(user, filters, after_cursor, limit), limit, sort=filters.sort
-    )
+    qs, now = _lead_queue_and_now(user, filters, after_cursor, limit)
+    return _page(qs, limit, sort=filters.sort, now=now)
 
 
 def reallocation_review_queue(
@@ -434,11 +469,13 @@ def global_unassigned_queue(
     the order the work should be picked up in.
     """
     qs = IntakeItem.objects.select_related("customer").filter(status="GLOBAL_UNASSIGNED")
-    cursor = decode_cursor(after_cursor)
-    if cursor is not None:
-        raw_value, last_id = cursor
-        if raw_value is not None:
-            parsed = datetime.fromisoformat(raw_value)
-            qs = qs.filter(Q(created_at__gt=parsed) | Q(created_at=parsed, id__gt=last_id))
+    # Typed decode: wrong length / wrong types / unparseable date means "first
+    # page" (never an unpack error or a 500), as for every other cursor here.
+    parts = decode_cursor_parts(after_cursor, ("datetime?", "int"))
+    if parts is not None and parts[0] is not None:
+        parsed, last_id = parts
+        if parsed.tzinfo is None:
+            parsed = timezone.make_aware(parsed)
+        qs = qs.filter(Q(created_at__gt=parsed) | Q(created_at=parsed, id__gt=last_id))
     qs = qs.order_by("created_at", "id")
     return _page(qs, limit, key=lambda row: row.created_at)

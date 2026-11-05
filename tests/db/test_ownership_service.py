@@ -220,15 +220,11 @@ def test_an_active_lock_holds_ownership(actors):
     assert lead.caretaker_id == actors["u1"].id
 
 
-def test_ownership_resolution_ignores_order_status(actors):
-    """The reference implementation's resolveOwnership never reads order
-    status, and this port must not add that check.
-
-    Excluding cancelled and COD-returned orders is the missed-channel rule
-    (crm/domain/missed_channel.py), not an ownership rule. Filtering here as
-    well would double-apply it and diverge from the prototype — an order that
-    is later cancelled still moved ownership at the time it was closed, and
-    the audit trail has to say so.
+def test_ineligible_order_status_does_not_move_ownership(actors):
+    """Superseded rule: apply_order_to_lead drops cancelled, COD-returned and
+    unmapped-status orders BEFORE resolve_ownership
+    (crm.domain.ownership.is_order_eligible_for_ownership). The missed-channel
+    rule keeps its own exclusions in crm/domain/missed_channel.py.
     """
     lead = make_lead(caretaker=actors["u1"], policy={"ownershipPolicy": "LATEST_ORDER"})
     OwnershipSegment.objects.create(lead=lead, caretaker=actors["u1"], started_at=T0)
@@ -242,10 +238,10 @@ def test_ownership_resolution_ignores_order_status(actors):
         lock_active=False,
     )
 
-    assert decision.changed is True
-    assert decision.reason == "LATEST_ORDER"
+    assert decision.changed is False
     lead.refresh_from_db()
-    assert lead.caretaker_id == actors["u2"].id
+    assert lead.caretaker_id == actors["u1"].id
+    assert not OwnershipSegment.objects.filter(lead=lead, caretaker=actors["u2"]).exists()
 
 
 def test_assigning_a_caretaker_sets_routing_to_assigned(actors):

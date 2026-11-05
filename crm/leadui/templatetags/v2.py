@@ -10,6 +10,7 @@ from django import template
 from django.utils.html import format_html
 
 from crm.domain.bangkok import BANGKOK_TZ
+from crm.leadui.labels_th import th_label, th_summary
 
 register = template.Library()
 
@@ -40,7 +41,18 @@ def chip_tone(value: str) -> str:
 @register.simple_tag
 def v2_chip(value):
     value = "" if value is None else str(value)
-    return format_html('<span class="chip {}">{}</span>', chip_tone(value), value)
+    # Tone follows the machine code; the text shown is Thai (labels_th).
+    return format_html('<span class="chip {}">{}</span>', chip_tone(value), th_label(value))
+
+
+@register.filter(name="th")
+def th_filter(value):
+    return th_label(value)
+
+
+@register.filter(name="th_summary")
+def th_summary_filter(value):
+    return th_summary(value)
 
 
 def _to_bangkok(moment):

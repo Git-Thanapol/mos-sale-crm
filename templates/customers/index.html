@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}ลูกค้า · Sales CRM{% endblock %}
 {% block content %}
-{% include "components/_page_header.html" with title="ลูกค้า" subtitle="ค้นหาและดูข้อมูลลูกค้าแบบ server-side" %}
+{% include "components/_page_header.html" with title="ลูกค้า" subtitle="ค้นหาและดูข้อมูลลูกค้า" %}
 
 <form method="get" class="crm-card" style="margin-bottom:16px;">
   <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;">
@@ -15,8 +15,8 @@
       </select>
     </div>
     <div class="crm-form-group">
-      <label class="crm-label">ค้นหา</label>
-      <input class="crm-input" type="text" name="keyword" value="{{ filters.keyword }}"
+      <label class="crm-label" for="customers-keyword">ค้นหา</label>
+      <input class="crm-input" id="customers-keyword" type="text" name="keyword" value="{{ filters.keyword }}"
              placeholder="ชื่อ / เบอร์ / รหัสไปรษณีย์ / เลขคำสั่งซื้อ">
     </div>
   </div>

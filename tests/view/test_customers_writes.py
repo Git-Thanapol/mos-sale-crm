@@ -70,10 +70,23 @@ def test_assign_owner_cascades_to_orders_and_followup(client, editor):
     )
     Order.objects.create(customer=customer, order_no="O1", owner_display="เก่า", staff_code="S0001")
     Followup.objects.create(customer=customer, owner_display="เก่า", staff_code="S0001")
+    # Ownership now lives on the Lead: the target must be an active team member.
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from crm.teams.models import TeamAssignment
+    from tests.db.factories import make_lead
+
+    lead = make_lead(customer=customer)
+    target = User.objects.create_user(email="s2@example.com", password="x", role="พนักงาน", staff_code="S0002")
+    TeamAssignment.objects.create(
+        user=target, team_code=lead.team.code, effective_from=timezone.now() - timedelta(days=1)
+    )
 
     resp = client.post(
         reverse("customers:assign_owner", args=[customer.id]),
-        {"staff_code": "S0002", "owner_display": "ใหม่"},
+        {"staff_code": "S0002", "owner_display": "ใหม่", "reason": "โอนงาน"},
         follow=True,
     )
     assert resp.status_code == 200
@@ -82,6 +95,8 @@ def test_assign_owner_cascades_to_orders_and_followup(client, editor):
     assert customer.owner_display == "ใหม่"
     assert Order.objects.get(customer=customer).staff_code == "S0002"
     assert Followup.objects.get(customer=customer).staff_code == "S0002"
+    lead.refresh_from_db()
+    assert lead.caretaker_id == target.id
 
 
 def test_assign_owner_denied_for_non_editor(client, telesell_factory):

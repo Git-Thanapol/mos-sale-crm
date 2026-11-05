@@ -87,6 +87,8 @@ def test_backfill_assigns_a_uid_to_every_existing_row():
     assert not Customer.objects.filter(customer_uid__isnull=True).exists()
 
 
-def test_phone_key_remains_unique_in_this_plan():
-    # Plan 1 does not relax this; Plan 2 (import engine) does.
-    assert Customer._meta.get_field("phone_key").unique is True
+def test_phone_key_is_not_unique_but_stays_indexed():
+    # Dropped by customers.0006 (client request): unconfirmed identities may share a phone.
+    field = Customer._meta.get_field("phone_key")
+    assert field.unique is False
+    assert field.db_index is True

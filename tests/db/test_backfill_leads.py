@@ -161,8 +161,29 @@ def test_an_order_dated_yesterday_is_still_before_the_baseline():
     customer = make_customer(_uid="0000002", staff_code="S0001")
     make_user(email="s1@example.com", staff_code="S0001")
     make_order(customer=customer, closer=None, ordered_at=timezone.now() - timedelta(days=1))
-    call_command("backfill_leads", team_code="CRM_TEAM")
+    call_command("backfill_leads", team_code="CRM_TEAM", no_migrated_baseline=True)
     assert recompute_lead_missed_channel(lead=Lead.objects.get(customer=customer)) == 0
+
+
+def test_backfill_stamps_the_d023_baseline_and_it_survives_recompute():
+    from crm.leads.order_status import HX63_SNAPSHOT_BASELINE
+
+    customer = make_customer(_uid="0000009", staff_code="S0001")
+    make_user(email="s1@example.com", staff_code="S0001")
+    # Between the HX63 snapshot and the backfill's own segment start.
+    make_order(customer=customer, closer=None, ordered_at=timezone.now() - timedelta(days=1))
+    call_command("backfill_leads", team_code="CRM_TEAM")
+    lead = Lead.objects.get(customer=customer)
+    assert lead.migrated_baseline_at == HX63_SNAPSHOT_BASELINE
+    assert lead.missed_channel_count == 1
+    assert recompute_lead_missed_channel(lead=lead) == 1
+
+
+def test_no_migrated_baseline_flag_leaves_it_null():
+    customer = make_customer(_uid="0000010", staff_code="S0001")
+    make_user(email="s1@example.com", staff_code="S0001")
+    call_command("backfill_leads", team_code="CRM_TEAM", no_migrated_baseline=True)
+    assert Lead.objects.get(customer=customer).migrated_baseline_at is None
 
 
 def test_the_hx63_baseline_option_counts_from_the_snapshot_instead():

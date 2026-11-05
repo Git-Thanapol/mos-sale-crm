@@ -8,6 +8,11 @@
   --c-bg-grad-b: #FFF3E8;
   --c-accent: #F97316;
   --c-accent-weak: #FFEDD5;
+  /* Contrast-safe variants (WCAG 1.4.3): brand --c-accent is only 2.8:1 under
+     white text and 2.45:1 as text on --c-accent-weak. Use -strong as a fill
+     behind --c-accent-ink (5.2:1) and -text for orange-ish text (6.3:1 on weak). */
+  --c-accent-strong: #C2410C;
+  --c-accent-text: #9A3412;
   --c-accent-ink: #FFFFFF;
   --c-ink: #1F2937;
   --c-ink-2: #6B7280;
@@ -48,4 +53,5 @@
   --c-ink-2: #B8AA9C;
   --c-border: #3A2F27;
   --c-accent-weak: #4A2F1A;
+  --c-accent-text: #FDBA74;
 }

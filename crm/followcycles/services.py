@@ -20,7 +20,25 @@ from crm.followcycles.models import (
     FollowupCycle,
     Note,
 )
+from crm.leads.errors import LeadStoppedError
 from crm.leads.models import Lead, LeadAuditEvent
+
+
+def _lock(lead: Lead) -> Lead:
+    # Imported lazily: crm.leads.services is the owner of the lock/version
+    # protocol and must not be a module-level dependency of this package.
+    from crm.leads.services import lock_lead
+
+    return lock_lead(lead)
+
+
+def _reject_if_stopped(lead: Lead, what: str) -> None:
+    """STOPPED guard (locked rule: STOPPED is a lifecycle state a human
+    reviews). Contact attempts and appointments are work on an open lead, so
+    they are refused until it is reactivated. Notes stay allowed: a reviewer
+    needs to record why a lead is stopped or why it should come back."""
+    if lead.lifecycle_status == "STOPPED":
+        raise LeadStoppedError(f"LEAD_STOPPED:{what}")
 
 
 @transaction.atomic
@@ -32,6 +50,7 @@ def open_cycle(*, actor, lead: Lead, trigger_order=None) -> FollowupCycle:
     the new cycle, `MANUAL_CLOSE` otherwise — the reason is what later explains
     why a cycle stopped.
     """
+    _lock(lead)
     now = timezone.now()
     active = FollowupCycle.objects.select_for_update().filter(lead=lead, status="ACTIVE").first()
     if active is not None:
@@ -57,6 +76,10 @@ def open_cycle(*, actor, lead: Lead, trigger_order=None) -> FollowupCycle:
 def end_cycle(*, actor, cycle: FollowupCycle, reason: str) -> FollowupCycle:
     if reason not in CYCLE_END_REASONS:
         raise ValueError(f"UNKNOWN_CYCLE_END_REASON:{reason}")
+    # Lead first, then the cycle: the same order stop_lead takes its locks in.
+    _lock(cycle.lead)
+    FollowupCycle.objects.select_for_update().filter(pk=cycle.pk).first()
+    cycle.refresh_from_db()
     if cycle.status != "ACTIVE":
         raise ValueError("CYCLE_ALREADY_ENDED")
 
@@ -69,6 +92,7 @@ def end_cycle(*, actor, cycle: FollowupCycle, reason: str) -> FollowupCycle:
     cycle.save(update_fields=["status", "ended_at", "ended_reason", "lock_active"])
 
     lead = cycle.lead
+    lead.refresh_from_db()
     if lead.current_cycle_id == cycle.id:
         lead.current_cycle_id = None
         lead.save(update_fields=["current_cycle_id", "updated_at"])
@@ -86,6 +110,7 @@ def add_note(*, actor, lead: Lead, body: str, order=None) -> Note:
     text = (body or "").strip()
     if not text:
         raise ValueError("EMPTY_NOTE")
+    _lock(lead)
 
     active = FollowupCycle.objects.filter(lead=lead, status="ACTIVE").first()
     note = Note.objects.create(
@@ -135,6 +160,12 @@ def log_contact_attempt(
     when = attempted_at or timezone.now()
     if when.tzinfo is None:
         raise ValueError("NAIVE_DATETIME:attempted_at")
+
+    # Row lock BEFORE reading the streak: two concurrent NO_ANSWERs would
+    # otherwise both read N and both write N+1, losing a count and delaying
+    # the stop threshold.
+    _lock(lead)
+    _reject_if_stopped(lead, "contact attempt")
 
     active = FollowupCycle.objects.filter(lead=lead, status="ACTIVE").first()
     attempt = ContactAttempt.objects.create(
@@ -201,6 +232,8 @@ def set_appointment(*, actor, lead: Lead, scheduled_at, note: str = "") -> Appoi
     """
     if scheduled_at.tzinfo is None:
         raise ValueError("NAIVE_DATETIME:scheduled_at")
+    _lock(lead)
+    _reject_if_stopped(lead, "appointment")
 
     active = FollowupCycle.objects.filter(lead=lead, status="ACTIVE").first()
     appointment = Appointment.objects.create(
@@ -249,6 +282,11 @@ def _refresh_next_follow_at(lead: Lead) -> None:
 
 
 def _close_appointment(*, actor, appointment: Appointment, status: str) -> Appointment:
+    # Lead lock first (it owns next_follow_at), then the appointment row, so two
+    # closers serialize and the second sees the first's status.
+    _lock(appointment.lead)
+    Appointment.objects.select_for_update().filter(pk=appointment.pk).first()
+    appointment.refresh_from_db()
     if appointment.status != "SCHEDULED":
         raise ValueError(f"APPOINTMENT_ALREADY_CLOSED:{appointment.status}")
     appointment.status = status

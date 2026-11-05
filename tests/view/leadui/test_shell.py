@@ -6,6 +6,8 @@ Run via: docker compose exec -T web python -m pytest tests/view/leadui/test_shel
 from datetime import datetime, timezone
 
 import pytest
+
+from crm.leadui.labels_th import th_label
 from django.template import Context, Template
 from django.urls import reverse
 
@@ -56,7 +58,7 @@ def editor():
 def test_chip_tone_matches_the_prototype(value, tone):
     # StatusChip, App.tsx:34-37: danger is tested first, then warn, then ok.
     assert render("{% v2_chip value %}", value=value) == (
-        f'<span class="chip {tone}">{value}</span>'
+        f'<span class="chip {tone}">{th_label(value)}</span>'
     )
 
 

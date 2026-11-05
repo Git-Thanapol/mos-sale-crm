@@ -26,7 +26,7 @@
 }
 
 .crm-matrix-table thead th {
-  background: var(--c-accent);
+  background: var(--c-accent-strong);
   color: var(--c-accent-ink);
   font-weight: 700;
   position: sticky;

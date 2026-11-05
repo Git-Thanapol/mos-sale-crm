@@ -133,6 +133,37 @@ def classify_identity(*, name: str, phone: str, candidates: list[dict]) -> dict:
     return best
 
 
+def classify_identity_guarded(*, name: str, phone: str, candidates: list[dict]) -> dict:
+    """Guarded wrapper over the parity-pinned classifier.
+
+    The pure function keeps the single highest-weight candidate, which silently
+    picks one when several customers qualify. Here, if more than one DISTINCT
+    customer qualifies as a plausible match (AUTO_MATCH or HUMAN_REVIEW), the result is HUMAN_REVIEW with no
+    chosen candidate and `candidateCustomerIds` listing them all. Nothing is
+    auto-matched through ambiguity.
+    """
+    best = classify_identity(name=name, phone=phone, candidates=candidates)
+    if best["kind"] == "NEW_CUSTOMER":
+        return best
+    qualifying: dict[str, str] = {}
+    for candidate in candidates:
+        single = classify_identity(name=name, phone=phone, candidates=[candidate])
+        if single["kind"] != "NEW_CUSTOMER":
+            qualifying.setdefault(str(candidate["customerId"]), single["kind"])
+    if len(qualifying) > 1:
+        return {
+            **best,
+            "kind": "HUMAN_REVIEW",
+            "candidateCustomerId": None,
+            "candidateCustomerIds": sorted(qualifying),
+            "reasons": [
+                *best["reasons"],
+                f"{len(qualifying)} candidate customers qualify; not auto-matching",
+            ],
+        }
+    return best
+
+
 def identity_blocks_commit(kind: str) -> bool:
     """Block commit when a row would create or re-point identity ambiguously."""
     return kind == "HUMAN_REVIEW"

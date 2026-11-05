@@ -178,7 +178,11 @@ def _link_customers(orders: list[OnlineOrder], records_by_key: dict[str, dict]) 
         return counts
 
     keys = sorted(record_by_phone_key.keys())
-    existing_customers = Customer.objects.in_bulk(keys, field_name="phone_key")
+    # phone_key is not unique: in_bulk(field_name=...) refuses it. Oldest customer wins.
+    existing_customers: dict[str, Customer] = {}
+    for start in range(0, len(keys), 5000):
+        for customer in Customer.objects.filter(phone_key__in=keys[start : start + 5000]).order_by("-id"):
+            existing_customers[customer.phone_key] = customer  # descending id: last write is the oldest
 
     new_customers = [
         Customer(

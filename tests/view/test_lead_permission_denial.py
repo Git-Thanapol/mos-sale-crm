@@ -17,6 +17,7 @@ from django.utils import timezone
 
 from crm.intake.services import upsert_intake
 from crm.leads.models import Lead
+from crm.teams.models import TeamAssignment
 from tests.db.factories import (
     ROLE_ADMIN,
     ROLE_EDITOR,
@@ -56,12 +57,12 @@ def u2():
 
 
 def test_telesale_posting_a_caretaker_change_gets_403(client, telesell_s1, u2):
-    lead = make_lead(customer=make_customer(_uid="0000001", staff_code="S0001"))
+    lead = make_lead(customer=make_customer(_uid="0000001", staff_code="S0001"), caretaker=telesell_s1)
     login(client, telesell_s1)
     response = client.post(reverse("leads:reassign", args=[lead.id]), {"caretaker": u2.id})
-    assert response.status_code == 403
+    assert response.status_code == 403  # in scope (own lead), no ownership authority
     lead.refresh_from_db()
-    assert lead.caretaker_id is None
+    assert lead.caretaker_id == telesell_s1.id
 
 
 def test_team_lead_cannot_post_to_another_teams_lead(client, u2):
@@ -73,7 +74,7 @@ def test_team_lead_cannot_post_to_another_teams_lead(client, u2):
     )
     login(client, team_lead)
     response = client.post(reverse("leads:reassign", args=[upsell.id]), {"caretaker": u2.id})
-    assert response.status_code == 403
+    assert response.status_code == 404  # out of scope: no existence oracle
     upsell.refresh_from_db()
     assert upsell.caretaker_id is None
 
@@ -86,14 +87,17 @@ def test_team_lead_may_post_within_their_own_team(client, u2):
         email="tl2@example.com", role="TEAM_LEAD", staff_code="L002", team_scope=["CRM_TEAM"]
     )
     login(client, team_lead)
-    response = client.post(reverse("leads:reassign", args=[lead.id]), {"caretaker": u2.id})
+    TeamAssignment.objects.create(user=u2, team_code="CRM_TEAM", effective_from=timezone.now())
+    response = client.post(
+        reverse("leads:reassign", args=[lead.id]), {"caretaker": u2.id, "reason": "rebalance"}
+    )
     assert response.status_code in (302, 303)
     lead.refresh_from_db()
     assert lead.caretaker_id == u2.id
 
 
 def test_client_supplied_actor_and_role_are_ignored(client, telesell_s1, u2, editor):
-    lead = make_lead(customer=make_customer(_uid="0000004", staff_code="S0001"))
+    lead = make_lead(customer=make_customer(_uid="0000004", staff_code="S0001"), caretaker=telesell_s1)
     login(client, telesell_s1)
     response = client.post(
         reverse("leads:reassign", args=[lead.id]),
@@ -107,7 +111,7 @@ def test_client_supplied_actor_and_role_are_ignored(client, telesell_s1, u2, edi
     )
     assert response.status_code == 403
     lead.refresh_from_db()
-    assert lead.caretaker_id is None
+    assert lead.caretaker_id == telesell_s1.id
 
 
 def test_this_repos_admin_cannot_reassign(client, u2):
@@ -122,7 +126,7 @@ def test_a_viewer_cannot_add_a_note(client):
     lead = make_lead(customer=make_customer(_uid="0000006", staff_code="S0001"))
     viewer = make_user(email="v@example.com", role=ROLE_VIEWER, staff_code="")
     login(client, viewer)
-    assert client.post(reverse("leads:add_note", args=[lead.id]), {"body": "x"}).status_code == 403
+    assert client.post(reverse("leads:add_note", args=[lead.id]), {"body": "x"}).status_code == 404
 
 
 def test_team_lead_in_team_a_cannot_reach_the_same_customers_team_b_lead(client):
@@ -144,7 +148,7 @@ def test_team_lead_in_team_a_cannot_reach_the_same_customers_team_b_lead(client)
     assert team_b_lead.id not in visible
 
     response = client.post(reverse("leads:add_note", args=[team_b_lead.id]), {"body": "x"})
-    assert response.status_code == 403
+    assert response.status_code == 404
 
 
 def test_telesale_cannot_post_to_the_same_customers_other_team_lead(client, telesell_s1):
@@ -168,13 +172,13 @@ def test_telesale_cannot_post_to_the_same_customers_other_team_lead(client, tele
         303,
     )
     assert (
-        client.post(reverse("leads:add_note", args=[other.id]), {"body": "leak"}).status_code == 403
+        client.post(reverse("leads:add_note", args=[other.id]), {"body": "leak"}).status_code == 404
     )
     assert (
         client.post(
             reverse("leads:log_attempt", args=[other.id]), {"result": "NO_ANSWER"}
         ).status_code
-        == 403
+        == 404
     )
 
 

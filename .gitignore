@@ -17,3 +17,14 @@ seed/*.csv
 scripts/deploy.env
 feedback/
 .superpowers/
+
+# Google Drive sync artifacts
+desktop.ini
+* (1).*
+
+# Editor settings
+.vscode/
+
+# Client data files (customer PII): never commit
+sample_upload_Nov2026/
+v2-filtered-provisional-*/

@@ -90,7 +90,7 @@ def test_stopped_queue_lists_every_stopped_lead_regardless_of_routing(client, ed
     assert f"lead/{stopped_assigned.id}/" in body
     assert f"lead/{stopped_unassigned.id}/" in body
     assert f"lead/{following.id}/" not in body
-    assert ">STOPPED</span>" in body
+    assert ">หยุดติดตาม</span>" in body
 
 
 def test_a_team_lead_sees_only_their_scoped_team_in_both_queues(client, team_lead):

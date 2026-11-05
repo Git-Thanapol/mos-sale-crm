@@ -20,7 +20,6 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from crm.accounts.models import User
 from crm.core.permissions import (
     can_edit_lead,
     can_reassign_caretaker,
@@ -243,9 +242,9 @@ def lead_detail(request, lead_id: int):
     can_reassign = can_reassign_caretaker(request.user, lead)
     caretakers = []
     if can_reassign:
-        caretakers = list(
-            User.objects.filter(is_active=True).exclude(staff_code="").order_by("staff_name", "email")[:200]
-        )
+        # Only people the server would accept as this lead caretaker: active,
+        # a lead-holding role, and a member of the LEAD team (not every user).
+        caretakers = page_selectors.caretaker_candidates(lead)
     return render(
         request,
         "leadui/lead_detail.html",
@@ -286,8 +285,8 @@ def customer_detail(request, customer_id: int):
 def customer_history(request, customer_id: int):
     """Order history, loaded only when the user asks (the prototype's "ดูประวัติเก่า").
 
-    The first page writes one CUSTOMER_HISTORY_VIEW audit event; continuation
-    pages do not. Returns an HTML fragment, not a page.
+    Every page writes a CUSTOMER_HISTORY_VIEW audit event. Returns an HTML
+    fragment, not a page.
     """
     customer = page_selectors.visible_customer(request.user, customer_id)
     if customer is None:
@@ -295,15 +294,25 @@ def customer_history(request, customer_id: int):
     cursor = request.GET.get("cursor") or None
     first_page = page_selectors.history_cursor_is_first_page(cursor)
     page = page_selectors.order_history(customer, cursor)
-    if first_page:
-        leads = page_selectors.visible_leads(request.user, customer)
-        LeadAuditEvent.objects.create(
-            lead=leads[0] if leads else None,
-            customer=customer,
-            action="CUSTOMER_HISTORY_VIEW",
-            actor=request.user,
-            payload={"kind": "ORDER_HISTORY_VIEW", "customer_id": customer.id},
-        )
+    # Privileged history access is audited on EVERY page, not just the first:
+    # each continuation reveals more rows. When the user holds no visible Lead
+    # of this customer (they reached it through customer scope) the event is a
+    # customer-level audit (lead NULL, customer set, scope=CUSTOMER) -- never a
+    # silent lead=None row that looks like a lead event with the lead missing.
+    leads = page_selectors.visible_leads(request.user, customer)
+    LeadAuditEvent.objects.create(
+        lead=leads[0] if leads else None,
+        customer=customer,
+        action="CUSTOMER_HISTORY_VIEW",
+        actor=request.user,
+        payload={
+            "kind": "ORDER_HISTORY_VIEW",
+            "customer_id": customer.id,
+            "scope": "LEAD" if leads else "CUSTOMER",
+            "first_page": first_page,
+            "rows": len(page.items),
+        },
+    )
     more_url = (
         reverse("leadui:customer_history", args=[customer.id]) + "?" + urlencode({"cursor": page.next_cursor})
         if page.next_cursor

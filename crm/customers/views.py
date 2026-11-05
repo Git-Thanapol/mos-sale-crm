@@ -15,6 +15,7 @@ from crm.core.thai import FOLLOWUP_STATUS_LABELS
 from crm.customers.export import build_export_workbook
 from crm.customers.models import Customer
 from crm.customers.selectors import (
+    ALL,
     DEFAULT_PAGE_SIZE,
     CustomerFilters,
     customer_360,
@@ -24,6 +25,7 @@ from crm.customers.selectors import (
     customer_page,
     owner_assignment_options,
 )
+from crm.leads.models import LeadAuditEvent
 from crm.customers.services import assign_owner, assign_url, save_follow_marker
 from crm.online_orders.selectors import online_orders_for_customer
 
@@ -75,12 +77,49 @@ def index(request):
     return render(request, "customers/index.html", context)
 
 
+#: Hard cap on customers in one XLSX export (the file has one row per order
+#: line, so the workbook can be much larger). Over the cap the export is refused
+#: with a message asking for narrower filters, instead of an unbounded build.
+EXPORT_MAX_CUSTOMERS = 50000
+
+
+def _export_scope(filters: CustomerFilters) -> dict:
+    """Which filters were applied, by NAME only: values (keyword = name/phone)
+    are PII and stay out of the audit trail."""
+    return {
+        name: True
+        for name, value in vars(filters).items()
+        if value not in (None, "", [], (), False, ALL)
+    }
+
+
 @login_required
 @require_permission("can_export_customers")
 def export_xlsx(request):
     filters = CustomerFilters.from_query(request.GET)
     qs = customer_export_queryset(request.user, filters)
+    total = qs.count()
+    scope = _export_scope(filters)
+
+    if total > EXPORT_MAX_CUSTOMERS:
+        LeadAuditEvent.objects.create(
+            action="EXPORT",
+            actor=request.user,
+            reason="export refused: over row cap",
+            payload={"kind": "CUSTOMER_XLSX", "filters": scope, "rows": total, "refused": True},
+        )
+        messages.error(
+            request,
+            f"ส่งออกได้ไม่เกิน {EXPORT_MAX_CUSTOMERS:,} ลูกค้าต่อครั้ง (พบ {total:,}) กรุณากรองให้แคบลง",
+        )
+        return redirect(reverse("customers:list"))
+
     content = build_export_workbook(qs)
+    LeadAuditEvent.objects.create(
+        action="EXPORT",
+        actor=request.user,
+        payload={"kind": "CUSTOMER_XLSX", "filters": scope, "rows": total, "refused": False},
+    )
 
     stamp = timezone.now().strftime("%Y%m%d_%H%M")
     filename = f"crm_customers_{stamp}.xlsx"
@@ -138,9 +177,15 @@ def assign_owner_view(request, customer_id: int):
             messages.error(request, "ไม่พบ staff_code ของผู้ดูแลที่เลือก")
         else:
             try:
-                updated = assign_owner(request.user, customer, owner_display, staff_code)
+                updated = assign_owner(
+                    request.user,
+                    customer,
+                    owner_display,
+                    staff_code,
+                    request.POST.get("reason", ""),
+                )
                 messages.success(request, f"อัปเดตผู้ดูแลแล้ว {updated:,} แถว")
-            except PermissionDenied as exc:
+            except (PermissionDenied, ValueError) as exc:
                 messages.error(request, str(exc))
     return redirect(_back_to_list_url(request, customer_id))
 
