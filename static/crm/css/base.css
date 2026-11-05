@@ -1,12 +1,4 @@
-/* TODO(Phase 1 follow-up): vendor NotoSansThai-{Regular,SemiBold,Bold}.woff2
-   into static/crm/fonts/ before Phase 7 cutover — self-hosted only, no
-   Google Fonts (the no-online-services rule applies to the browser too).
-   Until the files exist, "Noto Sans Thai" is listed first in the font stack
-   but deliberately NOT @font-face'd: declaring it pointed at missing files
-   made every page fire three 404s. Restore the three @font-face rules
-   (weights 400/600/700, font-display: swap, src ../fonts/NotoSansThai-*.woff2)
-   in the same commit that adds the files. Until then the stack falls back to
-   the OS's Thai-capable system font. */
+/* "Noto Sans Thai" is loaded from Google Fonts by templates/base.html. */
 
 * { box-sizing: border-box; }
 
