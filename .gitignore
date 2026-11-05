@@ -17,3 +17,10 @@ seed/*.csv
 scripts/deploy.env
 feedback/
 .superpowers/
+
+# Google Drive sync artifacts
+desktop.ini
+* (1).*
+
+# Editor settings
+.vscode/

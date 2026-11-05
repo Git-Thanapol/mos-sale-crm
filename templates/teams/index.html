@@ -41,7 +41,7 @@
 <div class="crm-section-title">ยอดรวมระดับทีม</div>
 {% for team in summary.teams %}
   <div class="crm-card" style="margin-bottom:12px;">
-    <h5>{{ team.team_name }}</h5>
+    <h2 class="crm-subhead" style="margin-top:0;">{{ team.team_name }}</h2>
     <div class="crm-kpi-row">
       {% include "components/_kpi_card.html" with label="จำนวนออเดอร์" value=team.order_count|thai_int %}
       {% include "components/_kpi_card.html" with label="ยอดขายรวม" value=team.sales_amount|thai_amount %}

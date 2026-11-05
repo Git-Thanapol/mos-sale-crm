@@ -36,10 +36,11 @@
   <script src="{% static 'crm/vendor/alpine.min.js' %}" defer></script>
 </head>
 <body>
+  <a class="crm-skip-link" href="#main">ข้ามไปยังเนื้อหาหลัก</a>
   {% if user.is_authenticated %}
   <div class="crm-layout">
     {% include "_sidebar.html" %}
-    <main class="crm-main">
+    <main class="crm-main" id="main" tabindex="-1">
       {% block messages %}
       {% if messages %}
         {% for message in messages %}
@@ -53,7 +54,9 @@
     </main>
   </div>
   {% else %}
-    {% block auth_content %}{% endblock %}
+    <main id="main" tabindex="-1">
+      {% block auth_content %}{% endblock %}
+    </main>
   {% endif %}
   <div id="modal-root"></div>
 </body>

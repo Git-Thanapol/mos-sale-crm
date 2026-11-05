@@ -96,7 +96,8 @@
 .v2 a.v2-btn { white-space: nowrap; display: inline-block; border: 0; border-radius: 7px; padding: 9px 14px; background: #176b5b; color: white; cursor: pointer; font-weight: 650; text-decoration: none; }
 .v2 a.v2-btn.secondary { background: #e8efed; color: #28554d; }
 .v2 a.v2-btn.danger-button { background: #b63b3b; }
-.v2 a.link { color: #185f53; font-weight: 650; text-decoration: none; }
+.v2 a.link { color: #185f53; font-weight: 650; text-decoration: none; display: inline-block; min-height: 24px; } /* WCAG 2.5.8 target size */
+.v2 input[type="checkbox"] { width: 24px; height: 24px; margin: 0; vertical-align: middle; accent-color: #176b5b; }
 .v2 span.link { color: #185f53; font-weight: 650; }
 
 /* Host adaptation: <dialog> replaces the prototype's window.confirm. */
