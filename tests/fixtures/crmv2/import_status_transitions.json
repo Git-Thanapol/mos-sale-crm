@@ -1,0 +1,3398 @@
+[
+  {
+    "name": "order/PENDING_CONFIRMATION->PENDING_CONFIRMATION/false",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->PENDING_CONFIRMATION/true",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->WAITING_SHIPMENT/false",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->WAITING_SHIPMENT/true",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->SHIPPED/false",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->SHIPPED/true",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->DELIVERED/false",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->DELIVERED/true",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->CANCELLED/false",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "CANCELLED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->CANCELLED/true",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "CANCELLED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->COD_RETURNED/false",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "COD_RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/PENDING_CONFIRMATION->COD_RETURNED/true",
+    "input": {
+      "fn": "order",
+      "current": "PENDING_CONFIRMATION",
+      "incoming": "COD_RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->PENDING_CONFIRMATION/false",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->PENDING_CONFIRMATION/true",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->WAITING_SHIPMENT/false",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->WAITING_SHIPMENT/true",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->SHIPPED/false",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->SHIPPED/true",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->DELIVERED/false",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->DELIVERED/true",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->CANCELLED/false",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "CANCELLED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->CANCELLED/true",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "CANCELLED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->COD_RETURNED/false",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "COD_RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/WAITING_SHIPMENT->COD_RETURNED/true",
+    "input": {
+      "fn": "order",
+      "current": "WAITING_SHIPMENT",
+      "incoming": "COD_RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/SHIPPED->PENDING_CONFIRMATION/false",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/SHIPPED->PENDING_CONFIRMATION/true",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/SHIPPED->WAITING_SHIPMENT/false",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/SHIPPED->WAITING_SHIPMENT/true",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/SHIPPED->SHIPPED/false",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/SHIPPED->SHIPPED/true",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/SHIPPED->DELIVERED/false",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/SHIPPED->DELIVERED/true",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "order/SHIPPED->CANCELLED/false",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "CANCELLED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/SHIPPED->CANCELLED/true",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "CANCELLED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/SHIPPED->COD_RETURNED/false",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/SHIPPED->COD_RETURNED/true",
+    "input": {
+      "fn": "order",
+      "current": "SHIPPED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/DELIVERED->PENDING_CONFIRMATION/false",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/DELIVERED->PENDING_CONFIRMATION/true",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/DELIVERED->WAITING_SHIPMENT/false",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/DELIVERED->WAITING_SHIPMENT/true",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/DELIVERED->SHIPPED/false",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/DELIVERED->SHIPPED/true",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "order/DELIVERED->DELIVERED/false",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/DELIVERED->DELIVERED/true",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/DELIVERED->CANCELLED/false",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "CANCELLED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/DELIVERED->CANCELLED/true",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "CANCELLED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/DELIVERED->COD_RETURNED/false",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/DELIVERED->COD_RETURNED/true",
+    "input": {
+      "fn": "order",
+      "current": "DELIVERED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "order/CANCELLED->PENDING_CONFIRMATION/false",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->PENDING_CONFIRMATION/true",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->WAITING_SHIPMENT/false",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->WAITING_SHIPMENT/true",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->SHIPPED/false",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->SHIPPED/true",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->DELIVERED/false",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->DELIVERED/true",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/CANCELLED->CANCELLED/false",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "CANCELLED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/CANCELLED->CANCELLED/true",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "CANCELLED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/CANCELLED->COD_RETURNED/false",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "order/CANCELLED->COD_RETURNED/true",
+    "input": {
+      "fn": "order",
+      "current": "CANCELLED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->PENDING_CONFIRMATION/false",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->PENDING_CONFIRMATION/true",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "PENDING_CONFIRMATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->WAITING_SHIPMENT/false",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->WAITING_SHIPMENT/true",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "WAITING_SHIPMENT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->SHIPPED/false",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->SHIPPED/true",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->DELIVERED/false",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->DELIVERED/true",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->CANCELLED/false",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "CANCELLED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->CANCELLED/true",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "CANCELLED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->COD_RETURNED/false",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "order/COD_RETURNED->COD_RETURNED/true",
+    "input": {
+      "fn": "order",
+      "current": "COD_RETURNED",
+      "incoming": "COD_RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/UNPAID->UNPAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "UNPAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/UNPAID->UNPAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "UNPAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/UNPAID->PENDING_VERIFICATION/false",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->PENDING_VERIFICATION/true",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->PAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "PAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->PAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "PAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->COD_PENDING/false",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "COD_PENDING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->COD_PENDING/true",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "COD_PENDING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->COD_COLLECTED/false",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->COD_COLLECTED/true",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/UNPAID->REFUNDED/false",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "REFUNDED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/UNPAID->REFUNDED/true",
+    "input": {
+      "fn": "payment",
+      "current": "UNPAID",
+      "incoming": "REFUNDED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->UNPAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "UNPAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->UNPAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "UNPAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->PENDING_VERIFICATION/false",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->PENDING_VERIFICATION/true",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->PAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "PAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->PAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "PAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->COD_PENDING/false",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "COD_PENDING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->COD_PENDING/true",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "COD_PENDING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->COD_COLLECTED/false",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->COD_COLLECTED/true",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->REFUNDED/false",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "REFUNDED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/PENDING_VERIFICATION->REFUNDED/true",
+    "input": {
+      "fn": "payment",
+      "current": "PENDING_VERIFICATION",
+      "incoming": "REFUNDED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/PAID->UNPAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "UNPAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->UNPAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "UNPAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->PENDING_VERIFICATION/false",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->PENDING_VERIFICATION/true",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->PAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "PAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/PAID->PAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "PAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/PAID->COD_PENDING/false",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "COD_PENDING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->COD_PENDING/true",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "COD_PENDING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->COD_COLLECTED/false",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->COD_COLLECTED/true",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/PAID->REFUNDED/false",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "REFUNDED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/PAID->REFUNDED/true",
+    "input": {
+      "fn": "payment",
+      "current": "PAID",
+      "incoming": "REFUNDED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->UNPAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "UNPAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->UNPAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "UNPAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->PENDING_VERIFICATION/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->PENDING_VERIFICATION/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->PAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "PAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->PAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "PAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->COD_PENDING/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "COD_PENDING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->COD_PENDING/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "COD_PENDING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->COD_COLLECTED/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->COD_COLLECTED/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->REFUNDED/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "REFUNDED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/COD_PENDING->REFUNDED/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_PENDING",
+      "incoming": "REFUNDED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->UNPAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "UNPAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->UNPAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "UNPAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->PENDING_VERIFICATION/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->PENDING_VERIFICATION/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->PAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "PAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->PAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "PAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->COD_PENDING/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "COD_PENDING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->COD_PENDING/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "COD_PENDING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->COD_COLLECTED/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->COD_COLLECTED/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->REFUNDED/false",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "REFUNDED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/COD_COLLECTED->REFUNDED/true",
+    "input": {
+      "fn": "payment",
+      "current": "COD_COLLECTED",
+      "incoming": "REFUNDED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->UNPAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "UNPAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->UNPAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "UNPAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->PENDING_VERIFICATION/false",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->PENDING_VERIFICATION/true",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "PENDING_VERIFICATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->PAID/false",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "PAID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->PAID/true",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "PAID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->COD_PENDING/false",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "COD_PENDING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->COD_PENDING/true",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "COD_PENDING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->COD_COLLECTED/false",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->COD_COLLECTED/true",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "COD_COLLECTED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->REFUNDED/false",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "REFUNDED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "payment/REFUNDED->REFUNDED/true",
+    "input": {
+      "fn": "payment",
+      "current": "REFUNDED",
+      "incoming": "REFUNDED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/NOT_SHIPPED->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "NOT_SHIPPED",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/LABEL_CREATED->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "LABEL_CREATED",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/PICKED_UP->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "PICKED_UP",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/IN_TRANSIT->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "IN_TRANSIT",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/DELIVERED->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "DELIVERED",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/FAILED->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/FAILED->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/FAILED->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/FAILED->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/FAILED->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/FAILED->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/FAILED->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/FAILED->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "FORWARD"
+    }
+  },
+  {
+    "name": "shipping/FAILED->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/FAILED->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/FAILED->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/FAILED->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/FAILED->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/FAILED->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/FAILED->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/FAILED->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "FAILED",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "INVALID"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "REVERSAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/RETURNING->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNING",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "CANCELLATION"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->NOT_SHIPPED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->NOT_SHIPPED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "NOT_SHIPPED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->LABEL_CREATED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->LABEL_CREATED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "LABEL_CREATED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->PICKED_UP/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "PICKED_UP",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->PICKED_UP/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "PICKED_UP",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->IN_TRANSIT/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->IN_TRANSIT/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "IN_TRANSIT",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->DELIVERED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "DELIVERED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->DELIVERED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "DELIVERED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->FAILED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "FAILED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->FAILED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "FAILED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->RETURNING/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "RETURNING",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->RETURNING/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "RETURNING",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "TERMINAL"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->RETURNED/false",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "RETURNED",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "shipping/RETURNED->RETURNED/true",
+    "input": {
+      "fn": "shipping",
+      "current": "RETURNED",
+      "incoming": "RETURNED",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": "SAME"
+    }
+  },
+  {
+    "name": "allowed/SAME/false",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "SAME",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/SAME/true",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "SAME",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/FORWARD/false",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "FORWARD",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/FORWARD/true",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "FORWARD",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/REVERSAL/false",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "REVERSAL",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "allowed/REVERSAL/true",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "REVERSAL",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/CANCELLATION/false",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "CANCELLATION",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/CANCELLATION/true",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "CANCELLATION",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "allowed/INVALID/false",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "INVALID",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "allowed/INVALID/true",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "INVALID",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "allowed/TERMINAL/false",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "TERMINAL",
+      "allowReversal": false
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "allowed/TERMINAL/true",
+    "input": {
+      "fn": "statusChangeAllowed",
+      "verdict": "TERMINAL",
+      "allowReversal": true
+    },
+    "expected": {
+      "value": false
+    }
+  }
+]

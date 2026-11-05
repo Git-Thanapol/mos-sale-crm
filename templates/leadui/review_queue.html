@@ -1,0 +1,19 @@
+{% extends "leadui/base_v2.html" %}
+{% block title %}{{ title }} · Sales CRM{% endblock %}
+{% block v2_content %}
+  {% include "leadui/_page_title.html" with title=title subtitle=subtitle %}
+  {% if kind == "TEAM" %}
+  <form class="toolbar" method="get" data-v2-filters>
+    <select name="age_preset" aria-label="ระยะห่างจากออเดอร์ล่าสุด Team Unassigned">
+      <option value="">ทุกช่วงออเดอร์ล่าสุด</option>
+      {% for value, label in age_preset_options %}<option value="{{ value }}"{% if age_preset == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </form>
+  {% endif %}
+  {% if rows %}
+    {% include "leadui/_lead_table.html" with link_customer=False %}
+  {% else %}
+    {% include "leadui/_state.html" with kind="empty" %}
+  {% endif %}
+  {% include "leadui/_pager.html" %}
+{% endblock %}

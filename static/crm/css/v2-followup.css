@@ -1,0 +1,108 @@
+/* CRM V2 prototype stylesheet, scoped under .v2.
+ * Source: customer-crm-v2-codex/src/ui/styles.css. Every rule is prefixed
+ * `.v2 ` so it cannot restyle the host site; the prototype's own shell
+ * (app-shell, aside, nav, brand, role-box, topbar, uat-banner, main) is NOT
+ * ported because this site keeps its own sidebar and base template.
+ * Do not hand-edit selectors: tests/unit/test_v2_css_scoped.py guards this.
+ */
+.v2 { color: #1f2937; font-synthesis: none; }
+.v2, .v2 * { box-sizing: border-box; }
+.v2 button, .v2 input, .v2 select, .v2 textarea { font: inherit; }
+.v2 button { border: 0; border-radius: 7px; padding: 9px 14px; background: #176b5b; color: white; cursor: pointer; font-weight: 650; }
+.v2 button:disabled { opacity: .5; cursor: wait; }
+.v2 button.secondary { background: #e8efed; color: #28554d; }
+.v2 button.danger-button { background: #b63b3b; }
+.v2 .page-title { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; margin-bottom: 18px; }
+.v2 .page-title h1 { font-size: 25px; margin: 0 0 4px; }
+.v2 .page-title p { margin: 0; color: #6b7280; }
+.v2 .toolbar { background: white; padding: 13px; border: 1px solid #dce2e1; border-radius: 10px; display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.v2 .toolbar input { min-width: 300px; }
+.v2 .hint { color: #7b848a; font-size: 12px; margin-left: auto; }
+.v2 input, .v2 select, .v2 textarea { border: 1px solid #cbd5d1; border-radius: 6px; padding: 9px 10px; background: white; color: #1f2937; }
+.v2 textarea { min-height: 90px; width: 100%; resize: vertical; }
+.v2 .table-shell { overflow: auto; background: white; border: 1px solid #dce2e1; border-radius: 10px; }
+.v2 table { width: 100%; border-collapse: collapse; }
+.v2 th { text-align: left; color: #66736f; font-size: 12px; letter-spacing: .02em; background: #f8faf9; }
+.v2 th, .v2 td { padding: 12px 14px; border-bottom: 1px solid #edf0ef; vertical-align: middle; }
+.v2 tr:last-child td { border-bottom: 0; }
+.v2 td small { display: block; color: #77827f; margin-top: 4px; }
+.v2 .link { padding: 0; background: none; color: #185f53; text-align: left; }
+.v2 .metric { font-size: 21px; font-weight: 750; }
+.v2 .chip { display: inline-block; border-radius: 999px; padding: 4px 8px; margin: 2px 4px 2px 0; font-size: 11px; font-weight: 750; background: #e8eceb; color: #46524f; }
+.v2 .chip.danger { background: #fee2e2; color: #a42323; }
+.v2 .chip.warn { background: #fff2c9; color: #7d5d0d; }
+.v2 .chip.ok { background: #d8f3e9; color: #176b5b; }
+.v2 .team-badge { display: inline-block; padding: 3px 7px; border-radius: 5px; background: #e2eeeb; color: #285b51; font-size: 12px; font-weight: 700; }
+.v2 .state-box { margin: 18px 0; padding: 34px; background: white; border: 1px dashed #b9c5c2; border-radius: 10px; text-align: center; color: #697571; display: grid; gap: 10px; justify-items: center; }
+.v2 .state-box.error { color: #9b2d2d; border-color: #e2a4a4; }
+.v2 .skeleton { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .5; } }
+.v2 .card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.v2 .work-card, .v2 .detail-card { background: white; border: 1px solid #dce2e1; border-radius: 10px; padding: 18px; }
+.v2 .work-card h3, .v2 .detail-card h2 { margin: 10px 0 6px; }
+.v2 .work-card p { margin: 6px 0; }
+.v2 .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.v2 .callout { background: #e9f5f1; border-left: 4px solid #2a8b78; padding: 12px 15px; border-radius: 6px; margin-bottom: 16px; }
+.v2 .detail-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.v2 .detail-card dl { display: grid; grid-template-columns: 150px 1fr; gap: 8px; }
+.v2 .detail-card dt { color: #6b7280; }
+.v2 .detail-card dd { margin: 0; font-weight: 650; }
+.v2 .detail-card form { display: grid; gap: 8px; }
+.v2 .list-button { width: 100%; display: flex; justify-content: space-between; align-items: center; margin: 6px 0; background: #f0f5f4; color: #24564f; }
+.v2 .lead-heading { display: flex; justify-content: space-between; align-items: flex-start; }
+.v2 .lead-heading h2 { margin-top: 0; }
+.v2 .lead-heading p { color: #6b7280; }
+.v2 .note { padding: 10px 0; border-bottom: 1px solid #edf0ef; }
+.v2 .note small { display: block; color: #7b848a; }
+.v2 .history { margin-top: 14px; }
+.v2 .history-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 10px 0; border-bottom: 1px solid #edf0ef; align-items: center; }
+.v2 .stepper { display: grid; grid-template-columns: repeat(6, 1fr); background: white; border: 1px solid #dce2e1; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+.v2 .step { display: flex; align-items: center; gap: 7px; font-weight: 650; color: #65706d; }
+.v2 .step span { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: #dfe9e7; color: #28554d; }
+.v2 .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; }
+.v2 .metric-grid div { background: #f5f8f7; border-radius: 7px; padding: 12px; display: grid; }
+.v2 .metric-grid strong { font-size: 24px; }
+.v2 .metric-grid span { color: #6b7280; font-size: 12px; }
+.v2 .toast { background: #d8f3e9; color: #176b5b; padding: 10px 14px; border-radius: 7px; margin-bottom: 12px; }
+.v2 .pager { display: flex; justify-content: flex-end; gap: 8px; margin: 12px 0 18px; }
+@media (max-width: 1180px) {
+  .v2 .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .v2 .detail-layout { grid-template-columns: 1fr; }
+  .v2 .stepper { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+}
+.v2 .decision-center .page-title { display: block; }
+.v2 .decision-center .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.v2 .decision-center .tabs button { background: #e8efed; color: #28554d; display: flex; gap: 8px; align-items: center; }
+.v2 .decision-center .tabs button.active { background: #176b5b; color: white; }
+.v2 .decision-center .tabs .count { background: rgba(0, 0, 0, .12); border-radius: 999px; padding: 1px 8px; font-size: 12px; }
+.v2 .decision-center .filters { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.v2 .decision-center .muted { color: #6b7280; font-size: 13px; }
+.v2 .decision-center .state-box.ok { border-color: #9fd3c6; background: #eef8f5; color: #176b5b; }
+.v2 .decision-list { display: grid; gap: 10px; }
+.v2 .decision-card { background: white; border: 1px solid #dce2e1; border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
+.v2 .decision-card header { display: flex; gap: 6px; align-items: center; }
+.v2 .decision-card header small { margin-left: auto; color: #9ca3af; }
+.v2 .evidence { display: grid; gap: 6px; }
+.v2 .evidence > div:first-child { display: flex; gap: 10px; align-items: baseline; }
+.v2 .evidence small { color: #6b7280; }
+.v2 .evidence .variants { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+.v2 .decision-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px dashed #dce2e1; padding-top: 10px; }
+.v2 .decision-form input { min-width: 180px; padding: 7px 9px; border: 1px solid #cfd8d6; border-radius: 6px; }
+.v2 .decision-form select { padding: 7px 9px; border: 1px solid #cfd8d6; border-radius: 6px; }
+.v2 .decision-card .resolved { display: flex; gap: 10px; align-items: center; border-top: 1px dashed #dce2e1; padding-top: 10px; }
+
+/* Host adaptation (not in the prototype): the prototype's pager and row
+   actions are <button>s; here they are links, so they get the same look. */
+.v2 a.v2-btn { white-space: nowrap; display: inline-block; border: 0; border-radius: 7px; padding: 9px 14px; background: #176b5b; color: white; cursor: pointer; font-weight: 650; text-decoration: none; }
+.v2 a.v2-btn.secondary { background: #e8efed; color: #28554d; }
+.v2 a.v2-btn.danger-button { background: #b63b3b; }
+.v2 a.link { color: #185f53; font-weight: 650; text-decoration: none; }
+.v2 span.link { color: #185f53; font-weight: 650; }
+
+/* Host adaptation: <dialog> replaces the prototype's window.confirm. */
+.v2 dialog { border: 1px solid #dce2e1; border-radius: 10px; padding: 18px; min-width: 360px; color: #1f2937; }
+.v2 dialog form { display: grid; gap: 8px; }
+.v2 dialog h2 { margin: 0 0 8px; }
+
+/* Host adaptation: the prototype's list-button is a <button>; here it is a link row. */
+.v2 a.list-button { text-decoration: none; padding: 9px 14px; border-radius: 7px; font-weight: 650; }

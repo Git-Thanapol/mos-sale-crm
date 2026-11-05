@@ -29,7 +29,16 @@ ROLE_USER_ALIASES = {"USER"}
 SYSTEM_VIEW_ROLES = {ROLE_EDITOR}
 ORDER_DELETE_ROLES = {ROLE_EDITOR, ROLE_STAFF, "STAFF"}
 
-ROLE_OPTIONS = ["EDITOR", "ADMIN", ROLE_STAFF, "TELESELL", "STAFF", "USER", ROLE_VIEWER]
+ROLE_OPTIONS = [
+    "EDITOR",
+    "ADMIN",
+    "TEAM_LEAD",
+    ROLE_STAFF,
+    "TELESELL",
+    "STAFF",
+    "USER",
+    ROLE_VIEWER,
+]
 
 
 class HasRoleAndStaffCode(Protocol):
@@ -110,7 +119,15 @@ def can_manage_system_page(user: HasRoleAndStaffCode | None) -> bool:
 
 
 def can_view_followup(user: HasRoleAndStaffCode | None) -> bool:
-    return user_role(user) == ROLE_EDITOR or is_staff_limited(user)
+    # TEAM_LEAD is included because the Team Unassigned, STOPPED Review and
+    # reallocation sections live on this page and are gated on
+    # can_review_any_lead -- without this the only non-EDITOR role that can
+    # use them could not open the page at all.
+    return (
+        user_role(user) == ROLE_EDITOR
+        or user_role(user) == ROLE_TEAM_LEAD
+        or is_staff_limited(user)
+    )
 
 
 def can_view_followup_owner_filter(user: HasRoleAndStaffCode | None) -> bool:
@@ -207,3 +224,223 @@ def require_permission(predicate_name: str):
         return wrapped
 
     return decorator
+
+
+# --- CRM V2 Lead surface -----------------------------------------------------
+# Role mapping (docs/DECISIONS.md): the spec's Admin is this repo's EDITOR.
+# This repo's ADMIN is NOT the spec's Admin -- the "Preserved verbatim"
+# asymmetry stands, so ADMIN stays weaker for follow-up/export/owner-assign and
+# must not be quietly strengthened by the predicates below.
+ROLE_TEAM_LEAD = "TEAM_LEAD"
+
+MSG_LEAD_OUT_OF_SCOPE = "ไม่มีสิทธิ์เข้าถึง Lead ของทีมอื่น"
+
+
+def _is_usable(user: object) -> bool:
+    """Falsy or deactivated users have no authority at all.
+
+    Checked before every role test so a disabled account loses access without
+    a separate code path (08_SECURITY: a disabled/resigned user must not retain
+    operational access or caretaker authority).
+    """
+    if not user:
+        return False
+    return bool(getattr(user, "is_active", True))
+
+
+def is_team_lead(user: object) -> bool:
+    return _is_usable(user) and user_role(user) == ROLE_TEAM_LEAD
+
+
+def team_scope(user: object) -> frozenset[str]:
+    if not _is_usable(user):
+        return frozenset()
+    return frozenset(clean(code) for code in getattr(user, "team_scope", []) or [] if clean(code))
+
+
+def current_team_codes(user: object) -> frozenset[str]:
+    """Team codes the user currently belongs to, from their open assignment.
+
+    Read fresh rather than cached on the user, and restricted to assignments
+    with no effective_to, so an expired membership grants nothing.
+    """
+    if not _is_usable(user) or getattr(user, "pk", None) is None:
+        return frozenset()
+    from crm.teams.models import TeamAssignment
+
+    return frozenset(
+        code.strip()
+        for code in TeamAssignment.objects.filter(
+            user_id=user.pk, effective_to__isnull=True
+        ).values_list("team_code", flat=True)
+        if code and code.strip()
+    )
+
+
+def is_lead_caretaker(user: object, lead: object) -> bool:
+    """Is this user the lead's caretaker?
+
+    Shared by the predicate and by StaffScopedQuerySet so the two cannot
+    disagree about what "my own work" means.
+    """
+    caretaker_id = getattr(lead, "caretaker_id", None)
+    user_pk = getattr(user, "pk", None)
+    if caretaker_id is None or user_pk is None:
+        return False
+    return str(caretaker_id) == str(user_pk)
+
+
+def _lead_team_code(lead: object) -> str:
+    """The LEAD's own team.
+
+    Deliberately not the customer's access array: that array is a union across
+    every team holding a lead for the customer, so judging a single lead by it
+    would let a team-A user reach a team-B lead for the same person.
+    """
+    team = getattr(lead, "team", None)
+    return clean(getattr(team, "code", "")) if team is not None else ""
+
+
+def can_view_lead(user: object, lead: object) -> bool:
+    if not _is_usable(user):
+        return False
+    if user_role(user) == ROLE_EDITOR:
+        return True
+    if is_team_lead(user):
+        return _lead_team_code(lead) in team_scope(user)
+
+    # Telesale only. The role gate comes FIRST: an earlier version let the
+    # caretaker check short-circuit ahead of it, so any role at all -- ทั่วไป
+    # (read-only) and ADMIN (deliberately weaker for follow-up) included --
+    # could view and therefore edit a lead merely by being its caretaker, and
+    # the reassign dropdown lists every active user with a staff_code.
+    if not is_telesell(user):
+        return False
+
+    # Being the caretaker is its own path: that lead is the user's own work
+    # regardless of team membership, and with TeamAssignment sparse in this
+    # deployment team-only scoping would hide work from the person doing it.
+    if is_lead_caretaker(user, lead):
+        return True
+
+    # Otherwise: ownership in the legacy schema is per-CUSTOMER
+    # (Customer.staff_code), and one customer can hold a Lead in several teams
+    # -- so comparing staff_code alone matches EVERY team's lead for that
+    # customer. 06 section B makes "Telesale cannot access another Team's
+    # protected Lead" an acceptance item, so the lead's own team has to count.
+    if not can_edit_customer_lead(user, getattr(lead, "customer", None)):
+        return False
+    return _lead_team_code(lead) in current_team_codes(user)
+
+
+def can_edit_lead(user: object, lead: object) -> bool:
+    """Edit the lead's own follow-up state (status, note, appointment).
+
+    Same gate as viewing: a telesale who may see their customer's lead may work
+    it. Ownership and admin actions have their own, narrower predicates.
+    """
+    return can_view_lead(user, lead)
+
+
+def can_reassign_caretaker(user: object, lead: object) -> bool:
+    """Ownership mutation. EDITOR anywhere, TEAM_LEAD within scope, nobody else.
+
+    A telesale never reassigns ownership, even on their own lead
+    (08_SECURITY: "No ownership/admin/import authority").
+    """
+    if not _is_usable(user):
+        return False
+    if user_role(user) == ROLE_EDITOR:
+        return True
+    return is_team_lead(user) and _lead_team_code(lead) in team_scope(user)
+
+
+def can_review_stopped(user: object, lead: object) -> bool:
+    """STOPPED review: authorized reactivation/reassignment."""
+    return can_reassign_caretaker(user, lead)
+
+
+def can_resolve_intake(user: object) -> bool:
+    """Global Unassigned is a cross-team identity decision, so EDITOR only.
+
+    A TEAM_LEAD is scoped to one team and cannot judge which team a
+    Team-unknown order belongs to.
+    """
+    return _is_usable(user) and user_role(user) == ROLE_EDITOR
+
+
+_PREDICATES.update(
+    {
+        "can_resolve_intake": can_resolve_intake,
+    }
+)
+_PREDICATE_MESSAGES.update(
+    {
+        "can_resolve_intake": MSG_SYSTEM_PAGE_BLOCKED,
+    }
+)
+
+
+def can_review_any_lead(user: object) -> bool:
+    """Role-level: may this user act on ownership for ANY lead?
+
+    Used to decide whether to RENDER a review section, where there is no
+    specific lead yet. EDITOR qualifies everywhere; a TEAM_LEAD qualifies when
+    they hold a non-empty team scope. Per-row authority is still decided by
+    can_reassign_caretaker, so this only ever controls whether a heading and
+    its queue are drawn -- never whether a write is allowed.
+    """
+    if not _is_usable(user):
+        return False
+    if user_role(user) == ROLE_EDITOR:
+        return True
+    return is_team_lead(user) and bool(team_scope(user))
+
+
+def can_use_lead_workspace(user: object) -> bool:
+    """Role-level gate for the CRM V2 lead pages (งานของฉัน and the detail
+    drill-downs): the prototype's TELESALE, TEAM_LEAD and ADMIN, which map to
+    this repo's พนักงาน, TEAM_LEAD and EDITOR. Repo ADMIN and the read-only
+    roles are deliberately outside it, exactly as for can_view_lead. Per-row
+    authority is still can_view_lead / the scoped queryset.
+    """
+    if not _is_usable(user):
+        return False
+    return user_role(user) in (ROLE_EDITOR, ROLE_TEAM_LEAD) or is_telesell(user)
+
+
+def import_actor_role(user: object) -> str | None:
+    """Map a repo user onto the prototype's import roles.
+
+    EDITOR is the prototype's ADMIN, TEAM_LEAD is TEAM_LEAD and a telesale is
+    TELESALE. Repo ADMIN, the read-only roles and deactivated accounts map to
+    None: they hold no import authority at all. The import rules in crm.domain
+    speak the prototype's vocabulary; this is the single translation point.
+    """
+    if not _is_usable(user):
+        return None
+    role = user_role(user)
+    if role == ROLE_EDITOR:
+        return "ADMIN"
+    if role == ROLE_TEAM_LEAD:
+        return "TEAM_LEAD"
+    if is_telesell(user):
+        return "TELESALE"
+    return None
+
+
+def can_import_v2(user: object) -> bool:
+    """Upload, confirm, commit, rollback and migration decisions: Admin only."""
+    return import_actor_role(user) == "ADMIN"
+
+
+def can_resolve_import_conflicts(user: object) -> bool:
+    """See the conflict queue: EDITOR, or a TEAM_LEAD who holds a team scope.
+    Per-conflict authority is crm.domain.conflict_scope.assert_resolver_scope."""
+    role = import_actor_role(user)
+    return role == "ADMIN" or (role == "TEAM_LEAD" and bool(team_scope(user)))
+
+
+def can_view_import_history(user: object) -> bool:
+    """Same audience as the conflict queue; Rollback inside it is Admin only."""
+    return can_resolve_import_conflicts(user)

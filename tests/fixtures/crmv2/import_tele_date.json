@@ -1,0 +1,3268 @@
+[
+  {
+    "name": "parse/Tele 26.10.69.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 26.10.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "26.10.69",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/Tele_26-10-2569.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele_26-10-2569.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "26-10-2569",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele_26-10-2569.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele_26-10-2569.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele_26-10-2569.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele_26-10-2569.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele_26-10-2569.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele_26-10-2569.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele_26-10-2569.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele_26-10-2569.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele_26-10-2569.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele_26-10-2569.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/tele 2026-10-26.csv",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "tele 2026-10-26.csv"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "2026-10-26",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026-10-26.csv/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026-10-26.csv"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026-10-26.csv/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026-10-26.csv",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026-10-26.csv/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026-10-26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026-10-26.csv/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026-10-26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026-10-26.csv/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026-10-26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/tele 2026_10_26.csv",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "tele 2026_10_26.csv"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "2026_10_26",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026_10_26.csv/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026_10_26.csv"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026_10_26.csv/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026_10_26.csv",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026_10_26.csv/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026_10_26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026_10_26.csv/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026_10_26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/tele 2026_10_26.csv/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "tele 2026_10_26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 26.10.26.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 26.10.26.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "26.10.26",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.26.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.26.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.26.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.26.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.26.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.26.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.26.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.26.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.26.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.26.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 26.10.69 (copy 27.10.69).xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": true,
+        "raw": "26.10.69",
+        "reason": "the filename contains conflicting dates (2026-10-26, 2026-10-27)"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 (copy 27.10.69).xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "AMBIGUOUS_FILENAME_DATE: the filename contains conflicting dates (2026-10-26, 2026-10-27)"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 (copy 27.10.69).xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "AMBIGUOUS_FILENAME_DATE: the filename contains conflicting dates (2026-10-26, 2026-10-27)"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 (copy 27.10.69).xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "AMBIGUOUS_FILENAME_DATE: the filename contains conflicting dates (2026-10-26, 2026-10-27)"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 (copy 27.10.69).xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "AMBIGUOUS_FILENAME_DATE: the filename contains conflicting dates (2026-10-26, 2026-10-27)"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 (copy 27.10.69).xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "AMBIGUOUS_FILENAME_DATE: the filename contains conflicting dates (2026-10-26, 2026-10-27)"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/no-date.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "no-date.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/no-date.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "no-date.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/no-date.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/no-date.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/no-date.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/no-date.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 31.02.69.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 31.02.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 31.02.69.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 31.02.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 31.02.69.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 31.02.69.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 31.02.69.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 31.02.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 31.02.69.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 31.02.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 31.02.69.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 31.02.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 99.99.99.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 99.99.99.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 99.99.99.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 99.99.99.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 99.99.99.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 99.99.99.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 99.99.99.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 99.99.99.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 99.99.99.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 99.99.99.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 99.99.99.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 99.99.99.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/C:\\data\\Tele 05.11.69.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "C:\\data\\Tele 05.11.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-11-05",
+        "ambiguous": false,
+        "raw": "05.11.69",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/C:\\data\\Tele 05.11.69.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "C:\\data\\Tele 05.11.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/C:\\data\\Tele 05.11.69.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "C:\\data\\Tele 05.11.69.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/C:\\data\\Tele 05.11.69.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "C:\\data\\Tele 05.11.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-11-05 but the file contains 2026-10-26"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/C:\\data\\Tele 05.11.69.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "C:\\data\\Tele 05.11.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-11-05 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/C:\\data\\Tele 05.11.69.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "C:\\data\\Tele 05.11.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-11-05 but the file contains 2026-10-26, 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse//uploads/Tele 05-11-2569.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "/uploads/Tele 05-11-2569.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-11-05",
+        "ambiguous": false,
+        "raw": "05-11-2569",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose//uploads/Tele 05-11-2569.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "/uploads/Tele 05-11-2569.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose//uploads/Tele 05-11-2569.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "/uploads/Tele 05-11-2569.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose//uploads/Tele 05-11-2569.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "/uploads/Tele 05-11-2569.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-11-05 but the file contains 2026-10-26"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose//uploads/Tele 05-11-2569.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "/uploads/Tele 05-11-2569.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-11-05 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose//uploads/Tele 05-11-2569.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "/uploads/Tele 05-11-2569.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-11-05",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-11-05",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-11-05 but the file contains 2026-10-26, 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/order 12345678.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "order 12345678.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/order 12345678.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "order 12345678.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/order 12345678.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "order 12345678.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/order 12345678.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "order 12345678.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/order 12345678.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "order 12345678.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/order 12345678.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "order 12345678.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 26.10.69 26.10.69.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 26.10.69 26.10.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "26.10.69",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 26.10.69.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 26.10.69.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 26.10.69.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 26.10.69.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 26.10.69.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 26.10.69 26.10.69.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 26.10.69 26.10.69.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/report 2026-10-26 2026-10-26.csv",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "report 2026-10-26 2026-10-26.csv"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "ambiguous": false,
+        "raw": "2026-10-26",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/report 2026-10-26 2026-10-26.csv/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "report 2026-10-26 2026-10-26.csv"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/report 2026-10-26 2026-10-26.csv/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "report 2026-10-26 2026-10-26.csv",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/report 2026-10-26 2026-10-26.csv/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "report 2026-10-26 2026-10-26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/report 2026-10-26 2026-10-26.csv/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "report 2026-10-26 2026-10-26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2026-10-26 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/report 2026-10-26 2026-10-26.csv/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "report 2026-10-26 2026-10-26.csv",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2026-10-26",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2026-10-26",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 1.1.51.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 1.1.51.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2008-01-01",
+        "ambiguous": false,
+        "raw": "1.1.51",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.51.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.51.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2008-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2008-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.51.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.51.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2008-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2008-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.51.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.51.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2008-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2008-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2008-01-01 but the file contains 2026-10-26"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.51.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.51.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2008-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2008-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2008-01-01 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.51.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.51.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2008-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2008-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2008-01-01 but the file contains 2026-10-26, 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/Tele 1.1.50.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele 1.1.50.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2050-01-01",
+        "ambiguous": false,
+        "raw": "1.1.50",
+        "reason": "date parsed from the filename"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.50.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.50.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2050-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2050-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.50.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.50.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2050-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2050-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": []
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.50.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.50.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2050-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2050-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2050-01-01 but the file contains 2026-10-26"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.50.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.50.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2050-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2050-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2050-01-01 but the file contains 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele 1.1.50.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele 1.1.50.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": {
+          "dayKey": "2050-01-01",
+          "timezone": "Asia/Bangkok",
+          "source": "FILENAME",
+          "confirmedBy": null,
+          "confirmedAt": null,
+          "filenameCandidate": "2050-01-01",
+          "filenameAmbiguous": false
+        },
+        "blockers": [
+          "FILENAME_DATE_CONFLICTS_WITH_SOURCE: filename suggests 2050-01-01 but the file contains 2026-10-26, 2026-10-27"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/Tele ๒๖.๑๐.๖๙.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "Tele ๒๖.๑๐.๖๙.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/Tele ๒๖.๑๐.๖๙.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele ๒๖.๑๐.๖๙.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele ๒๖.๑๐.๖๙.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele ๒๖.๑๐.๖๙.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele ๒๖.๑๐.๖๙.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele ๒๖.๑๐.๖๙.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele ๒๖.๑๐.๖๙.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele ๒๖.๑๐.๖๙.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/Tele ๒๖.๑๐.๖๙.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "Tele ๒๖.๑๐.๖๙.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/x 26.10.2400.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "x 26.10.2400.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2400.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2400.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2400.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2400.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2400.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2400.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2400.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2400.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2400.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2400.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/x 26.10.1899.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "x 26.10.1899.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.1899.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.1899.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.1899.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.1899.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.1899.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.1899.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.1899.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.1899.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.1899.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.1899.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "parse/x 26.10.2201.xlsx",
+    "input": {
+      "fn": "parseFilenameDate",
+      "fileName": "x 26.10.2201.xlsx"
+    },
+    "expected": {
+      "value": {
+        "dayKey": null,
+        "ambiguous": false,
+        "raw": null,
+        "reason": "the filename contains no date"
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2201.xlsx/null",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2201.xlsx"
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2201.xlsx/[]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2201.xlsx",
+      "sourceEvidenceDayKeys": []
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2201.xlsx/[\"2026-10-26\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2201.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2201.xlsx/[\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2201.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "propose/x 26.10.2201.xlsx/[\"2026-10-26\",\"2026-10-27\"]",
+    "input": {
+      "fn": "proposeBatchBusinessDate",
+      "fileName": "x 26.10.2201.xlsx",
+      "sourceEvidenceDayKeys": [
+        "2026-10-26",
+        "2026-10-27"
+      ]
+    },
+    "expected": {
+      "value": {
+        "candidate": null,
+        "blockers": [
+          "NO_DATE_IN_FILENAME"
+        ]
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69.xlsx/none/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_NOT_CONFIRMED"
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69.xlsx//null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "operatorDayKey": "",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_NOT_CONFIRMED"
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69.xlsx/2026-10-26/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "operatorDayKey": "2026-10-26",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "FILENAME",
+        "confirmedBy": "admin",
+        "confirmedAt": 1730000000000,
+        "filenameCandidate": "2026-10-26",
+        "filenameAmbiguous": false
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69.xlsx/2026-10-27/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "operatorDayKey": "2026-10-27",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-27",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 1730000000000,
+        "filenameCandidate": "2026-10-26",
+        "filenameAmbiguous": false
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69.xlsx/2026-10-27/[\"2026-10-26\"]",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "operatorDayKey": "2026-10-27",
+      "actor": "admin",
+      "at": 1730000000000,
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_CONFLICTS_WITH_SOURCE"
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69.xlsx/2026-10-26/[\"2026-10-26\"]",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69.xlsx",
+      "operatorDayKey": "2026-10-26",
+      "actor": "admin",
+      "at": 1730000000000,
+      "sourceEvidenceDayKeys": [
+        "2026-10-26"
+      ]
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "FILENAME",
+        "confirmedBy": "admin",
+        "confirmedAt": 1730000000000,
+        "filenameCandidate": "2026-10-26",
+        "filenameAmbiguous": false
+      }
+    }
+  },
+  {
+    "name": "confirm/no-date.xlsx/none/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "confirm/no-date.xlsx/2026-10-26/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "operatorDayKey": "2026-10-26",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 1730000000000,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    }
+  },
+  {
+    "name": "confirm/no-date.xlsx/not-a-date/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "operatorDayKey": "not-a-date",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_BATCH_DATE"
+      }
+    }
+  },
+  {
+    "name": "confirm/no-date.xlsx/2026-02-30/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "operatorDayKey": "2026-02-30",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_BATCH_DATE"
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69 (copy 27.10.69).xlsx/2026-10-26/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx",
+      "operatorDayKey": "2026-10-26",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 1730000000000,
+        "filenameCandidate": null,
+        "filenameAmbiguous": true
+      }
+    }
+  },
+  {
+    "name": "confirm/Tele 26.10.69 (copy 27.10.69).xlsx/none/null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "Tele 26.10.69 (copy 27.10.69).xlsx",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "confirm/no-date.xlsx/  2026-10-26  /null",
+    "input": {
+      "fn": "confirmBatchBusinessDate",
+      "fileName": "no-date.xlsx",
+      "operatorDayKey": "  2026-10-26  ",
+      "actor": "admin",
+      "at": 1730000000000
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 1730000000000,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    }
+  },
+  {
+    "name": "normalizeDayKey/2026-10-26",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2026-10-26"
+    },
+    "expected": {
+      "value": "2026-10-26"
+    }
+  },
+  {
+    "name": "normalizeDayKey/2026-02-29",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2026-02-29"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeDayKey/2024-02-29",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2024-02-29"
+    },
+    "expected": {
+      "value": "2024-02-29"
+    }
+  },
+  {
+    "name": "normalizeDayKey/2569-10-26",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2569-10-26"
+    },
+    "expected": {
+      "value": "2026-10-26"
+    }
+  },
+  {
+    "name": "normalizeDayKey/2026-1-1",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2026-1-1"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeDayKey/ 2026-10-26 ",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": " 2026-10-26 "
+    },
+    "expected": {
+      "value": "2026-10-26"
+    }
+  },
+  {
+    "name": "normalizeDayKey/2026/10/26",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2026/10/26"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeDayKey/1899-01-01",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "1899-01-01"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeDayKey/2201-01-01",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2201-01-01"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeDayKey/2400-01-01",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2400-01-01"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeDayKey/2401-01-01",
+    "input": {
+      "fn": "normalizeDayKey",
+      "text": "2401-01-01"
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/69/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 69,
+      "digits": 2
+    },
+    "expected": {
+      "value": 2026
+    }
+  },
+  {
+    "name": "normalizeYear/26/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 26,
+      "digits": 2
+    },
+    "expected": {
+      "value": 2026
+    }
+  },
+  {
+    "name": "normalizeYear/50/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 50,
+      "digits": 2
+    },
+    "expected": {
+      "value": 2050
+    }
+  },
+  {
+    "name": "normalizeYear/51/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 51,
+      "digits": 2
+    },
+    "expected": {
+      "value": 2008
+    }
+  },
+  {
+    "name": "normalizeYear/0/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 0,
+      "digits": 2
+    },
+    "expected": {
+      "value": 2000
+    }
+  },
+  {
+    "name": "normalizeYear/99/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 99,
+      "digits": 2
+    },
+    "expected": {
+      "value": 2056
+    }
+  },
+  {
+    "name": "normalizeYear/100/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 100,
+      "digits": 2
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/-1/2",
+    "input": {
+      "fn": "normalizeYear",
+      "year": -1,
+      "digits": 2
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/2569/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 2569,
+      "digits": 4
+    },
+    "expected": {
+      "value": 2026
+    }
+  },
+  {
+    "name": "normalizeYear/2026/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 2026,
+      "digits": 4
+    },
+    "expected": {
+      "value": 2026
+    }
+  },
+  {
+    "name": "normalizeYear/2400/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 2400,
+      "digits": 4
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/2401/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 2401,
+      "digits": 4
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/1899/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 1899,
+      "digits": 4
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/2201/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 2201,
+      "digits": 4
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "normalizeYear/2743/4",
+    "input": {
+      "fn": "normalizeYear",
+      "year": 2743,
+      "digits": 4
+    },
+    "expected": {
+      "value": 2200
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-10-26",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 10,
+      "day": 26
+    },
+    "expected": {
+      "value": "2026-10-26"
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-2-29",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 2,
+      "day": 29
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "dayKeyOf/2024-2-29",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2024,
+      "month": 2,
+      "day": 29
+    },
+    "expected": {
+      "value": "2024-02-29"
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-4-31",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 4,
+      "day": 31
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-0-1",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 0,
+      "day": 1
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-13-1",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 13,
+      "day": 1
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-1-32",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 1,
+      "day": 32
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "dayKeyOf/2026-1-0",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026,
+      "month": 1,
+      "day": 0
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "dayKeyOf/2026.5-1-1",
+    "input": {
+      "fn": "dayKeyOf",
+      "year": 2026.5,
+      "month": 1,
+      "day": 1
+    },
+    "expected": {
+      "value": null
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/09:30",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "09:30"
+    },
+    "expected": {
+      "value": 1792981800000
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/9:05",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "9:05"
+    },
+    "expected": {
+      "value": 1792980300000
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/00:00",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "00:00"
+    },
+    "expected": {
+      "value": 1792947600000
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/23:59",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "23:59"
+    },
+    "expected": {
+      "value": 1793033940000
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/24:00",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "24:00"
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_TIME"
+      }
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/12:60",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "12:60"
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_TIME"
+      }
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/9.30",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": "9.30"
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_TIME"
+      }
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/ 9:30 ",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": " 9:30 "
+    },
+    "expected": {
+      "value": 1792981800000
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-02-30/09:30",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-02-30",
+      "timeText": "09:30"
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_BATCH_DATE"
+      }
+    }
+  },
+  {
+    "name": "buildOrderedAt/nope/09:30",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "nope",
+      "timeText": "09:30"
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_BATCH_DATE"
+      }
+    }
+  },
+  {
+    "name": "buildOrderedAt/2026-10-26/",
+    "input": {
+      "fn": "buildOrderedAt",
+      "dayKey": "2026-10-26",
+      "timeText": ""
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_TIME"
+      }
+    }
+  },
+  {
+    "name": "assertConfirmedBatchDate/null",
+    "input": {
+      "fn": "assertConfirmedBatchDate",
+      "value": null
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "assertConfirmedBatchDate/undefined",
+    "input": {
+      "fn": "assertConfirmedBatchDate",
+      "value": null
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_REQUIRED"
+      }
+    }
+  },
+  {
+    "name": "assertConfirmedBatchDate/unconfirmed",
+    "input": {
+      "fn": "assertConfirmedBatchDate",
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": null,
+        "confirmedAt": null,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_NOT_CONFIRMED"
+      }
+    }
+  },
+  {
+    "name": "assertConfirmedBatchDate/no-time",
+    "input": {
+      "fn": "assertConfirmedBatchDate",
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": null,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "BATCH_DATE_NOT_CONFIRMED"
+      }
+    }
+  },
+  {
+    "name": "assertConfirmedBatchDate/bad-day",
+    "input": {
+      "fn": "assertConfirmedBatchDate",
+      "value": {
+        "dayKey": "2026-99-99",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 10,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    },
+    "expected": {
+      "error": {
+        "name": "BatchBusinessDateError",
+        "code": "INVALID_BATCH_DATE"
+      }
+    }
+  },
+  {
+    "name": "assertConfirmedBatchDate/ok",
+    "input": {
+      "fn": "assertConfirmedBatchDate",
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 10,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    },
+    "expected": {
+      "value": {
+        "dayKey": "2026-10-26",
+        "timezone": "Asia/Bangkok",
+        "source": "OPERATOR",
+        "confirmedBy": "admin",
+        "confirmedAt": 10,
+        "filenameCandidate": null,
+        "filenameAmbiguous": false
+      }
+    }
+  }
+]

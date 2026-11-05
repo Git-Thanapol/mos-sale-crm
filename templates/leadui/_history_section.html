@@ -1,0 +1,4 @@
+<section class="detail-card history">
+  <h2>ประวัติออเดอร์</h2>
+  {% if orders %}{% include "leadui/_history_rows.html" %}{% else %}{% include "leadui/_state.html" with kind="empty" message="ยังไม่มีรายการประวัติออเดอร์" %}{% endif %}
+</section>

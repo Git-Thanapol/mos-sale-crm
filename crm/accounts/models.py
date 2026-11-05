@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.functions import Lower
 
@@ -23,6 +24,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     staff_code = models.CharField(max_length=32, blank=True, db_index=True)
     staff_name = models.CharField(max_length=128, blank=True)
     owner_alias = models.CharField(max_length=128, blank=True)
+
+    # Team codes a TEAM_LEAD is authorized for. Server-side only: it is never
+    # read from a request, because 08_SECURITY_AND_AUTH_REQUIREMENTS.md
+    # forbids trusting a client-supplied Team scope. Empty for every other
+    # role, and an empty scope authorizes nothing.
+    team_scope = ArrayField(models.CharField(max_length=32), default=list, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

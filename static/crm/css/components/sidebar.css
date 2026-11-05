@@ -37,3 +37,25 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* Sub-menu under a parent item (ติดตามลูกค้า). Same tokens as the items so it
+   follows light/dark themes; indented and smaller to read as a child. */
+.crm-sidebar__sub { margin: 0 0 var(--space-2) var(--space-4); }
+
+.crm-sidebar__subitem {
+  display: block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--r-pill);
+  text-decoration: none;
+  color: var(--c-ink);
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.crm-sidebar__subitem:hover { background: var(--c-accent-weak); }
+
+.crm-sidebar__subitem--active {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-weight: 600;
+}

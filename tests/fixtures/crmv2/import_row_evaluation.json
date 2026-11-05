@@ -1,0 +1,2818 @@
+[
+  {
+    "name": "row/new-order-new-lead-no-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": null,
+        "closerTeamId": null,
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "NEW_CUSTOMER",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": [
+          "no usable team/caretaker: routes to unassigned review rather than a guessed owner"
+        ]
+      }
+    }
+  },
+  {
+    "name": "row/new-order-new-lead-with-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "NEW_CUSTOMER",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/identity-review-blocks",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "HUMAN_REVIEW",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": [
+            "exact normalized phone but name differs"
+          ]
+        },
+        "existingOrder": null,
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": null,
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "IDENTITY",
+            "severity": "BLOCKING",
+            "summary": "Customer identity is ambiguous (exact normalized phone but name differs).",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "AUTO_MATCH",
+              "NEW_CUSTOMER"
+            ]
+          }
+        ],
+        "reasons": [
+          "identity review required before a new lead can be created"
+        ]
+      }
+    }
+  },
+  {
+    "name": "row/identity-review-no-reasons",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "HUMAN_REVIEW",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": null,
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "IDENTITY",
+            "severity": "BLOCKING",
+            "summary": "Customer identity is ambiguous (similar name without exact phone).",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "AUTO_MATCH",
+              "NEW_CUSTOMER"
+            ]
+          }
+        ],
+        "reasons": [
+          "identity review required before a new lead can be created"
+        ]
+      }
+    }
+  },
+  {
+    "name": "row/identity-review-ignored-with-lead",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "HUMAN_REVIEW",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/identity-review-ignored-with-order",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "HUMAN_REVIEW",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {}
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "UNCHANGED",
+        "blocking": false,
+        "merge": {
+          "considered": 2,
+          "unchanged": 2,
+          "safeUpdate": 0,
+          "staleInput": 0,
+          "conflict": 0,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/auto-match-new-order",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/unchanged",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {}
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "UNCHANGED",
+        "blocking": false,
+        "merge": {
+          "considered": 2,
+          "unchanged": 2,
+          "safeUpdate": 0,
+          "staleInput": 0,
+          "conflict": 0,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/safe-update",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "trackingNumber": "TH1"
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {}
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "SAFE_UPDATE",
+        "blocking": false,
+        "merge": {
+          "considered": 1,
+          "unchanged": 0,
+          "safeUpdate": 1,
+          "staleInput": 0,
+          "conflict": 0,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/stale-input",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "SHOPEE"
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {
+            "channel": {
+              "sourceId": "old",
+              "sourceUpdatedAt": 1700000005000,
+              "precedence": 10
+            }
+          }
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "STALE_INPUT",
+        "blocking": false,
+        "merge": {
+          "considered": 1,
+          "unchanged": 0,
+          "safeUpdate": 0,
+          "staleInput": 1,
+          "conflict": 0,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/merge-conflict-same-version",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "SHOPEE"
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {
+            "channel": {
+              "sourceId": "old",
+              "sourceUpdatedAt": 1700000000000,
+              "precedence": 10
+            }
+          }
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": {
+          "considered": 1,
+          "unchanged": 0,
+          "safeUpdate": 0,
+          "staleInput": 0,
+          "conflict": 1,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "STALE",
+            "severity": "BLOCKING",
+            "summary": "channel: same source version reports a different value",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "KEEP_EXISTING",
+              "ACCEPT_INCOMING"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/reversal-blocked",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "orderStatus": "PENDING_CONFIRMATION"
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {}
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": {
+          "considered": 1,
+          "unchanged": 0,
+          "safeUpdate": 0,
+          "staleInput": 0,
+          "conflict": 0,
+          "reversalRequired": 1
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "REVERSAL",
+            "severity": "BLOCKING",
+            "summary": "orderStatus: status transition WAITING_SHIPMENT -> PENDING_CONFIRMATION classified REVERSAL",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "KEEP_EXISTING",
+              "APPROVE_REVERSAL"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/reversal-allowed",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "orderStatus": "PENDING_CONFIRMATION"
+        },
+        "allowReversal": true
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {}
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "SAFE_UPDATE",
+        "blocking": false,
+        "merge": {
+          "considered": 1,
+          "unchanged": 0,
+          "safeUpdate": 1,
+          "staleInput": 0,
+          "conflict": 0,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/customer-repoint-conflict",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "customerId": "cust-9"
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": {
+          "orderId": "SO-1",
+          "customerId": "cust-1",
+          "orderedAt": 1700000000000,
+          "closerUserId": "user-a",
+          "closerTeamId": "team-crm",
+          "caretakerAtOrderTime": "user-a",
+          "channel": "LINE",
+          "shop": "main",
+          "subtotal": 100,
+          "total": 120,
+          "trackingNumber": "",
+          "carrier": "",
+          "url": "",
+          "recipientName": "สมชาย",
+          "phone": "0812345678",
+          "orderStatus": "WAITING_SHIPMENT",
+          "paymentStatus": "PAID",
+          "shippingStatus": "LABEL_CREATED",
+          "items": [
+            {
+              "sku": "A",
+              "qty": 1
+            }
+          ],
+          "address": {
+            "line": "1 ถนน",
+            "subdistrict": "",
+            "district": "เมือง",
+            "province": "กรุงเทพ",
+            "postalCode": "10100"
+          },
+          "fieldProvenance": {}
+        },
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": {
+          "considered": 1,
+          "unchanged": 0,
+          "safeUpdate": 0,
+          "staleInput": 0,
+          "conflict": 1,
+          "reversalRequired": 0
+        },
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "STALE",
+            "severity": "BLOCKING",
+            "summary": "customerId: customerId changes require the identity merge flow, not an order upsert",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "KEEP_EXISTING",
+              "ACCEPT_INCOMING"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/EXCLUSIVE/same-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/EXCLUSIVE/other-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "EXCLUSIVE_HELD",
+          "conflict": {
+            "kind": "OWNERSHIP",
+            "blocking": false,
+            "summary": "Order closed by a different user while the lead holds an active exclusive caretaker. Ownership was kept.",
+            "options": [
+              "KEEP_CURRENT",
+              "REASSIGN"
+            ]
+          }
+        },
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "OWNERSHIP",
+            "severity": "WARNING",
+            "summary": "Order closed by a different user while the lead holds an active exclusive caretaker. Ownership was kept.",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "KEEP_CURRENT",
+              "REASSIGN"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/EXCLUSIVE/other-closer-locked",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": true
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "EXCLUSIVE_HELD",
+          "conflict": {
+            "kind": "OWNERSHIP",
+            "blocking": false,
+            "summary": "Order closed by a different user while the lead holds an active exclusive caretaker. Ownership was kept.",
+            "options": [
+              "KEEP_CURRENT",
+              "REASSIGN"
+            ]
+          }
+        },
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "OWNERSHIP",
+            "severity": "WARNING",
+            "summary": "Order closed by a different user while the lead holds an active exclusive caretaker. Ownership was kept.",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "KEEP_CURRENT",
+              "REASSIGN"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/EXCLUSIVE/no-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": null,
+        "closerTeamId": null,
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/EXCLUSIVE/unassigned-lead",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": null,
+          "ownershipStartedAt": null,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": true,
+          "newSegmentStartedAt": 1700000000000,
+          "reason": "INITIAL_ASSIGNMENT",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER/same-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER/other-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-b",
+          "changed": true,
+          "newSegmentStartedAt": 1700000000000,
+          "reason": "LATEST_ORDER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER/other-closer-locked",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER",
+          "lockActive": true
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-b",
+          "changed": true,
+          "newSegmentStartedAt": 1700000000000,
+          "reason": "LATEST_ORDER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER/no-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": null,
+        "closerTeamId": null,
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "NO_ACTIVE_CLOSER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER/unassigned-lead",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": null,
+          "ownershipStartedAt": null,
+          "ownershipPolicy": "LATEST_ORDER",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": true,
+          "newSegmentStartedAt": 1700000000000,
+          "reason": "LATEST_ORDER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER_WITH_LOCK/same-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER_WITH_LOCK",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER_WITH_LOCK/other-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER_WITH_LOCK",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-b",
+          "changed": true,
+          "newSegmentStartedAt": 1700000000000,
+          "reason": "LATEST_ORDER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER_WITH_LOCK/other-closer-locked",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER_WITH_LOCK",
+          "lockActive": true
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "LOCKED",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER_WITH_LOCK/no-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": null,
+        "closerTeamId": null,
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER_WITH_LOCK",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "NO_ACTIVE_CLOSER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/ownership/LATEST_ORDER_WITH_LOCK/unassigned-lead",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": null,
+          "ownershipStartedAt": null,
+          "ownershipPolicy": "LATEST_ORDER_WITH_LOCK",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": true,
+          "newSegmentStartedAt": 1700000000000,
+          "reason": "LATEST_ORDER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/stopped-same-caretaker",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "STOPPED",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": {
+          "requiresReview": true,
+          "proposedAction": "REACTIVATE",
+          "sameCaretakerAsBefore": true,
+          "teamId": "team-crm"
+        },
+        "conflicts": [
+          {
+            "kind": "REACTIVATION",
+            "severity": "BLOCKING",
+            "summary": "A stopped lead received a new order from the same caretaker: choose REACTIVATE or KEEP_STOPPED.",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "REACTIVATE",
+              "KEEP_STOPPED"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/stopped-other-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-b",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "STOPPED",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "EXCLUSIVE_HELD",
+          "conflict": {
+            "kind": "OWNERSHIP",
+            "blocking": false,
+            "summary": "Order closed by a different user while the lead holds an active exclusive caretaker. Ownership was kept.",
+            "options": [
+              "KEEP_CURRENT",
+              "REASSIGN"
+            ]
+          }
+        },
+        "reactivation": {
+          "requiresReview": true,
+          "proposedAction": "REACTIVATE",
+          "sameCaretakerAsBefore": false,
+          "teamId": "team-crm"
+        },
+        "conflicts": [
+          {
+            "kind": "OWNERSHIP",
+            "severity": "WARNING",
+            "summary": "Order closed by a different user while the lead holds an active exclusive caretaker. Ownership was kept.",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "KEEP_CURRENT",
+              "REASSIGN"
+            ]
+          },
+          {
+            "kind": "REACTIVATION",
+            "severity": "BLOCKING",
+            "summary": "A stopped lead received a new order: choose a reactivation action.",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "REACTIVATE",
+              "KEEP_STOPPED"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/stopped-no-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": null,
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "STOPPED",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "EXCLUSIVE",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "UNCHANGED",
+          "conflict": null
+        },
+        "reactivation": {
+          "requiresReview": true,
+          "proposedAction": "KEEP_STOPPED",
+          "sameCaretakerAsBefore": false,
+          "teamId": "team-crm"
+        },
+        "conflicts": [
+          {
+            "kind": "REACTIVATION",
+            "severity": "BLOCKING",
+            "summary": "A stopped lead received a new order: choose a reactivation action.",
+            "teamId": "team-crm",
+            "rowIndex": 3,
+            "options": [
+              "REACTIVATE",
+              "KEEP_STOPPED"
+            ]
+          }
+        ],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "row/team-from-lead",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-a",
+        "closerTeamId": null,
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "HUMAN_REVIEW",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": [
+            "x"
+          ]
+        },
+        "existingOrder": null,
+        "existingLead": null,
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "CONFLICT",
+        "blocking": true,
+        "merge": null,
+        "ownership": null,
+        "reactivation": null,
+        "conflicts": [
+          {
+            "kind": "IDENTITY",
+            "severity": "BLOCKING",
+            "summary": "Customer identity is ambiguous (x).",
+            "teamId": null,
+            "rowIndex": 3,
+            "options": [
+              "AUTO_MATCH",
+              "NEW_CUSTOMER"
+            ]
+          }
+        ],
+        "reasons": [
+          "identity review required before a new lead can be created"
+        ]
+      }
+    }
+  },
+  {
+    "name": "row/inactive-closer",
+    "input": {
+      "fn": "evaluateRow",
+      "facts": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "orderedAt": 1700000000000,
+        "closerUserId": "user-gone",
+        "closerTeamId": "team-crm",
+        "customerName": "สมชาย",
+        "phone": "0812345678",
+        "fields": {
+          "channel": "LINE",
+          "total": 120
+        }
+      },
+      "context": {
+        "identity": {
+          "kind": "AUTO_MATCH",
+          "candidateCustomerId": null,
+          "nameScore": 0,
+          "phoneExact": false,
+          "phoneNear": false,
+          "reasons": []
+        },
+        "existingOrder": null,
+        "existingLead": {
+          "leadId": "team-crm:cust-1",
+          "teamId": "team-crm",
+          "lifecycleStatus": "FOLLOWING",
+          "caretakerUserId": "user-a",
+          "ownershipStartedAt": 1699913600000,
+          "ownershipPolicy": "LATEST_ORDER",
+          "lockActive": false
+        },
+        "activeUserIds": [
+          "user-a",
+          "user-b",
+          "user-lead"
+        ]
+      }
+    },
+    "expected": {
+      "value": {
+        "rowIndex": 3,
+        "orderId": "SO-1",
+        "classification": "NEW_ORDER",
+        "blocking": false,
+        "merge": null,
+        "ownership": {
+          "caretakerUserId": "user-a",
+          "changed": false,
+          "newSegmentStartedAt": null,
+          "reason": "NO_ACTIVE_CLOSER",
+          "conflict": null
+        },
+        "reactivation": null,
+        "conflicts": [],
+        "reasons": []
+      }
+    }
+  },
+  {
+    "name": "aggregate/all-rows",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "UNCHANGED",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "UNCHANGED",
+          "blocking": false
+        },
+        {
+          "classification": "SAFE_UPDATE",
+          "blocking": false
+        },
+        {
+          "classification": "STALE_INPUT",
+          "blocking": false
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "SAFE_UPDATE",
+          "blocking": false
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        },
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        }
+      ],
+      "newCustomers": 4
+    },
+    "expected": {
+      "value": {
+        "rows": 34,
+        "newOrders": 20,
+        "newCustomers": 4,
+        "safeUpdates": 2,
+        "staleInputs": 1,
+        "unchanged": 2,
+        "conflicts": 9,
+        "blockingConflicts": 9,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/empty",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [],
+      "newCustomers": 0
+    },
+    "expected": {
+      "value": {
+        "rows": 0,
+        "newOrders": 0,
+        "newCustomers": 0,
+        "safeUpdates": 0,
+        "staleInputs": 0,
+        "unchanged": 0,
+        "conflicts": 0,
+        "blockingConflicts": 0,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/only-NEW_ORDER",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "NEW_ORDER",
+          "blocking": false
+        }
+      ],
+      "newCustomers": 1
+    },
+    "expected": {
+      "value": {
+        "rows": 1,
+        "newOrders": 1,
+        "newCustomers": 1,
+        "safeUpdates": 0,
+        "staleInputs": 0,
+        "unchanged": 0,
+        "conflicts": 0,
+        "blockingConflicts": 0,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/only-SAFE_UPDATE",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "SAFE_UPDATE",
+          "blocking": false
+        }
+      ],
+      "newCustomers": 1
+    },
+    "expected": {
+      "value": {
+        "rows": 1,
+        "newOrders": 0,
+        "newCustomers": 1,
+        "safeUpdates": 1,
+        "staleInputs": 0,
+        "unchanged": 0,
+        "conflicts": 0,
+        "blockingConflicts": 0,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/only-UNCHANGED",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "UNCHANGED",
+          "blocking": false
+        }
+      ],
+      "newCustomers": 1
+    },
+    "expected": {
+      "value": {
+        "rows": 1,
+        "newOrders": 0,
+        "newCustomers": 1,
+        "safeUpdates": 0,
+        "staleInputs": 0,
+        "unchanged": 1,
+        "conflicts": 0,
+        "blockingConflicts": 0,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/only-STALE_INPUT",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "STALE_INPUT",
+          "blocking": false
+        }
+      ],
+      "newCustomers": 1
+    },
+    "expected": {
+      "value": {
+        "rows": 1,
+        "newOrders": 0,
+        "newCustomers": 1,
+        "safeUpdates": 0,
+        "staleInputs": 1,
+        "unchanged": 0,
+        "conflicts": 0,
+        "blockingConflicts": 0,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/only-CONFLICT",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "CONFLICT",
+          "blocking": true
+        }
+      ],
+      "newCustomers": 1
+    },
+    "expected": {
+      "value": {
+        "rows": 1,
+        "newOrders": 0,
+        "newCustomers": 1,
+        "safeUpdates": 0,
+        "staleInputs": 0,
+        "unchanged": 0,
+        "conflicts": 1,
+        "blockingConflicts": 1,
+        "invalidRows": 0
+      }
+    }
+  },
+  {
+    "name": "aggregate/only-INVALID",
+    "input": {
+      "fn": "aggregatePreview",
+      "evaluations": [
+        {
+          "classification": "INVALID",
+          "blocking": false
+        }
+      ],
+      "newCustomers": 1
+    },
+    "expected": {
+      "value": {
+        "rows": 1,
+        "newOrders": 0,
+        "newCustomers": 1,
+        "safeUpdates": 0,
+        "staleInputs": 0,
+        "unchanged": 0,
+        "conflicts": 0,
+        "blockingConflicts": 0,
+        "invalidRows": 1
+      }
+    }
+  }
+]

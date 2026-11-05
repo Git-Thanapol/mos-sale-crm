@@ -1,0 +1,23 @@
+{% extends "leadui/base_v2.html" %}
+{% load v2 %}
+{% block title %}ข้อมูลลูกค้า · Sales CRM{% endblock %}
+{% block v2_content %}
+  {% include "leadui/_page_title.html" with title="ข้อมูลลูกค้า" subtitle="สรุปก่อน โหลดประวัติออเดอร์เมื่อผู้ใช้กดเท่านั้น" %}
+  <div class="detail-layout">
+    <section class="detail-card">
+      <h2>{{ customer.customer_name|default:customer.phone1|default:"(ไม่มีชื่อ)" }}</h2>
+      <p>{{ customer.phone1|default:"ไม่มีเบอร์หลัก" }}</p>
+      <dl>
+        <dt>ออเดอร์ล่าสุด</dt><dd>{{ summary.last_order_no|default:"—" }}</dd>
+        <dt>จำนวนออเดอร์</dt><dd>{{ summary.total_orders }}</dd>
+        <dt>ยอดซื้อรวม</dt><dd>{{ summary.total_spend|baht }}</dd>
+      </dl>
+      <button type="button" data-v2-history="{{ history_url }}" data-v2-into="#v2-history">ดูประวัติเก่า</button>
+    </section>
+    <section class="detail-card">
+      <h2>Leads ตาม Team</h2>
+      {% for row in leads %}<a class="list-button v2-link-row" href="{% url 'leadui:lead_detail' row.lead.id %}"><span>{{ row.lead.team.display_name }}</span>{% v2_chip row.lead.lifecycle_status %}</a>{% endfor %}
+    </section>
+  </div>
+  <div id="v2-history"></div>
+{% endblock %}

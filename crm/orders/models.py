@@ -32,6 +32,11 @@ class Order(models.Model):
     source_type = models.CharField(max_length=32, blank=True)  # 'manual' | 'import'
     uploaded_by = models.CharField(max_length=255, blank=True)
     import_batch_id = models.UUIDField(null=True, blank=True)
+    #: CRM V2 import engine: prototype order fields that have no column of their own
+    #: (channel, shop, subtotal, paymentStatus, shippingStatus, address...), and the
+    #: per-field source stamp the field-level merge uses to refuse stale input.
+    import_fields = models.JSONField(default=dict, blank=True)
+    field_provenance = models.JSONField(default=dict, blank=True)
     source_import_row = models.ForeignKey(
         "imports.StagingImportRow", null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
     )

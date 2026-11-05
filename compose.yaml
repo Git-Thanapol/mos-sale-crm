@@ -58,6 +58,26 @@ services:
       - media:/app/media
       - import_uploads:/app/import_uploads
 
+  # One-shot HX63 migration tooling. Under a profile, so `docker compose up`
+  # never starts it: it is a command you run once at cutover, not a service.
+  #   docker compose --profile hx63 run --rm hx63 tools/run-hx63-migration.ts
+  # PROTO_DIR must point at the reviewed CRM V2 prototype checkout; it is
+  # mounted read-only so a migration run cannot modify the reference
+  # implementation it is certified against.
+  hx63:
+    profiles: ["hx63"]
+    build:
+      context: .
+      dockerfile: docker/hx63/Dockerfile
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - ${PROTO_DIR:-./.proto-missing}:/proto:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   pgdata:
   static:

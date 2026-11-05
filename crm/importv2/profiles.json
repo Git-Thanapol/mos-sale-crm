@@ -1,0 +1,1185 @@
+[
+  {
+    "profileId": "crm-customers",
+    "version": 1,
+    "sourceKind": "CRM_CUSTOMERS",
+    "status": "ACTIVE",
+    "headerSignature": [
+      "วันที่สั่งซื้อ",
+      "เลขคำสั่งซื้อ",
+      "ช่องทางขาย",
+      "SKU",
+      "สินค้า",
+      "จำนวน",
+      "ราคา",
+      "วิธีการชำระ",
+      "ขนส่ง",
+      "หมายเลขพัสดุ",
+      "URL",
+      "ชื่อลูกค้า",
+      "เบอร์โทร",
+      "เบอร์สำรอง",
+      "ที่อยู่จัดส่ง",
+      "ตำบล",
+      "อำเภอ",
+      "จังหวัด",
+      "รหัสไปรษณีย์",
+      "พนักงานเปิดบิล",
+      "พนักงานอัพเซลล์",
+      "พนักงานดูแล",
+      "ทีม",
+      "ความสำคัญ",
+      "วันนัดติดตาม",
+      "โน้ตติดตาม"
+    ],
+    "columns": [
+      {
+        "columnIndex": 0,
+        "header": "วันที่สั่งซื้อ",
+        "canonicalField": "orderedAt",
+        "aliases": [],
+        "transform": "THAI_DATE",
+        "expect": "DATE",
+        "required": true
+      },
+      {
+        "columnIndex": 1,
+        "header": "เลขคำสั่งซื้อ",
+        "canonicalField": "orderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ORDER_ID",
+        "required": true
+      },
+      {
+        "columnIndex": 2,
+        "header": "ช่องทางขาย",
+        "canonicalField": "channel",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 3,
+        "header": "SKU",
+        "canonicalField": "sku",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 4,
+        "header": "สินค้า",
+        "canonicalField": "productName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 5,
+        "header": "จำนวน",
+        "canonicalField": "quantity",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 6,
+        "header": "ราคา",
+        "canonicalField": "amount",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 7,
+        "header": "วิธีการชำระ",
+        "canonicalField": "paymentMethod",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 8,
+        "header": "ขนส่ง",
+        "canonicalField": "carrier",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 9,
+        "header": "หมายเลขพัสดุ",
+        "canonicalField": "trackingNumber",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 10,
+        "header": "URL",
+        "canonicalField": "url",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 11,
+        "header": "ชื่อลูกค้า",
+        "canonicalField": "customerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": true
+      },
+      {
+        "columnIndex": 12,
+        "header": "เบอร์โทร",
+        "canonicalField": "phone",
+        "aliases": [],
+        "transform": "PHONE",
+        "expect": "PHONE",
+        "required": false
+      },
+      {
+        "columnIndex": 13,
+        "header": "เบอร์สำรอง",
+        "canonicalField": "phoneAlt",
+        "aliases": [],
+        "transform": "PHONE",
+        "expect": "PHONE",
+        "required": false
+      },
+      {
+        "columnIndex": 14,
+        "header": "ที่อยู่จัดส่ง",
+        "canonicalField": "addressLine",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 15,
+        "header": "ตำบล",
+        "canonicalField": "subdistrict",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 16,
+        "header": "อำเภอ",
+        "canonicalField": "district",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 17,
+        "header": "จังหวัด",
+        "canonicalField": "province",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 18,
+        "header": "รหัสไปรษณีย์",
+        "canonicalField": "postalCode",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 19,
+        "header": "พนักงานเปิดบิล",
+        "canonicalField": "sellerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 20,
+        "header": "พนักงานอัพเซลล์",
+        "canonicalField": "upsellName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 21,
+        "header": "พนักงานดูแล",
+        "canonicalField": "caretakerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 22,
+        "header": "ทีม",
+        "canonicalField": "teamName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 23,
+        "header": "ความสำคัญ",
+        "canonicalField": "priority",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 24,
+        "header": "วันนัดติดตาม",
+        "canonicalField": "followUpDate",
+        "aliases": [],
+        "transform": "THAI_DATE",
+        "expect": "DATE",
+        "required": false
+      },
+      {
+        "columnIndex": 25,
+        "header": "โน้ตติดตาม",
+        "canonicalField": "followUpNote",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      }
+    ],
+    "checksum": "2c204b707512aa4faacf654150b91b82e901751fb4c0e11d1f3e21f5f066eff4",
+    "createdBy": "system:bootstrap",
+    "createdAt": 1793145600000
+  },
+  {
+    "profileId": "litedetailorder",
+    "version": 1,
+    "sourceKind": "LITE_DETAIL_ORDER",
+    "status": "ACTIVE",
+    "headerSignature": [
+      "หมายเลขออเดอร์ภายใน",
+      "หมายเลขคำสั่งซื้อออนไลน์",
+      "สินค้า",
+      "สถานะคำสั่งซื้อ",
+      "บริษัทขนส่ง",
+      "เลขพัสดุ",
+      "เวลาสั่งซื้อ",
+      "ร้านค้า​",
+      "ป้ายแท็ก",
+      "ราคาสินค้าทั้งหมด",
+      "จังหวัด",
+      "เมือง",
+      "แขวง/ตำบล",
+      "ผู้รับ",
+      "รหัสไปรษณีย์",
+      "พนักงานขาย",
+      "แพลตฟอร์ม",
+      "วิธีการชำระเงิน",
+      "พนักงาน Upsell",
+      "ยอดขาย Upsell",
+      "ภาษี",
+      "รหัสสินค้า",
+      "ชื่อสินค้า",
+      "รูปแบบสินค้า",
+      "ราคาต่อหน่วย",
+      "จำนวน",
+      "รายละเอียดยอดที่ชำระแล้ว",
+      "ผู้สร้างคำสั่งซื้อ",
+      "แยกรายละเอียดสินค้าคอมโบเซ็ต",
+      "อัตราภาษี"
+    ],
+    "columns": [
+      {
+        "columnIndex": 0,
+        "header": "หมายเลขออเดอร์ภายใน",
+        "canonicalField": "orderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ORDER_ID",
+        "required": true
+      },
+      {
+        "columnIndex": 1,
+        "header": "หมายเลขคำสั่งซื้อออนไลน์",
+        "canonicalField": "onlineOrderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 2,
+        "header": "สินค้า",
+        "canonicalField": "skuSummary",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 3,
+        "header": "สถานะคำสั่งซื้อ",
+        "canonicalField": "orderStatusText",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ENUM",
+        "required": true
+      },
+      {
+        "columnIndex": 4,
+        "header": "บริษัทขนส่ง",
+        "canonicalField": "carrier",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 5,
+        "header": "เลขพัสดุ",
+        "canonicalField": "trackingNumber",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 6,
+        "header": "เวลาสั่งซื้อ",
+        "canonicalField": "orderedAt",
+        "aliases": [],
+        "transform": "EXCEL_SERIAL",
+        "expect": "DATE",
+        "required": true
+      },
+      {
+        "columnIndex": 7,
+        "header": "ร้านค้า​",
+        "canonicalField": "shop",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 8,
+        "header": "ป้ายแท็ก",
+        "canonicalField": "tags",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 9,
+        "header": "ราคาสินค้าทั้งหมด",
+        "canonicalField": "subtotal",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 10,
+        "header": "จังหวัด",
+        "canonicalField": "province",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 11,
+        "header": "เมือง",
+        "canonicalField": "district",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 12,
+        "header": "แขวง/ตำบล",
+        "canonicalField": "subdistrict",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 13,
+        "header": "ผู้รับ",
+        "canonicalField": "recipientName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 14,
+        "header": "รหัสไปรษณีย์",
+        "canonicalField": "postalCode",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 15,
+        "header": "พนักงานขาย",
+        "canonicalField": "sellerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 16,
+        "header": "แพลตฟอร์ม",
+        "canonicalField": "platform",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 17,
+        "header": "วิธีการชำระเงิน",
+        "canonicalField": "paymentMethod",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 18,
+        "header": "พนักงาน Upsell",
+        "canonicalField": "upsellName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 19,
+        "header": "ยอดขาย Upsell",
+        "canonicalField": "upsellAmount",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 20,
+        "header": "ภาษี",
+        "canonicalField": "tax",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 21,
+        "header": "รหัสสินค้า",
+        "canonicalField": "sku",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 22,
+        "header": "ชื่อสินค้า",
+        "canonicalField": "productName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 23,
+        "header": "รูปแบบสินค้า",
+        "canonicalField": "variant",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 24,
+        "header": "ราคาต่อหน่วย",
+        "canonicalField": "unitPrice",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 25,
+        "header": "จำนวน",
+        "canonicalField": "quantity",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 26,
+        "header": "รายละเอียดยอดที่ชำระแล้ว",
+        "canonicalField": "paidAmount",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 27,
+        "header": "ผู้สร้างคำสั่งซื้อ",
+        "canonicalField": "creatorName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 28,
+        "header": "แยกรายละเอียดสินค้าคอมโบเซ็ต",
+        "canonicalField": "comboDetail",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 29,
+        "header": "อัตราภาษี",
+        "canonicalField": "taxRate",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      }
+    ],
+    "checksum": "4adc936c73fece57b4f1d2d5f7b3f64ac8e3aa75710cbb11fc4d0c6784c6040c",
+    "createdBy": "system:bootstrap",
+    "createdAt": 1793145600000
+  },
+  {
+    "profileId": "inoutmanagemain",
+    "version": 1,
+    "sourceKind": "INOUT_MANAGE_MAIN",
+    "status": "ACTIVE",
+    "headerSignature": [
+      "หมายเลขคำสั่งซื้อออนไลน์",
+      "สถานะ",
+      "ยอดที่ชำระแล้ว",
+      "พิมพ์ใบปะหน้าแล้ว",
+      "จํานวนการพิมพ์",
+      "จำนวนสินค้าที่ขายได้",
+      "ข้อมูลสินค้า",
+      "บริษัทขนส่ง",
+      "หมายเลขพัสดุ",
+      "สถานะขนส่ง",
+      "เวลาที่เหลือในการจัดส่ง",
+      "กำหนดส่งสินค้า",
+      "วันสิ้นสุดเข้ารับพัสดุ",
+      "เลขกำกับสินค้า",
+      "ป้ายสินค้า | หลายแท็บ",
+      "หมายเลขออเดอร์ภายใน",
+      "เจ้าของสินค้า",
+      "ชื่อร้านค้า",
+      "คลัง",
+      "น้ำหนัก (โดยประมาณ)",
+      "น้ำหนัก (ที่ชั่ง)",
+      "ปริมาตร",
+      "บรรจุภัณฑ์",
+      "ข้อความของผู้ซื้อ",
+      "ชื่อผู้จัดจําหน่าย",
+      "หมายเหตุ",
+      "หมายเหตุ | หมายเหตุออฟไลน์",
+      "ที่อยู่ผู้รับ",
+      "ผู้รับ",
+      "COD (เก็บเงินปลายทาง)",
+      "ชื่อใบกำกับภาษี",
+      "เลขที่เสียภาษี",
+      "วันที่สร้าง",
+      "ผู้ตรวจสอบสินค้า",
+      "เวลาตรวจสินค้า",
+      "วันที่ออกจากคลังสินค้า",
+      "ผู้ส่ง",
+      "รายการออกคลัง",
+      "หมายเลขตู้",
+      "ใช้สินค้าคงคลัง",
+      "วันที่ชำระเงิน",
+      "ดึงข้อมูลการขนส่งมีปัญหา",
+      "ผู้ให้บริการขนส่ง",
+      "แพลตฟอร์ม",
+      "ผู้รับ",
+      "เขต/อำเภอของผู้รับ",
+      "แขวง/ตำบลของผู้รับ",
+      "รหัสไปรษณีย์ของผู้รับ",
+      "ผู้รับ",
+      "เลขใบแจ้งหนี้",
+      "วันที่สั่งซื้อ",
+      "ชื่อลูกค้า",
+      "จำนวนเงิน (ไม่รวมภาษี)",
+      "อัตราภาษี",
+      "ภาษีมูลค่าเพิ่ม",
+      "จำนวนเงินทั้งหมด"
+    ],
+    "columns": [
+      {
+        "columnIndex": 0,
+        "header": "หมายเลขคำสั่งซื้อออนไลน์",
+        "canonicalField": "onlineOrderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 1,
+        "header": "สถานะ",
+        "canonicalField": "orderStatusText",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ENUM",
+        "required": true
+      },
+      {
+        "columnIndex": 2,
+        "header": "ยอดที่ชำระแล้ว",
+        "canonicalField": "paidAmount",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 5,
+        "header": "จำนวนสินค้าที่ขายได้",
+        "canonicalField": "itemCount",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 6,
+        "header": "ข้อมูลสินค้า",
+        "canonicalField": "itemsText",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 7,
+        "header": "บริษัทขนส่ง",
+        "canonicalField": "carrier",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 8,
+        "header": "หมายเลขพัสดุ",
+        "canonicalField": "trackingNumber",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 9,
+        "header": "สถานะขนส่ง",
+        "canonicalField": "shippingText",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 15,
+        "header": "หมายเลขออเดอร์ภายใน",
+        "canonicalField": "orderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ORDER_ID",
+        "required": true
+      },
+      {
+        "columnIndex": 16,
+        "header": "เจ้าของสินค้า",
+        "canonicalField": "productOwner",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 17,
+        "header": "ชื่อร้านค้า",
+        "canonicalField": "shop",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 22,
+        "header": "บรรจุภัณฑ์",
+        "canonicalField": "packageCount",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 27,
+        "header": "ที่อยู่ผู้รับ",
+        "canonicalField": "addressLine",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 28,
+        "header": "ผู้รับ",
+        "canonicalField": "recipientName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 29,
+        "header": "COD (เก็บเงินปลายทาง)",
+        "canonicalField": "codFlag",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ENUM",
+        "required": false
+      },
+      {
+        "columnIndex": 32,
+        "header": "วันที่สร้าง",
+        "canonicalField": "createdAtSource",
+        "aliases": [],
+        "transform": "EXCEL_SERIAL",
+        "expect": "DATE",
+        "required": false
+      },
+      {
+        "columnIndex": 36,
+        "header": "ผู้ส่ง",
+        "canonicalField": "shipperName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 40,
+        "header": "วันที่ชำระเงิน",
+        "canonicalField": "paidAt",
+        "aliases": [],
+        "transform": "EXCEL_SERIAL",
+        "expect": "DATE",
+        "required": false
+      },
+      {
+        "columnIndex": 43,
+        "header": "แพลตฟอร์ม",
+        "canonicalField": "platform",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 44,
+        "header": "ผู้รับ",
+        "canonicalField": "province",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 45,
+        "header": "เขต/อำเภอของผู้รับ",
+        "canonicalField": "district",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 46,
+        "header": "แขวง/ตำบลของผู้รับ",
+        "canonicalField": "subdistrict",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 47,
+        "header": "รหัสไปรษณีย์ของผู้รับ",
+        "canonicalField": "postalCode",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 48,
+        "header": "ผู้รับ",
+        "canonicalField": "phone",
+        "aliases": [],
+        "transform": "PHONE",
+        "expect": "PHONE",
+        "required": false
+      },
+      {
+        "columnIndex": 50,
+        "header": "วันที่สั่งซื้อ",
+        "canonicalField": "orderedAt",
+        "aliases": [],
+        "transform": "EXCEL_SERIAL",
+        "expect": "DATE",
+        "required": true
+      },
+      {
+        "columnIndex": 51,
+        "header": "ชื่อลูกค้า",
+        "canonicalField": "customerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 52,
+        "header": "จำนวนเงิน (ไม่รวมภาษี)",
+        "canonicalField": "subtotal",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 55,
+        "header": "จำนวนเงินทั้งหมด",
+        "canonicalField": "total",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      }
+    ],
+    "checksum": "acdece27dbfd35c34a9805bbeea518d079cc4a55f7eeb28b468f62b2ed2c1d71",
+    "createdBy": "system:bootstrap",
+    "createdAt": 1793145600000
+  },
+  {
+    "profileId": "tele-sales-report",
+    "version": 1,
+    "sourceKind": "TELE_SALES_REPORT",
+    "status": "ACTIVE",
+    "headerSignature": [
+      "ลำดับ",
+      "เวลา",
+      "ประเภทคำสั่งซื้อ",
+      "เลขคำสั่งซื้อ",
+      "ชื่อสินค้า",
+      "จำนวนชิ้น",
+      "ราคาอัพ",
+      "พนักงานที่สร้าง"
+    ],
+    "columns": [
+      {
+        "columnIndex": 0,
+        "header": "ลำดับ",
+        "canonicalField": "rowNumber",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 1,
+        "header": "เวลา",
+        "canonicalField": "orderedTimeText",
+        "aliases": [],
+        "transform": "HH_MM",
+        "expect": "ENUM",
+        "required": true
+      },
+      {
+        "columnIndex": 2,
+        "header": "ประเภทคำสั่งซื้อ",
+        "canonicalField": "orderType",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ENUM",
+        "required": false
+      },
+      {
+        "columnIndex": 3,
+        "header": "เลขคำสั่งซื้อ",
+        "canonicalField": "orderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ORDER_ID",
+        "required": true
+      },
+      {
+        "columnIndex": 4,
+        "header": "ชื่อสินค้า",
+        "canonicalField": "productName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 5,
+        "header": "จำนวนชิ้น",
+        "canonicalField": "quantity",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 6,
+        "header": "ราคาอัพ",
+        "canonicalField": "upsellAmount",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 7,
+        "header": "พนักงานที่สร้าง",
+        "canonicalField": "creatorName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      }
+    ],
+    "checksum": "ca646ec80369253ab8a0a8fe3e21eb4f03a88c533793fe3de98887a789651f90",
+    "createdBy": "system:bootstrap",
+    "createdAt": 1793145600000
+  },
+  {
+    "profileId": "cutover-order-sheet",
+    "version": 1,
+    "sourceKind": "CUTOVER_ORDER_SHEET",
+    "status": "DRAFT",
+    "headerSignature": [
+      "วันเวลาที่สั่งซื้อ (YYYY-MM-DD HH:mm)",
+      "เลขคำสั่งซื้อ",
+      "ชื่อลูกค้า",
+      "เบอร์โทร",
+      "ช่องทาง",
+      "SKU",
+      "ชื่อสินค้า",
+      "จำนวน",
+      "ราคารวม",
+      "พนักงานปิดการขาย",
+      "ทีม",
+      "ที่อยู่",
+      "ตำบล",
+      "อำเภอ",
+      "จังหวัด",
+      "รหัสไปรษณีย์",
+      "หมายเหตุ"
+    ],
+    "columns": [
+      {
+        "columnIndex": 0,
+        "header": "วันเวลาที่สั่งซื้อ (YYYY-MM-DD HH:mm)",
+        "canonicalField": "orderedAtRaw",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": true
+      },
+      {
+        "columnIndex": 1,
+        "header": "เลขคำสั่งซื้อ",
+        "canonicalField": "orderId",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "ORDER_ID",
+        "required": true
+      },
+      {
+        "columnIndex": 2,
+        "header": "ชื่อลูกค้า",
+        "canonicalField": "customerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": true
+      },
+      {
+        "columnIndex": 3,
+        "header": "เบอร์โทร",
+        "canonicalField": "phone",
+        "aliases": [],
+        "transform": "PHONE",
+        "expect": "PHONE",
+        "required": true
+      },
+      {
+        "columnIndex": 4,
+        "header": "ช่องทาง",
+        "canonicalField": "channel",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 5,
+        "header": "SKU",
+        "canonicalField": "sku",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 6,
+        "header": "ชื่อสินค้า",
+        "canonicalField": "productName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 7,
+        "header": "จำนวน",
+        "canonicalField": "quantity",
+        "aliases": [],
+        "transform": "INTEGER",
+        "expect": "INTEGER",
+        "required": false
+      },
+      {
+        "columnIndex": 8,
+        "header": "ราคารวม",
+        "canonicalField": "total",
+        "aliases": [],
+        "transform": "MONEY",
+        "expect": "MONEY",
+        "required": false
+      },
+      {
+        "columnIndex": 9,
+        "header": "พนักงานปิดการขาย",
+        "canonicalField": "closerName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": true
+      },
+      {
+        "columnIndex": 10,
+        "header": "ทีม",
+        "canonicalField": "teamName",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 11,
+        "header": "ที่อยู่",
+        "canonicalField": "addressLine",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 12,
+        "header": "ตำบล",
+        "canonicalField": "subdistrict",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 13,
+        "header": "อำเภอ",
+        "canonicalField": "district",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 14,
+        "header": "จังหวัด",
+        "canonicalField": "province",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 15,
+        "header": "รหัสไปรษณีย์",
+        "canonicalField": "postalCode",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      },
+      {
+        "columnIndex": 16,
+        "header": "หมายเหตุ",
+        "canonicalField": "note",
+        "aliases": [],
+        "transform": "IDENTITY",
+        "expect": "TEXT",
+        "required": false
+      }
+    ],
+    "checksum": "fb613fea1bdd416c7d3971d15e06de9cf91115af5622bdf4012297da732d1c73",
+    "createdBy": "system:bootstrap",
+    "createdAt": 1793145600000
+  }
+]

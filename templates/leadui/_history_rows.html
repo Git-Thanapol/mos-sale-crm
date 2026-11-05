@@ -1,0 +1,2 @@
+{% load v2 %}{% for order in orders %}<div class="history-row"><strong>{{ order.order_no|default:"—" }}</strong><span>{{ order.order_date|bangkok }}</span><span>{{ order.source_type|default:"—" }}</span>{% v2_chip order|order_state %}<span>{{ order.total_amount|baht }}</span></div>
+{% endfor %}{% if more_url %}<button type="button" class="secondary" data-v2-history="{{ more_url }}">โหลดเพิ่ม</button>{% endif %}

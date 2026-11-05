@@ -1,0 +1,673 @@
+[
+  {
+    "name": "mapSourceStatus/สำเร็จ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "สำเร็จ"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "DELIVERED",
+        "paymentStatus": "PAID",
+        "shippingStatus": "DELIVERED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/จัดส่งแล้ว",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "จัดส่งแล้ว"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "SHIPPED",
+        "paymentStatus": "COD_PENDING",
+        "shippingStatus": "IN_TRANSIT",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/ยกเลิก",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "ยกเลิก"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "CANCELLED",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/ตีกลับ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "ตีกลับ"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "COD_RETURNED",
+        "paymentStatus": "REFUNDED",
+        "shippingStatus": "RETURNED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/คืนสินค้า",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "คืนสินค้า"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "COD_RETURNED",
+        "paymentStatus": "REFUNDED",
+        "shippingStatus": "RETURNED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/ชำระแล้วรอตรวจสอบ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "ชำระแล้วรอตรวจสอบ"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "PENDING_VERIFICATION",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/รอชำระเงิน",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "รอชำระเงิน"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/รอจัดส่ง",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "รอจัดส่ง"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "WAITING_SHIPMENT",
+        "paymentStatus": "PAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/ผิดปกติ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "ผิดปกติ"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": true,
+        "needsReview": true
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/null",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": null
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": false,
+        "needsReview": true
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/undefined",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": null
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": false,
+        "needsReview": true
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": ""
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": false,
+        "needsReview": true
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/  สำเร็จ  ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "  สำเร็จ  "
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "DELIVERED",
+        "paymentStatus": "PAID",
+        "shippingStatus": "DELIVERED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/สำเร็จ ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "สำเร็จ "
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "DELIVERED",
+        "paymentStatus": "PAID",
+        "shippingStatus": "DELIVERED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/ไม่รู้จัก",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "ไม่รู้จัก"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": false,
+        "needsReview": true
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/DELIVERED",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "DELIVERED"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "PENDING_CONFIRMATION",
+        "paymentStatus": "UNPAID",
+        "shippingStatus": "NOT_SHIPPED",
+        "known": false,
+        "needsReview": true
+      }
+    }
+  },
+  {
+    "name": "mapSourceStatus/สำเร็จ",
+    "input": {
+      "fn": "mapSourceStatus",
+      "raw": "สำเร็จ"
+    },
+    "expected": {
+      "value": {
+        "orderStatus": "DELIVERED",
+        "paymentStatus": "PAID",
+        "shippingStatus": "DELIVERED",
+        "known": true,
+        "needsReview": false
+      }
+    }
+  },
+  {
+    "name": "mapPaymentMethod/COD",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "COD"
+    },
+    "expected": {
+      "value": "COD_PENDING"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/cod",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "cod"
+    },
+    "expected": {
+      "value": "COD_PENDING"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/เก็บเงินปลายทาง",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "เก็บเงินปลายทาง"
+    },
+    "expected": {
+      "value": "COD_PENDING"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/ปลายทาง",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "ปลายทาง"
+    },
+    "expected": {
+      "value": "COD_PENDING"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/โอนเงิน",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "โอนเงิน"
+    },
+    "expected": {
+      "value": "PAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/Transfer",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "Transfer"
+    },
+    "expected": {
+      "value": "PAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/PAID",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "PAID"
+    },
+    "expected": {
+      "value": "PAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/paid online",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "paid online"
+    },
+    "expected": {
+      "value": "PAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/เก็บเงิน",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "เก็บเงิน"
+    },
+    "expected": {
+      "value": "COD_PENDING"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": ""
+    },
+    "expected": {
+      "value": "UNPAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/null",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": null
+    },
+    "expected": {
+      "value": "UNPAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/undefined",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": null
+    },
+    "expected": {
+      "value": "UNPAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/บัตรเครดิต",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": "บัตรเครดิต"
+    },
+    "expected": {
+      "value": "UNPAID"
+    }
+  },
+  {
+    "name": "mapPaymentMethod/ โอน ",
+    "input": {
+      "fn": "mapPaymentMethod",
+      "raw": " โอน "
+    },
+    "expected": {
+      "value": "PAID"
+    }
+  },
+  {
+    "name": "mapShippingText/",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": ""
+    },
+    "expected": {
+      "value": "NOT_SHIPPED"
+    }
+  },
+  {
+    "name": "mapShippingText/null",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": null
+    },
+    "expected": {
+      "value": "NOT_SHIPPED"
+    }
+  },
+  {
+    "name": "mapShippingText/undefined",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": null
+    },
+    "expected": {
+      "value": "NOT_SHIPPED"
+    }
+  },
+  {
+    "name": "mapShippingText/แสกนรับแล้ว",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "แสกนรับแล้ว"
+    },
+    "expected": {
+      "value": "PICKED_UP"
+    }
+  },
+  {
+    "name": "mapShippingText/สแกนรับ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "สแกนรับ"
+    },
+    "expected": {
+      "value": "PICKED_UP"
+    }
+  },
+  {
+    "name": "mapShippingText/รับพัสดุ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "รับพัสดุ"
+    },
+    "expected": {
+      "value": "PICKED_UP"
+    }
+  },
+  {
+    "name": "mapShippingText/Pickup",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "Pickup"
+    },
+    "expected": {
+      "value": "PICKED_UP"
+    }
+  },
+  {
+    "name": "mapShippingText/picked up",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "picked up"
+    },
+    "expected": {
+      "value": "PICKED_UP"
+    }
+  },
+  {
+    "name": "mapShippingText/กำลังจัดส่ง",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "กำลังจัดส่ง"
+    },
+    "expected": {
+      "value": "IN_TRANSIT"
+    }
+  },
+  {
+    "name": "mapShippingText/ระหว่างขนส่ง",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "ระหว่างขนส่ง"
+    },
+    "expected": {
+      "value": "IN_TRANSIT"
+    }
+  },
+  {
+    "name": "mapShippingText/In Transit",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "In Transit"
+    },
+    "expected": {
+      "value": "IN_TRANSIT"
+    }
+  },
+  {
+    "name": "mapShippingText/ขนส่งรับ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "ขนส่งรับ"
+    },
+    "expected": {
+      "value": "IN_TRANSIT"
+    }
+  },
+  {
+    "name": "mapShippingText/สำเร็จ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "สำเร็จ"
+    },
+    "expected": {
+      "value": "DELIVERED"
+    }
+  },
+  {
+    "name": "mapShippingText/delivered",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "delivered"
+    },
+    "expected": {
+      "value": "NOT_SHIPPED"
+    }
+  },
+  {
+    "name": "mapShippingText/ส่งถึงแล้ว",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "ส่งถึงแล้ว"
+    },
+    "expected": {
+      "value": "DELIVERED"
+    }
+  },
+  {
+    "name": "mapShippingText/ตีกลับ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "ตีกลับ"
+    },
+    "expected": {
+      "value": "RETURNING"
+    }
+  },
+  {
+    "name": "mapShippingText/Return",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "Return"
+    },
+    "expected": {
+      "value": "RETURNING"
+    }
+  },
+  {
+    "name": "mapShippingText/ปัญหา",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "ปัญหา"
+    },
+    "expected": {
+      "value": "FAILED"
+    }
+  },
+  {
+    "name": "mapShippingText/failed",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "failed"
+    },
+    "expected": {
+      "value": "FAILED"
+    }
+  },
+  {
+    "name": "mapShippingText/ล้มเหลว",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "ล้มเหลว"
+    },
+    "expected": {
+      "value": "FAILED"
+    }
+  },
+  {
+    "name": "mapShippingText/รอขนส่ง",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "รอขนส่ง"
+    },
+    "expected": {
+      "value": "IN_TRANSIT"
+    }
+  },
+  {
+    "name": "mapShippingText/label printed",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "label printed"
+    },
+    "expected": {
+      "value": "LABEL_CREATED"
+    }
+  },
+  {
+    "name": "mapShippingText/อื่นๆ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": "อื่นๆ"
+    },
+    "expected": {
+      "value": "NOT_SHIPPED"
+    }
+  },
+  {
+    "name": "mapShippingText/ กำลัง ",
+    "input": {
+      "fn": "mapShippingText",
+      "raw": " กำลัง "
+    },
+    "expected": {
+      "value": "IN_TRANSIT"
+    }
+  },
+  {
+    "name": "knownSourceStatuses",
+    "input": {
+      "fn": "knownSourceStatuses"
+    },
+    "expected": {
+      "value": [
+        "สำเร็จ",
+        "จัดส่งแล้ว",
+        "ยกเลิก",
+        "ตีกลับ",
+        "คืนสินค้า",
+        "ชำระแล้วรอตรวจสอบ",
+        "รอชำระเงิน",
+        "รอจัดส่ง",
+        "ผิดปกติ"
+      ]
+    }
+  }
+]

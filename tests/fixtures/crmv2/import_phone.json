@@ -1,0 +1,616 @@
+[
+  {
+    "name": "normalize/081-234-5678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "081-234-5678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/+66 81 234 5678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "+66 81 234 5678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/0066812345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0066812345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/812345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "812345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/0812345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0812345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/021234567",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "021234567"
+    },
+    "expected": {
+      "value": {
+        "national": "021234567",
+        "e164": "+6621234567",
+        "isMobile": false,
+        "isLandline": true,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/0212345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0212345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0212345678",
+        "e164": "+66212345678",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/abc",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "abc"
+    },
+    "expected": {
+      "value": {
+        "national": "",
+        "e164": "",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": ""
+    },
+    "expected": {
+      "value": {
+        "national": "",
+        "e164": "",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/null",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": null
+    },
+    "expected": {
+      "value": {
+        "national": "",
+        "e164": "",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/undefined",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": null
+    },
+    "expected": {
+      "value": {
+        "national": "",
+        "e164": "",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/812345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": 812345678
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/66812345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "66812345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/6681234567",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "6681234567"
+    },
+    "expected": {
+      "value": {
+        "national": "6681234567",
+        "e164": "+66681234567",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/  081 234 5678  ",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "  081 234 5678  "
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/0912345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0912345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0912345678",
+        "e164": "+66912345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/0612345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0612345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0612345678",
+        "e164": "+66612345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/0512345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0512345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0512345678",
+        "e164": "+66512345678",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/0312345678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "0312345678"
+    },
+    "expected": {
+      "value": {
+        "national": "0312345678",
+        "e164": "+66312345678",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/12345",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "12345"
+    },
+    "expected": {
+      "value": {
+        "national": "12345",
+        "e164": "",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/+66 2 123 4567",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "+66 2 123 4567"
+    },
+    "expected": {
+      "value": {
+        "national": "6621234567",
+        "e164": "+66621234567",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/00 66 81 234 5678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "00 66 81 234 5678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/081.234.5678",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "081.234.5678"
+    },
+    "expected": {
+      "value": {
+        "national": "0812345678",
+        "e164": "+66812345678",
+        "isMobile": true,
+        "isLandline": false,
+        "plausible": true
+      }
+    }
+  },
+  {
+    "name": "normalize/๐๘๑๒๓๔๕๖๗๘",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "๐๘๑๒๓๔๕๖๗๘"
+    },
+    "expected": {
+      "value": {
+        "national": "",
+        "e164": "",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/08123456789",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "08123456789"
+    },
+    "expected": {
+      "value": {
+        "national": "08123456789",
+        "e164": "+668123456789",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "normalize/66 8123 4567",
+    "input": {
+      "fn": "normalizePhone",
+      "raw": "66 8123 4567"
+    },
+    "expected": {
+      "value": {
+        "national": "6681234567",
+        "e164": "+66681234567",
+        "isMobile": false,
+        "isLandline": false,
+        "plausible": false
+      }
+    }
+  },
+  {
+    "name": "distance/0812345678/0812345678",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "0812345678",
+      "b": "0812345678"
+    },
+    "expected": {
+      "value": 0
+    }
+  },
+  {
+    "name": "distance/0812345678/0812345679",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "0812345678",
+      "b": "0812345679"
+    },
+    "expected": {
+      "value": 1
+    }
+  },
+  {
+    "name": "distance/0812345678/0812345699",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "0812345678",
+      "b": "0812345699"
+    },
+    "expected": {
+      "value": 2
+    }
+  },
+  {
+    "name": "distance/0812345678/0899999999",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "0812345678",
+      "b": "0899999999"
+    },
+    "expected": {
+      "value": 8
+    }
+  },
+  {
+    "name": "distance/0812345678/081234567",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "0812345678",
+      "b": "081234567"
+    },
+    "expected": {
+      "value": "Infinity"
+    }
+  },
+  {
+    "name": "distance//0812345678",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "",
+      "b": "0812345678"
+    },
+    "expected": {
+      "value": "Infinity"
+    }
+  },
+  {
+    "name": "distance/0812345678/",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "0812345678",
+      "b": ""
+    },
+    "expected": {
+      "value": "Infinity"
+    }
+  },
+  {
+    "name": "distance//",
+    "input": {
+      "fn": "digitEditDistance",
+      "a": "",
+      "b": ""
+    },
+    "expected": {
+      "value": "Infinity"
+    }
+  },
+  {
+    "name": "looks/0812345678",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "0812345678"
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "looks/66812345678",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "66812345678"
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "looks/081-234-5678",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "081-234-5678"
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "looks/12345",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "12345"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "looks/SO-1234567",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "SO-1234567"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "looks/021234567",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "021234567"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "looks/0512345678",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "0512345678"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "looks/+66812345678",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "+66812345678"
+    },
+    "expected": {
+      "value": true
+    }
+  },
+  {
+    "name": "looks/6612345678",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "6612345678"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "looks/0812345678901",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": "0812345678901"
+    },
+    "expected": {
+      "value": false
+    }
+  },
+  {
+    "name": "looks/",
+    "input": {
+      "fn": "looksLikePhone",
+      "value": ""
+    },
+    "expected": {
+      "value": false
+    }
+  }
+]

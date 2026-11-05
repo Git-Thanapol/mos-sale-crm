@@ -1,0 +1,37 @@
+{% extends "leadui/base_v2.html" %}
+{% block title %}งานของฉัน · Sales CRM{% endblock %}
+{% block v2_content %}
+  {% include "leadui/_page_title.html" with title="งานของฉัน" subtitle="เรียงงานเร่งด่วน: เกินกำหนด → นัดวันนี้ → ติดตาม → Lead ใหม่" %}
+  <form class="toolbar" method="get" data-v2-filters>
+    <input type="search" name="lead_keyword" aria-label="ค้นหา" placeholder="เบอร์โทร / ชื่อ / ชื่อมาตรฐาน / Order ID" value="{{ q.lead_keyword }}">
+    <select name="missed_channel" aria-label="กลุ่มออเดอร์ตกหล่น">
+      <option value="">ทุกกลุ่มออเดอร์ตกหล่น</option>
+      {% for option in missed_channel_options %}<option value="{{ option }}"{% if q.missed_channel == option %} selected{% endif %}>{{ option }}</option>{% endfor %}
+    </select>
+    <select name="age_preset" aria-label="ระยะห่างจากออเดอร์ล่าสุด" data-v2-age-preset>
+      <option value="">ทุกช่วงออเดอร์ล่าสุด</option>
+      {% for value, label in age_preset_options %}<option value="{{ value }}"{% if q.age_preset == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <label>ขั้นต่ำ (วัน)<input type="number" name="age_min_days" aria-label="ขั้นต่ำวันจากออเดอร์ล่าสุด" min="0" value="{{ q.age_min_days }}" data-v2-age-days></label>
+    <label>สูงสุด (วัน)<input type="number" name="age_max_days" aria-label="สูงสุดวันจากออเดอร์ล่าสุด" min="0" value="{{ q.age_max_days }}" data-v2-age-days></label>
+    <select name="age_sort" aria-label="เรียงออเดอร์ล่าสุด">
+      {% for value, label in sort_options %}<option value="{{ value }}"{% if sort_value == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="appointment_protection" aria-label="สถานะนัดหมาย">
+      {% for value, label in appointment_options %}<option value="{{ value }}"{% if q.appointment_protection == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="followup_protection" aria-label="สถานะรอบติดตาม">
+      {% for value, label in followup_options %}<option value="{{ value }}"{% if q.followup_protection == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <label class="quick-filter"><input type="checkbox" name="exclude_stopped" value="1"{% if exclude_stopped %} checked{% endif %}>ไม่รวม STOPPED</label>
+    {% if may_review %}<label class="quick-filter"><input type="checkbox" name="reallocation_review" value="1"{% if reallocation_review %} checked{% endif %}>หลีดที่ควรตรวจสอบการจัดสรรใหม่</label>{% endif %}
+    <span class="hint">เกณฑ์ทดสอบ Local: {{ reallocation_days }} วัน · เป็นคิวตรวจสอบเท่านั้น</span>
+  </form>
+  {% if rows %}
+    {% include "leadui/_lead_table.html" with link_customer=True %}
+    {% include "leadui/_pager.html" %}
+  {% else %}
+    {% include "leadui/_state.html" with kind="empty" %}
+    {% include "leadui/_pager.html" %}
+  {% endif %}
+{% endblock %}

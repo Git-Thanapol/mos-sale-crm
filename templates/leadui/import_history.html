@@ -1,0 +1,34 @@
+{% extends "leadui/base_v2.html" %}
+{% load v2 %}
+{% block title %}ประวัตินำเข้า · Sales CRM{% endblock %}
+{% block v2_content %}
+  {% include "leadui/_page_title.html" with title="ประวัตินำเข้า" subtitle="สถานะจริงเท่านั้น — แสดงสำเร็จเมื่อ COMMITTED" %}
+  {% if rows %}
+    <div class="table-shell"><table><thead><tr><th>Batch</th><th>ไฟล์</th><th>สถานะ</th><th>จำนวน</th><th></th></tr></thead><tbody>
+    {% for row in rows %}{% with batch=row.batch %}<tr>
+      <td title="{{ batch.batch_id }}">{{ batch.batch_id|stringformat:"s"|slice:":8" }}</td>
+      <td>{{ batch.file_name }}<small>{{ batch.source_kind }}</small></td>
+      <td>{% v2_chip batch.status %}</td>
+      <td>{{ batch.row_count }}</td>
+      <td>{% if row.can_rollback %}
+        <button type="button" class="danger-button" data-v2-open="rollback-{{ batch.id }}">Rollback</button>
+        <dialog id="rollback-{{ batch.id }}">
+          <h2>Rollback {{ batch.batch_id|stringformat:"s"|slice:":8" }}?</h2>
+          <form method="post" action="{% url 'leadui:history_rollback' batch.batch_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="operation_key" value="{{ row.operation_key }}">
+            <input type="text" name="reason" placeholder="เหตุผล">
+            <div class="actions">
+              <button type="submit" class="danger-button">Rollback</button>
+              <button type="button" class="secondary" data-v2-close>ยกเลิก</button>
+            </div>
+          </form>
+        </dialog>
+      {% endif %}</td>
+    </tr>{% endwith %}{% endfor %}
+    </tbody></table></div>
+  {% else %}
+    {% include "leadui/_state.html" with kind="empty" %}
+  {% endif %}
+  {% include "leadui/_pager.html" %}
+{% endblock %}

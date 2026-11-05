@@ -1,0 +1,719 @@
+[
+  {
+    "name": "EXCLUSIVE/no-caretaker",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": null,
+      "ownershipStartedAt": null,
+      "lifecycleStatus": "NEW",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-crm-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "INITIAL_ASSIGNMENT",
+      "conflict": null
+    }
+  },
+  {
+    "name": "EXCLUSIVE/same-closer",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-crm-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "UNCHANGED",
+      "conflict": null
+    }
+  },
+  {
+    "name": "EXCLUSIVE/other-closer",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "EXCLUSIVE_HELD",
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "blocking": false,
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ]
+      }
+    }
+  },
+  {
+    "name": "EXCLUSIVE/null-closer",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": null,
+        "closerTeamId": null
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "UNCHANGED",
+      "conflict": null
+    }
+  },
+  {
+    "name": "EXCLUSIVE/lock-active",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "WAITING_CUSTOMER",
+      "lockActive": true,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "EXCLUSIVE_HELD",
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "blocking": false,
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ]
+      }
+    }
+  },
+  {
+    "name": "EXCLUSIVE/stopped",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "STOPPED",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "EXCLUSIVE_HELD",
+      "conflict": {
+        "kind": "OWNERSHIP",
+        "blocking": false,
+        "options": [
+          "KEEP_CURRENT",
+          "REASSIGN"
+        ]
+      }
+    }
+  },
+  {
+    "name": "EXCLUSIVE/resigned-closer-no-caretaker",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": null,
+      "ownershipStartedAt": null,
+      "lifecycleStatus": "NEW",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-resigned",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": null,
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "EXCLUSIVE/resigned-closer-held",
+    "input": {
+      "policy": "EXCLUSIVE",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-resigned",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "UNCHANGED",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/no-caretaker",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": null,
+      "ownershipStartedAt": null,
+      "lifecycleStatus": "NEW",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-crm-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/same-closer",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-crm-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "UNCHANGED",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/other-closer",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-upsell-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/null-closer",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": null,
+        "closerTeamId": null
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/lock-active",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "WAITING_CUSTOMER",
+      "lockActive": true,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-upsell-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/stopped",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "STOPPED",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-upsell-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/resigned-closer-no-caretaker",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": null,
+      "ownershipStartedAt": null,
+      "lifecycleStatus": "NEW",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-resigned",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": null,
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER/resigned-closer-held",
+    "input": {
+      "policy": "LATEST_ORDER",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-resigned",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/no-caretaker",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": null,
+      "ownershipStartedAt": null,
+      "lifecycleStatus": "NEW",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-crm-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/same-closer",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-crm-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "UNCHANGED",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/other-closer",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-upsell-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/null-closer",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": null,
+        "closerTeamId": null
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/lock-active",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "WAITING_CUSTOMER",
+      "lockActive": true,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "LOCKED",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/stopped",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "STOPPED",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-upsell-1",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-upsell-1",
+      "changed": true,
+      "newSegmentStartedAt": 1790823601000,
+      "reason": "LATEST_ORDER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/resigned-closer-no-caretaker",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": null,
+      "ownershipStartedAt": null,
+      "lifecycleStatus": "NEW",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-resigned",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": null,
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  },
+  {
+    "name": "LATEST_ORDER_WITH_LOCK/resigned-closer-held",
+    "input": {
+      "policy": "LATEST_ORDER_WITH_LOCK",
+      "teamId": "team-crm",
+      "currentCaretakerUserId": "user-ts-crm-1",
+      "ownershipStartedAt": 1790823600000,
+      "lifecycleStatus": "FOLLOWING",
+      "lockActive": false,
+      "order": {
+        "orderId": "700010",
+        "orderedAt": 1790823601000,
+        "closerUserId": "user-ts-resigned",
+        "closerTeamId": "team-crm"
+      },
+      "activeUserIds": [
+        "user-ts-crm-1",
+        "user-ts-upsell-1",
+        "user-lead-crm"
+      ]
+    },
+    "expected": {
+      "caretakerUserId": "user-ts-crm-1",
+      "changed": false,
+      "newSegmentStartedAt": null,
+      "reason": "NO_ACTIVE_CLOSER",
+      "conflict": null
+    }
+  }
+]

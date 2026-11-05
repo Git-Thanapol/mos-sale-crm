@@ -15,7 +15,21 @@ class FakeUser(SimpleNamespace):
 
 @pytest.fixture
 def make_user():
-    def _make(role: str = "ทั่วไป", staff_code: str = "") -> FakeUser:
-        return FakeUser(role=role, staff_code=staff_code)
+    def _make(
+        role: str = "ทั่วไป",
+        staff_code: str = "",
+        team_scope: list[str] | None = None,
+        is_active: bool = True,
+    ) -> FakeUser:
+        """`team_scope` and `is_active` are needed by the Lead-surface
+        predicates: a TEAM_LEAD is authorized per team, and a disabled account
+        must lose authority without a separate code path.
+        """
+        return FakeUser(
+            role=role,
+            staff_code=staff_code,
+            team_scope=list(team_scope or []),
+            is_active=is_active,
+        )
 
     return _make

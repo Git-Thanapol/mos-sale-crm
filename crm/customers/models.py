@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from uuid import uuid4
+
 from django.db import models
 from django.db.models import F
 
@@ -15,6 +17,15 @@ class Customer(models.Model):
     tests/unit/test_identity.py::test_phone_key_rule_is_not_transitive for
     why the rule must not be "improved" into a phone-graph union-find.
     """
+
+    # The immutable identity. 02_LOCKED_BUSINESS_RULES.md requires an internal
+    # customerId that is not the phone: phone_key is DERIVED from phone1/phone2
+    # (crm.core.identity.phone_key), so it changes when a phone changes and
+    # cannot be what a Lead, an ownership segment or an audit row points at.
+    # phone_key keeps its UNIQUE constraint for now — relaxing it belongs to
+    # the import engine (Plan 2), which is the code that needs the
+    # HUMAN_REVIEW path for phone collisions. Nothing new keys off phone_key.
+    customer_uid = models.UUIDField(unique=True, editable=False, default=uuid4)
 
     phone_key = models.CharField(max_length=64, unique=True)
     phone1 = models.CharField(max_length=32, blank=True)

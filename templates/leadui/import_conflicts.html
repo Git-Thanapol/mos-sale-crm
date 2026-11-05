@@ -1,0 +1,35 @@
+{% extends "leadui/base_v2.html" %}
+{% load v2 %}
+{% block title %}Import Conflict Resolution · Sales CRM{% endblock %}
+{% block v2_content %}
+  {% include "leadui/_page_title.html" with title="Import Conflict Resolution" subtitle="Team Lead เห็นเฉพาะ own-Team; Identity และ multi-Team เป็น Admin เท่านั้น" %}
+  {% if cards %}
+    <div class="card-grid">
+      {% for card in cards %}
+        {% with conflict=card.conflict %}
+        <article class="work-card">
+          <div>{% v2_chip conflict.kind %} {% v2_chip conflict.severity %}</div>
+          <h3>{{ conflict.summary }}</h3>
+          <p>Team: {{ conflict.team.code|default:"GLOBAL" }}</p>
+          <small>{{ conflict.source_row_ref }}</small>
+          <div class="actions">
+            {% for option in conflict.options %}
+              <form method="post" action="{% url 'leadui:conflict_resolve' conflict.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="resolution" value="{{ option }}">
+                <input type="hidden" name="expected_version" value="{{ conflict.version }}">
+                <input type="hidden" name="expected_hash" value="{{ card.hash }}">
+                <input type="hidden" name="operation_key" value="{{ card.operation_key }}-{{ forloop.counter }}">
+                <button type="submit">{{ option }}</button>
+              </form>
+            {% endfor %}
+          </div>
+        </article>
+        {% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "leadui/_state.html" with kind="empty" %}
+  {% endif %}
+  {% include "leadui/_pager.html" %}
+{% endblock %}

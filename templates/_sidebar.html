@@ -6,8 +6,19 @@
     <div class="crm-sidebar__group-label">{{ group.label }}</div>
     {% for item in group.items %}
       {% if item.allowed %}
-        <a class="crm-sidebar__item{% if request.resolver_match.view_name == item.url_name %} crm-sidebar__item--active{% endif %}"
+        <a class="crm-sidebar__item{% if item.active %} crm-sidebar__item--active{% endif %}"
            href="{% url item.url_name %}">{{ item.label }}</a>
+        {% if item.children %}
+          <div class="crm-sidebar__sub">
+            {% for child in item.children %}
+              {% url child.url_name as child_url %}
+              {% if child_url %}
+                <a class="crm-sidebar__subitem{% if child.active %} crm-sidebar__subitem--active{% endif %}"
+                   href="{{ child_url }}">{{ child.label }}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
       {% else %}
         <span class="crm-sidebar__item crm-sidebar__item--disabled">{{ item.label }}</span>
       {% endif %}
