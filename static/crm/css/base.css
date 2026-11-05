@@ -86,7 +86,7 @@ main:focus { outline: none; }
 .crm-eyebrow {
   font-size: var(--fs-eyebrow);
   font-weight: 700;
-  color: var(--c-accent);
+  color: var(--c-accent-text);
   text-transform: uppercase; /* ASCII eyebrow only, e.g. "CRM Core" — never on Thai text */
   letter-spacing: .04em;
   margin: 0 0 var(--space-2);

@@ -79,6 +79,7 @@
             {% endfor %}
           </select>
           <input type="hidden" name="owner_display" value="{{ detail.customer.owner_display }}">
+          <input type="text" name="reason" class="crm-input" placeholder="เหตุผล" required>
         </div>
         <button type="submit" class="crm-btn crm-btn--primary">บันทึกผู้ดูแล</button>
       </form>

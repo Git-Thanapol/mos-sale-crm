@@ -181,11 +181,11 @@ def test_an_interrupted_rollback_resumes_where_it_stopped(editor, monkeypatch):
     real = rollback_module._undo
     calls = {"n": 0}
 
-    def flaky(entry, totals):
+    def flaky(entry, totals, creates):
         calls["n"] += 1
         if calls["n"] == 25:
             raise RuntimeError("crash")
-        return real(entry, totals)
+        return real(entry, totals, creates)
 
     monkeypatch.setattr(rollback_module, "_undo", flaky)
     with pytest.raises(RuntimeError):

@@ -24,23 +24,34 @@ from crm.core.permissions import (
     can_view_import_history,
     import_actor_role,
 )
+from crm.domain.import_confirm import source_requires_batch_date
 from crm.domain.import_errors import BatchBusinessDateError, ConfirmError
 from crm.importv2.models import ImportBatch
 from crm.importv2.services import conflicts as conflict_service
-from crm.importv2.services.commit import StalePreviewError, commit_batch, confirm_batch
+from crm.importv2.services.cancel import CANCELLABLE, cancel_batch, restage_batch
+from crm.importv2.services.commit import StalePreviewError, StaleResolutionError, commit_batch, confirm_batch
 from crm.importv2.services.preview import build_preview, set_batch_business_date
-from crm.importv2.services.rollback import rollback_batch
+from crm.importv2.services.rollback import retry_rollback, rollback_batch
 from crm.importv2.services.upload import UploadError, create_batch
+from crm.leadui.import_steps import STAGES, next_step
 from crm.leadui.views import lead_page, pager_urls
 
 PAGE_SIZE = 25
-HISTORY_ROLLBACK_STATUSES = ("COMMITTED", "PAUSED_QUOTA", "FAILED_RETRYABLE")
+INOUT = "INOUT_MANAGE_MAIN"
+LITE = "LITE_DETAIL_ORDER"
+#: Normal for these exports (they carry columns nobody needs); listing them buries real warnings.
+QUIET_WARNINGS = ("UNMAPPED_COLUMN", "DUPLICATE_HEADER")
+# COMMITTING / ROLLING_BACK are included so an interrupted commit or rollback can be resumed.
+HISTORY_ROLLBACK_STATUSES = ("COMMITTED", "PAUSED_QUOTA", "FAILED_RETRYABLE", "COMMITTING", "ROLLING_BACK")
+# Admin-only retry after a human reconciled the rows a failed rollback listed.
+HISTORY_RETRY_STATUSES = ("ROLLBACK_FAILED",)
 
 #: A refusal code from a service, in words an operator can act on.
 REFUSALS = {
     "ILLEGAL_STATE": "ขั้นตอนนี้ทำไม่ได้ในสถานะปัจจุบันของ Batch",
     "ALREADY_RESOLVED": "Conflict นี้ถูกแก้ไปแล้ว",
     "INVALID_RESOLUTION": "ตัวเลือกนี้ไม่ได้อยู่ในรายการของ Conflict",
+    "INVALID_ARGUMENT": "ต้องระบุเหตุผล (อย่างน้อย 3 ตัวอักษร)",
     "CONCURRENT_MODIFICATION": "ข้อมูลเปลี่ยนไปแล้ว — โหลดใหม่ก่อนตัดสิน",
 }
 
@@ -51,6 +62,11 @@ def _refusal(error: ValueError) -> str:
         if text.startswith(code):
             return f"{message} ({code})"
     return text
+
+
+def _rollback_failed_text(result: dict) -> str:
+    why = "; ".join(f"{d['entity']} #{d['id']}: {d['why']}" for d in (result.get("drift") or [])[:3])
+    return f"Rollback หยุด: {why} — ต้องตรวจสอบด้วยมือ แล้วกด Retry rollback (ROLLBACK_FAILED)"
 
 
 def _batch(batch_uuid) -> ImportBatch:
@@ -87,22 +103,67 @@ def import_page(request):
         except ValueError:
             batch = None
     if batch is None:
-        batch = ImportBatch.objects.order_by("-id").first()
+        batch = ImportBatch.objects.exclude(status="CANCELLED").order_by("-id").first()
     aggregate = (batch.preview_aggregate if batch else None) or {}
     issues = (batch.validation or {}).get("issues", []) if batch else []
+    blocks = [i for i in issues if i["severity"] == "BLOCK"]
+    step = next_step(
+        status=batch.status if batch else None,
+        has_blocks=bool(blocks),
+        open_blocking=batch.conflicts.filter(severity="BLOCKING", status="OPEN").count() if batch else 0,
+        is_inout=bool(batch and batch.source_kind == INOUT),
+    )
     return render(
         request,
         "leadui/import.html",
         {
             "batch": batch,
             "aggregate": aggregate,
-            "blocks": [i for i in issues if i["severity"] == "BLOCK"],
-            "warnings": [i for i in issues if i["severity"] == "WARNING"],
-            "steps": ("Upload", "Validate", "Preview", "Resolve", "Confirm", "Commit"),
+            "blocks": blocks,
+            "warnings": [i for i in issues if i["severity"] == "WARNING" and i["code"] not in QUIET_WARNINGS],
+            "slots": _slots(batch),
+            "other_file": bool(batch and batch.source_kind not in (INOUT, LITE)),
+            "stages": [
+                {"number": number, "label": label, "state": _stage_state(number - 1, step["stage"])}
+                for number, label in enumerate(STAGES, start=1)
+            ],
+            "step": step,
+            "can_repreview": bool(batch and batch.status == "AWAITING_RESOLUTION" and not blocks),
+            "needs_batch_date": bool(batch and source_requires_batch_date(batch.source_kind)),
             "operation_key": uuid.uuid4().hex,
+            "can_cancel": bool(batch and batch.status in CANCELLABLE and import_actor_role(request.user) == "ADMIN"),
             "batch_date": batch.batch_business_date.isoformat() if batch and batch.batch_business_date else "",
         },
     )
+
+
+def _stage_state(index: int, current: int) -> str:
+    return "done" if index < current else "now" if index == current else ""
+
+
+def _slots(selected: ImportBatch | None) -> list[dict]:
+    """The two main upload slots, each with its kind's latest batch that was not cancelled."""
+    latest = {
+        kind: ImportBatch.objects.filter(source_kind=kind).exclude(status="CANCELLED").order_by("-id").first()
+        for kind in (INOUT, LITE)
+    }
+    inout_done = bool(latest[INOUT] and latest[INOUT].status == "COMMITTED")
+    return [
+        {
+            "number": number,
+            "kind": kind,
+            "title": title,
+            "provides": provides,
+            "batch": latest[kind],
+            "selected": bool(selected and latest[kind] and selected.pk == latest[kind].pk),
+            # A reminder only: Lite can be uploaded at any time, including again later.
+            "hint": "รอไฟล์ 1 เสร็จก่อน" if kind == LITE and not inout_done else "",
+        }
+        for number, kind, title, provides in (
+            (1, INOUT, "InoutManageMain", "ให้เบอร์โทร ชื่อลูกค้า ที่อยู่ และยอดรวม"),
+            (2, LITE, "LiteDetailOrder", "ให้รายการสินค้า จำนวน ราคา และช่องทางขาย"),
+        )
+    ]
 
 
 @lead_page(can_import_v2)
@@ -112,8 +173,12 @@ def import_upload(request):
     if upload is None:
         messages.error(request, "กรุณาเลือกไฟล์นำเข้า")
         return redirect(_import_url())
+    slot = request.POST.get("slot")
     try:
-        batch = create_batch(actor=request.user, file_name=upload.name, raw=upload.read())
+        batch = create_batch(
+            actor=request.user, file_name=upload.name, raw=upload.read(),
+            expected_source_kind=slot if slot in (INOUT, LITE) else None,
+        )
     except UploadError as error:
         messages.error(request, f"นำเข้าไฟล์ไม่ได้: {error.message} ({error.code})")
         return redirect(_import_url())
@@ -184,6 +249,12 @@ def import_commit(request, batch_uuid):
         )
     except StalePreviewError:
         messages.error(request, "Preview เปลี่ยนไปหลังการอนุมัติ ไม่มีการเขียนข้อมูล — ยกเลิกแล้วอัปโหลดใหม่ (STALE_PREVIEW)")
+    except StaleResolutionError as error:
+        messages.error(
+            request,
+            "การตัดสิน Ownership/Reactivation แถว " + ", ".join(map(str, error.rows[:10])) + " ไม่ตรงกับ Lead ปัจจุบัน "
+            "ไม่มีการเขียนข้อมูล — Cancel/Restage แล้วสร้าง Preview ใหม่ (STALE_RESOLUTION)",
+        )
     except ValueError as error:
         messages.error(request, _refusal(error))
     except Exception as error:  # the batch is FAILED_RETRYABLE and journalled; say so
@@ -191,6 +262,29 @@ def import_commit(request, batch_uuid):
     else:
         messages.success(request, f"Commit เสร็จ: สร้าง {result['created']} · อัปเดต {result['updated']}")
     return redirect(_import_url(batch))
+
+
+@lead_page(can_import_v2)
+@require_POST
+def import_cancel(request, batch_uuid):
+    batch = _batch(batch_uuid)
+    try:
+        restage = request.POST.get("restage") == "1"
+        action = restage_batch if restage else cancel_batch
+        result = action(
+            actor=request.user, batch=batch, reason=(request.POST.get("reason") or "").strip(),
+            operation_key=request.POST.get("operation_key") or uuid.uuid4().hex,
+        )
+    except PermissionDenied:
+        raise
+    except ValueError as error:
+        messages.error(request, _refusal(error))
+        return redirect(_import_url(batch))
+    if result.get("newBatchId"):
+        messages.success(request, "ยกเลิก Batch เดิมแล้ว และสร้าง Batch ใหม่จากไฟล์เดิม — กด สร้าง Preview")
+        return redirect(reverse("leadui:import") + "?batch=" + result["newBatchId"])
+    messages.success(request, "ยกเลิก Batch แล้ว (ไม่มีการเขียนข้อมูลธุรกิจ)")
+    return redirect(_back(request, _import_url(batch)))
 
 
 # --- Import Conflict Resolution ----------------------------------------------------------
@@ -273,7 +367,13 @@ def history_page(request):
     page = _history_page(request.user, request.GET.get("cursor") or None)
     admin = can_import_v2(request.user)
     rows = [
-        {"batch": b, "can_rollback": admin and b.status in HISTORY_ROLLBACK_STATUSES, "operation_key": uuid.uuid4().hex}
+        {
+            "batch": b,
+            "can_rollback": admin and b.status in HISTORY_ROLLBACK_STATUSES,
+            "can_retry": admin and b.status in HISTORY_RETRY_STATUSES,
+            "can_cancel": admin and b.status in CANCELLABLE and not b.journal.exists(),
+            "operation_key": uuid.uuid4().hex,
+        }
         for b in page.items
     ]
     return render(request, "leadui/import_history.html", {"rows": rows, **pager_urls(request, page)})
@@ -286,7 +386,7 @@ def history_rollback(request, batch_uuid):
     try:
         result = rollback_batch(
             actor=request.user, batch=batch,
-            reason=request.POST.get("reason", "") or "Admin confirmed in UI",
+            reason=(request.POST.get("reason") or "").strip(),
             operation_key=request.POST.get("operation_key") or uuid.uuid4().hex,
         )
     except ValueError as error:
@@ -295,7 +395,26 @@ def history_rollback(request, batch_uuid):
         if result["status"] == "ROLLED_BACK":
             messages.success(request, f"Rollback เสร็จ: ลบ {result['deleted']} · คืนค่า {result['restored']}")
         else:
-            messages.error(request, "Rollback ไม่ได้: มีข้อมูลที่ถูกแก้ไขหลังนำเข้า ไม่มีการเปลี่ยนแปลงใดๆ (ROLLBACK_FAILED)")
+            messages.error(request, _rollback_failed_text(result))
+    return redirect(_back(request, reverse("leadui:import_history")))
+
+
+@lead_page(can_import_v2)
+@require_POST
+def history_retry_rollback(request, batch_uuid):
+    batch = _batch(batch_uuid)
+    try:
+        result = retry_rollback(
+            actor=request.user, batch=batch, reason=(request.POST.get("reason") or "").strip(),
+            operation_key=request.POST.get("operation_key") or uuid.uuid4().hex,
+        )
+    except ValueError as error:
+        messages.error(request, _refusal(error))
+    else:
+        if result["status"] == "ROLLED_BACK":
+            messages.success(request, f"Rollback เสร็จ: ลบ {result['deleted']} · คืนค่า {result['restored']}")
+        else:
+            messages.error(request, _rollback_failed_text(result))
     return redirect(_back(request, reverse("leadui:import_history")))
 
 

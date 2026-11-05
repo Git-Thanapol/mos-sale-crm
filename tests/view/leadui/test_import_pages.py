@@ -6,6 +6,8 @@ Run via: docker compose exec -T web python -m pytest tests/view/leadui/test_impo
 import re
 
 import pytest
+
+from crm.leadui.labels_th import th_label
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
@@ -49,22 +51,21 @@ def body_of(response):
 # --- นำเข้าข้อมูล -------------------------------------------------------------------------
 
 
-def test_the_import_page_matches_the_prototype_layout(client, editor):
+def test_the_import_page_has_two_slots_and_one_next_step(client, editor):
     login(client, editor)
     body = body_of(client.get(reverse("leadui:import")))
     assert "<h1>นำเข้าข้อมูล</h1>" in body
-    assert "<p>ไม่มี business write ก่อน Confirm; Batch Business Date ต้องยืนยันสำหรับ Tele</p>" in body
-    steps = re.findall(r'<div class="step"><span>(\d)</span>([A-Za-z]+)</div>', body)
-    assert steps == [("1", "Upload"), ("2", "Validate"), ("3", "Preview"), ("4", "Resolve"), ("5", "Confirm"), ("6", "Commit")]
-    for label in ("ลูกค้าใหม่", "ออเดอร์ใหม่", "อัปเดต", "Conflict"):
+    assert body.count('<section class="upload-slot') == 2
+    for name in ("InoutManageMain", "LiteDetailOrder"):
+        assert f'aria-label="เลือกไฟล์ {name}"' in body
+    assert 'name="slot" value="INOUT_MANAGE_MAIN"' in body and 'name="slot" value="LITE_DETAIL_ORDER"' in body
+    steps = re.findall(r'<div class="step[^"]*"><span>(\d)</span>([^<]+)</div>', body)
+    assert [s[1] for s in steps] == ["อัปโหลด", "Preview", "แก้ข้อขัดแย้ง", "Confirm", "Commit"]
+    for label in ("ลูกค้าใหม่", "ออเดอร์ใหม่", "อัปเดต", "ข้อขัดแย้ง"):
         assert f"<span>{label}</span>" in body
-    assert 'accept=".xlsx,.csv"' in body and 'aria-label="เลือกไฟล์นำเข้า"' in body
-    assert "เลือกไฟล์นำเข้า (.xlsx / .csv)" in body
-    assert "Batch Business Date (Asia/Bangkok)" in body and 'type="date"' in body
-    assert '<div class="metric-grid">' in body and '<section class="detail-card">' in body
-    for button in ("สร้าง Preview", "Confirm", "Commit"):
-        assert f">{button}</button>" in body
-    assert "ยังไม่ได้เลือกไฟล์" in body
+    assert "ขั้นต่อไป: เลือกไฟล์" in body and "นำเข้าไฟล์ประเภทอื่น" in body
+    # No action exists yet, and the Tele-only date field is not offered.
+    assert ">Commit</button>" not in body and "Batch Business Date" not in body
 
 
 @pytest.mark.parametrize("role", ["TEAM_LEAD", ROLE_TELESELL, ROLE_ADMIN, ROLE_VIEWER])
@@ -88,9 +89,9 @@ def test_uploading_a_file_stages_a_batch_and_shows_it(client, editor):
     batch = ImportBatch.objects.get()
     assert response.redirect_chain[-1][0].endswith(f"?batch={batch.batch_id}")
     assert '<div class="toast">' in body and "2 แถว" in body
-    assert "<h2>crm_customers.xlsx</h2>" in body
-    assert "crm-customers@1 · 2 rows · อัปโหลดโดย editor@example.com" in body
-    assert '<span class="chip neutral">PREVIEW</span>' in body
+    assert "crm_customers.xlsx · crm-customers@1 · อัปโหลดโดย editor@example.com" in body
+    assert ">สร้าง Preview</button>" in body and "นำเข้าไฟล์ประเภทอื่น</summary>" in body
+    assert '<span class="chip neutral">รอ Preview</span>' in body
     assert not Order.objects.exists()
 
 
@@ -103,6 +104,25 @@ def test_a_bad_file_is_refused_with_a_message_and_no_batch(client, editor, name,
     body = body_of(upload(client, [], name=name, content=content))
     assert not ImportBatch.objects.exists()
     assert "นำเข้าไฟล์ไม่ได้" in body
+
+
+def test_a_file_in_the_wrong_slot_is_refused_with_no_batch(client, editor):
+    login(client, editor)
+    response = client.post(
+        reverse("leadui:import_upload"),
+        {"file": SimpleUploadedFile("crm_customers.xlsx", xlsx([crm_row()])), "slot": "LITE_DETAIL_ORDER"},
+        follow=True,
+    )
+    assert "ช่องนี้รับ LiteDetailOrder" in body_of(response)
+    assert not ImportBatch.objects.exists()
+
+
+def test_the_lite_slot_shows_the_reminder_but_still_accepts_a_file(client, editor):
+    login(client, editor)
+    body = body_of(client.get(reverse("leadui:import")))
+    assert "รอไฟล์ 1 เสร็จก่อน" in body
+    lite_form = body[body.index('id="slot-LITE_DETAIL_ORDER"'):]
+    assert 'type="file"' in lite_form.split("</section>")[0] and "disabled" not in lite_form.split("</section>")[0]
 
 
 def test_posting_without_a_file_is_a_message_not_an_error(client, editor):
@@ -120,7 +140,7 @@ def test_the_preview_button_builds_the_preview_and_fills_the_metrics(client, edi
     batch.refresh_from_db()
     assert batch.status == "AWAITING_RESOLUTION"
     assert "<strong>2</strong><span>ลูกค้าใหม่</span>" in body and "<strong>2</strong><span>ออเดอร์ใหม่</span>" in body
-    assert '<span class="chip neutral">AWAITING_RESOLUTION</span>' in body
+    assert '<span class="chip neutral">รอดำเนินการต่อ</span>' in body
     assert "สร้าง Preview แล้ว" in body
 
 
@@ -129,7 +149,7 @@ def test_validation_problems_are_listed_and_the_preview_stays_blocked(client, ed
     upload(client, [crm_row(**{"0": "not a date"})])
     batch = ImportBatch.objects.get()
     body = body_of(client.post(reverse("leadui:import_preview", args=[batch.batch_id]), follow=True))
-    assert "INVALID_ROWS" in body and 'class="state-box error"' in body
+    assert "มีแถวที่แมปไม่ผ่าน" in body and 'class="state-box error"' in body
     batch.refresh_from_db()
     assert batch.status == "PREVIEW"
 
@@ -142,7 +162,9 @@ def test_the_batch_date_input_validates_and_sticks(client, editor):
     bad = body_of(client.post(url, {"batch_business_date": "2026-02-30"}, follow=True))
     assert "not a calendar date" in bad
     good = body_of(client.post(url, {"batch_business_date": "2026-10-26"}, follow=True))
-    assert 'value="2026-10-26"' in good and "ยืนยัน Batch Business Date แล้ว" in good
+    assert "ยืนยัน Batch Business Date แล้ว" in good
+    batch.refresh_from_db()
+    assert batch.batch_business_date.isoformat() == "2026-10-26"
 
 
 def test_confirm_is_refused_with_every_reason_while_a_conflict_is_open(client, editor):
@@ -190,7 +212,7 @@ def test_the_whole_flow_over_http_upload_preview_resolve_confirm_commit_rollback
     assert Order.objects.get(order_no="SO-100").customer_id == existing.id
 
     history = body_of(client.get(reverse("leadui:import_history")))
-    assert '<span class="chip ok">COMMITTED</span>' in history and "Rollback" in history
+    assert '<span class="chip ok">นำเข้าสำเร็จ</span>' in history and "Rollback" in history
     undone = client.post(reverse("leadui:history_rollback", args=[batch.batch_id]), {"operation_key": "r", "reason": "x"}, follow=True)
     assert "Rollback เสร็จ" in body_of(undone)
     assert not Order.objects.filter(order_no="SO-100").exists()
@@ -242,13 +264,13 @@ def test_the_conflicts_page_renders_cards_with_one_button_per_option(client, edi
     conflict_world(editor)
     login(client, editor)
     body = body_of(client.get(reverse("leadui:import_conflicts")))
-    assert "<h1>Import Conflict Resolution</h1>" in body
-    assert "<p>Team Lead เห็นเฉพาะ own-Team; Identity และ multi-Team เป็น Admin เท่านั้น</p>" in body
+    assert "<h1>แก้ไขข้อขัดแย้งการนำเข้า</h1>" in body
+    assert "<p>Team Lead เห็นเฉพาะทีมของตน; ตัวตนลูกค้าและข้อขัดแย้งหลายทีมเป็น Admin เท่านั้น</p>" in body
     assert body.count('<article class="work-card">') == 3
-    assert '<span class="chip neutral">OWNERSHIP</span> <span class="chip danger">BLOCKING</span>' in body
-    assert "<h3>สรุป OWNERSHIP 1</h3>" in body and "<p>Team: TEAM_A</p>" in body and "<small>row:1</small>" in body
+    assert '<span class="chip neutral">ความเป็นเจ้าของ</span> <span class="chip danger">ต้องแก้ก่อนยืนยัน</span>' in body
+    assert "<h3>สรุป OWNERSHIP 1</h3>" in body and "<p>ทีม: TEAM_A</p>" in body and "<small>row:1</small>" in body
     for option in ("KEEP_CURRENT", "REASSIGN", "AUTO_MATCH", "NEW_CUSTOMER"):
-        assert f">{option}</button>" in body
+        assert f">{th_label(option)}</button>" in body
 
 
 def test_a_team_lead_sees_and_resolves_only_their_own_team(client, editor, team_lead):
@@ -322,7 +344,7 @@ def test_the_history_table_matches_the_prototype(client, editor):
     assert re.findall(r"<th(?:\s[^>]*)?>(.*?)</th>", html) == ["Batch", "ไฟล์", "สถานะ", "จำนวน", ""]
     assert '<div class="table-shell">' in body
     assert "committed.xlsx<small>CRM_CUSTOMERS</small>" in body
-    assert '<span class="chip ok">COMMITTED</span>' in body and '<span class="chip warn">PAUSED_QUOTA</span>' in body
+    assert '<span class="chip ok">นำเข้าสำเร็จ</span>' in body and '<span class="chip warn">หยุดชั่วคราว (เกินโควตา)</span>' in body
 
 
 def test_rollback_is_offered_only_for_committed_paused_and_failed_retryable_batches(client, editor):

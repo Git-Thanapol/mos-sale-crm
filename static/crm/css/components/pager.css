@@ -17,5 +17,5 @@
   color: var(--c-ink);
 }
 
-.crm-pager__link--active { background: var(--c-accent); color: var(--c-accent-ink); font-weight: 700; }
+.crm-pager__link--active { background: var(--c-accent-strong); color: var(--c-accent-ink); font-weight: 700; }
 .crm-pager__caption { color: var(--c-ink-2); font-size: 13px; margin-right: var(--space-4); }

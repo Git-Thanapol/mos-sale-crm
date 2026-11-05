@@ -7,6 +7,8 @@ import re
 from datetime import timedelta
 
 import pytest
+
+from crm.leadui.labels_th import th_label
 from django.urls import reverse
 from django.utils import timezone
 
@@ -125,7 +127,7 @@ def test_reallocation_param_is_ignored_for_a_telesale(client, telesale):
 def test_hint_uses_the_configured_threshold(client, editor):
     body = get(client, editor).content.decode()
     assert (
-        f'<span class="hint">เกณฑ์ทดสอบ Local: {REALLOCATION_REVIEW_DEFAULT_DAYS} วัน · '
+        f'<span class="hint">เกณฑ์ตรวจสอบ: {REALLOCATION_REVIEW_DEFAULT_DAYS} วัน · '
         "เป็นคิวตรวจสอบเท่านั้น</span>"
     ) in body
 
@@ -169,8 +171,8 @@ def test_row_cells_follow_the_prototype(client, editor):
     assert "ลูกค้าทดสอบ 003" in html and "<small>0810000012</small>" in html
     assert '<span class="team-badge">CRM Team</span>' in html
     assert "<small>พนักงาน หนึ่ง</small>" in html
-    assert '<span class="chip neutral">FOLLOWING</span>' in html
-    assert '<span class="chip danger">OVERDUE</span>' in html
+    assert '<span class="chip neutral">กำลังติดตาม</span>' in html
+    assert '<span class="chip danger">เลยกำหนด</span>' in html
     assert "ออเดอร์ล่าสุด: " in html and "<small>22 วันที่แล้ว</small>" in html
     assert '<span class="metric">2</span><small>กลุ่ม 2</small>' in html
     assert f'href="{reverse("leadui:lead_detail", args=[lead.id])}"' in html
@@ -197,7 +199,7 @@ def test_protection_chips_show_cycle_appointment_and_lock(client, editor):
     cycle.save(update_fields=["lock_active"])
     html = table_html(get(client, editor).content.decode())
     for code in ("ACTIVE_FOLLOWUP", "ACTIVE_APPOINTMENT", "OWNERSHIP_LOCK", "APPOINTMENT_FUTURE"):
-        assert f">{code}</span>" in html, code
+        assert f">{th_label(code)}</span>" in html, code
 
 
 def test_blank_name_and_phone_render_no_phone_text_not_None(client, editor):

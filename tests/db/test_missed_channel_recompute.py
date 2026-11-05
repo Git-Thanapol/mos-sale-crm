@@ -147,3 +147,42 @@ def test_a_team_that_disables_the_policy_counts_zero(actors):
     OwnershipSegment.objects.create(lead=lead, caretaker=actors["u1"], started_at=T0)
     make_order(customer=lead.customer, closer=None, ordered_at=T1)
     assert recompute_lead_missed_channel(lead=lead) == 0
+
+
+def test_migrated_baseline_survives_a_plain_recompute_for_backfill_segment(actors):
+    lead = make_lead(caretaker=actors["u1"])
+    lead.migrated_baseline_at = HX63_SNAPSHOT_BASELINE
+    lead.save(update_fields=["migrated_baseline_at"])
+    seg_start = HX63_SNAPSHOT_BASELINE + timedelta(days=10)
+    OwnershipSegment.objects.create(
+        lead=lead, caretaker=actors["u1"], started_at=seg_start, reason="BACKFILL"
+    )
+    # Strictly between the HX63 baseline day and the segment start.
+    make_order(customer=lead.customer, closer=None, ordered_at=HX63_SNAPSHOT_BASELINE + timedelta(days=3))
+    assert recompute_lead_missed_channel(lead=lead) == 1
+
+
+def test_a_later_reassignment_segment_still_resets_the_baseline(actors):
+    lead = make_lead(caretaker=actors["u1"])
+    lead.migrated_baseline_at = HX63_SNAPSHOT_BASELINE
+    lead.save(update_fields=["migrated_baseline_at"])
+    seg_start = HX63_SNAPSHOT_BASELINE + timedelta(days=10)
+    OwnershipSegment.objects.create(
+        lead=lead, caretaker=actors["u1"], started_at=seg_start, reason="REASSIGN"
+    )
+    make_order(customer=lead.customer, closer=None, ordered_at=HX63_SNAPSHOT_BASELINE + timedelta(days=3))
+    assert recompute_lead_missed_channel(lead=lead) == 0
+
+
+def test_same_bangkok_day_as_midday_baseline_is_not_counted(actors):
+    # Date-only orders: an order on the baseline's own Bangkok day (19:31 local)
+    # cannot be proven to be after it, so it is excluded conservatively.
+    lead = make_lead(caretaker=actors["u1"])
+    lead.migrated_baseline_at = HX63_SNAPSHOT_BASELINE
+    lead.save(update_fields=["migrated_baseline_at"])
+    OwnershipSegment.objects.create(
+        lead=lead, caretaker=actors["u1"], started_at=HX63_SNAPSHOT_BASELINE + timedelta(days=10),
+        reason="BACKFILL",
+    )
+    make_order(customer=lead.customer, closer=None, ordered_at=HX63_SNAPSHOT_BASELINE)
+    assert recompute_lead_missed_channel(lead=lead) == 0

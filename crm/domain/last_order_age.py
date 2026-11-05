@@ -119,6 +119,32 @@ def resolve_last_order_age_filter(
     )
 
 
+#: Pseudo-bucket for a future-dated last order (negative age). It is a data
+#: anomaly to be reviewed, never a "fresh" order, so it is not a preset and
+#: never falls inside 0_7 (matches_last_order_age already rejects age < 0).
+DATE_ANOMALY_BUCKET = "DATE_ANOMALY"
+
+
+def is_date_anomaly(last_order_at: datetime | None, now: datetime) -> bool:
+    age = age_in_days(last_order_at, now)
+    return age is not None and age < 0
+
+
+def age_bucket_id(last_order_at: datetime | None, now: datetime) -> str:
+    """The preset id holding this order, "NO_ORDER", or DATE_ANOMALY."""
+    age = age_in_days(last_order_at, now)
+    if age is None:
+        return "NO_ORDER"
+    if age < 0:
+        return DATE_ANOMALY_BUCKET
+    for preset in LAST_ORDER_AGE_PRESETS:
+        if preset.no_order:
+            continue
+        if age >= (preset.min_days or 0) and (preset.max_days is None or age <= preset.max_days):
+            return preset.id
+    return "OVER_90"
+
+
 def last_order_age_cutoffs(
     preset: str | None, min_days: int | None, max_days: int | None, now: datetime
 ) -> AgeCutoffs | None:

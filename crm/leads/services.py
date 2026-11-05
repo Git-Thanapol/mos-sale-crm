@@ -27,7 +27,23 @@ from crm.domain.ownership import (
     derive_routing,
     resolve_ownership,
 )
+from crm.leads.errors import InvalidCaretakerError, LeadStoppedError, StaleLeadError
 from crm.leads.models import Lead, LeadAuditEvent, OwnershipSegment
+
+__all__ = [
+    "InvalidCaretakerError",
+    "LeadStoppedError",
+    "StaleLeadError",
+    "apply_order_to_lead",
+    "lock_lead",
+    "order_facts",
+    "reactivate_lead",
+    "reassign_caretaker",
+    "reconcile_lead_access",
+    "set_lifecycle",
+    "stop_lead",
+    "validate_caretaker_target",
+]
 
 
 def _active_user_ids() -> frozenset[str]:
@@ -35,8 +51,73 @@ def _active_user_ids() -> frozenset[str]:
     return frozenset(str(pk) for pk in User.objects.filter(is_active=True).values_list("pk", flat=True))
 
 
-def _order_facts(order) -> OwnershipOrderFacts:
+def lock_lead(lead: Lead, expected_version: int | None = None) -> Lead:
+    """Take the row lock on `lead`, reload it, and check the optimistic version.
+
+    Must run inside a transaction. The caller's instance is refreshed in place
+    so every later decision (current caretaker, lifecycle, streak) is made from
+    committed state rather than from whatever the form was rendered against.
+
+    `expected_version` is the Lead.version the user's form carried. None means
+    an internal caller (sync / import) that wants the lock but has no form to
+    compare; a stale form is rejected with StaleLeadError.
+    """
+    exists = Lead.objects.select_for_update().filter(pk=lead.pk).values_list("pk", flat=True).first()
+    if exists is None:
+        raise Lead.DoesNotExist(f"lead {lead.pk} no longer exists")
+    lead.refresh_from_db()
+    if expected_version is not None and lead.version != expected_version:
+        raise StaleLeadError(
+            f"lead {lead.pk} changed (form version {expected_version}, current {lead.version})"
+        )
+    return lead
+
+
+def closer_user_id_for(staff_code: str | None) -> str | None:
+    """Resolve an order's staff_code to a User id (one query)."""
+    code = (staff_code or "").strip()
+    if not code:
+        return None
+    pk = (
+        User.objects.filter(staff_code=code)
+        .order_by("-is_active", "pk")
+        .values_list("pk", flat=True)
+        .first()
+    )
+    return str(pk) if pk is not None else None
+
+
+def validate_caretaker_target(caretaker: User, lead: Lead) -> User:
+    """Can `caretaker` hold `lead`? Raises InvalidCaretakerError if not.
+
+    Re-reads the user (a stale object must not smuggle in a disabled account)
+    and requires a lead-holding role belonging to the lead's team: a telesale
+    needs an open TeamAssignment for that team, a TEAM_LEAD needs the team in
+    their scope. Any other role (EDITOR, ADMIN, read-only) does not hold leads.
+    """
+    from crm.core.permissions import current_team_codes, is_team_lead, is_telesell, team_scope
+
+    fresh = User.objects.filter(pk=caretaker.pk, is_active=True).first()
+    if fresh is None:
+        raise InvalidCaretakerError("CARETAKER_INACTIVE")
+    team_code = lead.team.code
+    if is_telesell(fresh):
+        if team_code not in current_team_codes(fresh):
+            raise InvalidCaretakerError("CARETAKER_NOT_IN_TEAM")
+    elif is_team_lead(fresh):
+        if team_code not in team_scope(fresh):
+            raise InvalidCaretakerError("CARETAKER_NOT_IN_TEAM")
+    else:
+        raise InvalidCaretakerError("CARETAKER_ROLE_CANNOT_HOLD_LEADS")
+    return fresh
+
+
+def order_facts(order, closer_user_id: str | None = None) -> OwnershipOrderFacts:
     """Project a crm_order row onto the pure ownership input.
+
+    Callers applying one order to several leads pass `closer_user_id` (resolved
+    once via closer_user_id_for) or the finished facts to apply_order_to_lead;
+    resolving per lead was an N+1 User query per order.
 
     The closer is identified by `staff_code`, which is how this schema records
     who closed an order; it is resolved to a User id because ownership is held
@@ -48,13 +129,8 @@ def _order_facts(order) -> OwnershipOrderFacts:
     requires orderedAt to stay the business-time authority, so import or
     created_at timestamps must not be substituted here.
     """
-    closer_id = None
+    closer_id = closer_user_id if closer_user_id is not None else closer_user_id_for(order.staff_code)
     closer_team_code = None
-    staff_code = (order.staff_code or "").strip()
-    if staff_code:
-        closer = User.objects.filter(staff_code=staff_code).order_by("-is_active", "pk").first()
-        if closer is not None:
-            closer_id = str(closer.pk)
     ordered_at = order.order_date
     if ordered_at is not None and not hasattr(ordered_at, "tzinfo"):
         # order_date is a DateField; anchor it at Bangkok midnight so the
@@ -69,6 +145,10 @@ def _order_facts(order) -> OwnershipOrderFacts:
         closer_user_id=closer_id,
         closer_team_code=closer_team_code,
     )
+
+
+#: Backwards-compatible private alias.
+_order_facts = order_facts
 
 
 def _apply_caretaker(
@@ -136,6 +216,7 @@ def _apply_caretaker(
     lead.ownership_started_at = boundary
     lead.access_team_ids = access["access_team_ids"]
     lead.access_user_ids = access["access_user_ids"]
+    lead.version = (lead.version or 0) + 1
     lead.save(
         update_fields=[
             "caretaker",
@@ -143,9 +224,16 @@ def _apply_caretaker(
             "ownership_started_at",
             "access_team_ids",
             "access_user_ids",
+            "version",
             "updated_at",
         ]
     )
+    # The baseline just moved (new open segment), so the stored missed-channel
+    # count is stale until recomputed. Same transaction: reassign,
+    # reconcile_lead_access and order-driven changes all keep it correct.
+    from crm.leads.recompute import recompute_lead_missed_channel
+
+    recompute_lead_missed_channel(lead=lead)
 
     LeadAuditEvent.objects.create(
         lead=lead,
@@ -165,17 +253,50 @@ def _apply_caretaker(
     return lead
 
 
+def _order_is_eligible(order, facts: OwnershipOrderFacts, lead: Lead) -> bool:
+    from crm.domain.enums import ORDER_STATUSES
+    from crm.domain.ownership import is_order_eligible_for_ownership
+    from crm.leads.order_status import to_machine_status
+
+    raw = (getattr(order, "order_status", "") or "").strip()
+    status = to_machine_status(raw)
+    if status is None and raw in ORDER_STATUSES:
+        status = raw  # already a machine code
+    # order_date is a DateField anchored at Bangkok midnight, so a same-day order
+    # always sorts before the (instant-valued) segment start. Staleness is
+    # therefore judged on the Bangkok DAY of the segment start.
+    started = lead.ownership_started_at
+    if started is not None:
+        from crm.domain.bangkok import day_start, epoch_day
+
+        started = day_start(epoch_day(started))
+    return is_order_eligible_for_ownership(status, facts.ordered_at, started)
+
+
 @transaction.atomic
-def apply_order_to_lead(*, actor, lead: Lead, order, lock_active: bool) -> OwnershipDecision:
+def apply_order_to_lead(
+    *, actor, lead: Lead, order, lock_active: bool, facts: OwnershipOrderFacts | None = None
+) -> OwnershipDecision:
     """Resolve ownership for one order and persist the result.
 
-    Deliberately does NOT filter by order status: the reference
-    implementation's resolveOwnership does not, and excluding cancelled or
-    COD-returned orders is the missed-channel rule
-    (crm/domain/missed_channel.py). Applying it here too would double-count the
-    exclusion and lose the fact that the order did move ownership when closed.
+    Orders that cannot move ownership (cancelled, COD-returned, unmapped status,
+    or dated before the current ownership segment) are dropped BEFORE
+    resolve_ownership via is_order_eligible_for_ownership; the missed-channel
+    rule applies its own exclusions separately (crm/domain/missed_channel.py).
     """
+    lock_lead(lead)
     active_user_ids = _active_user_ids()
+    order_input = facts if facts is not None else order_facts(order)
+    if not _order_is_eligible(order, order_input, lead):
+        # Cancelled / COD-returned / unmapped / stale orders never move
+        # ownership. Nothing is persisted: no segment, no audit row.
+        return OwnershipDecision(
+            caretaker_user_id=str(lead.caretaker_id) if lead.caretaker_id else None,
+            changed=False,
+            new_segment_started_at=None,
+            reason="ORDER_NOT_ELIGIBLE",
+            conflict=None,
+        )
     decision = resolve_ownership(
         policy=lead.team.ownership_policy,
         team_code=lead.team.code,
@@ -183,7 +304,7 @@ def apply_order_to_lead(*, actor, lead: Lead, order, lock_active: bool) -> Owner
         ownership_started_at=lead.ownership_started_at,
         lifecycle_status=lead.lifecycle_status,
         lock_active=lock_active,
-        order=_order_facts(order),
+        order=order_input,
         active_user_ids=active_user_ids,
     )
 
@@ -211,26 +332,52 @@ def apply_order_to_lead(*, actor, lead: Lead, order, lock_active: bool) -> Owner
 
 
 @transaction.atomic
-def reassign_caretaker(*, actor, lead: Lead, caretaker: User | None, reason: str) -> Lead:
+def reassign_caretaker(
+    *,
+    actor,
+    lead: Lead,
+    caretaker: User | None,
+    reason: str,
+    expected_version: int | None = None,
+    manual: bool = False,
+) -> Lead:
     """The only manual ownership write path.
 
     A caretaker who is not active is stored as no caretaker at all, so the lead
     routes to TEAM_UNASSIGNED instead of pointing at an account that cannot
     act (08_SECURITY: a disabled user must not retain caretaker authority).
+
+    `manual=True` is the human path (reassign view, customer owner assignment):
+    a non-empty reason is required and the target must be an active user with
+    a lead-holding role in the lead's team. System callers (import commit)
+    leave it False.
     """
+    lock_lead(lead, expected_version)
+    if manual:
+        if not (reason or "").strip():
+            raise ValueError("REASON_REQUIRED")
+        if caretaker is not None:
+            caretaker = validate_caretaker_target(caretaker, lead)
     return _apply_caretaker(
         actor=actor,
         lead=lead,
         caretaker=caretaker,
         started_at=timezone.now(),
         reason="MANUAL_REASSIGN",
-        audit_reason=reason,
+        audit_reason=(reason or "").strip() or "manual reassignment",
         active_user_ids=_active_user_ids(),
     )
 
 
 @transaction.atomic
-def stop_lead(*, actor, lead: Lead, reason: str, enforce_permission: bool = True) -> Lead:
+def stop_lead(
+    *,
+    actor,
+    lead: Lead,
+    reason: str,
+    enforce_permission: bool = True,
+    expected_version: int | None = None,
+) -> Lead:
     """Move a lead to STOPPED, audited, with its cycle and lock released.
 
     STOPPED is a lifecycle state that always carries a reason
@@ -251,6 +398,7 @@ def stop_lead(*, actor, lead: Lead, reason: str, enforce_permission: bool = True
     from crm.core.permissions import can_review_stopped
     from crm.domain.enums import STOP_REASONS
 
+    lock_lead(lead, expected_version)
     if enforce_permission and not can_review_stopped(actor, lead):
         raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
     if reason not in STOP_REASONS:
@@ -274,12 +422,14 @@ def stop_lead(*, actor, lead: Lead, reason: str, enforce_permission: bool = True
     lead.stopped_reason = reason
     lead.stopped_at = now
     lead.current_cycle_id = None
+    lead.version = (lead.version or 0) + 1
     lead.save(
         update_fields=[
             "lifecycle_status",
             "stopped_reason",
             "stopped_at",
             "current_cycle_id",
+            "version",
             "updated_at",
         ]
     )
@@ -295,7 +445,9 @@ def stop_lead(*, actor, lead: Lead, reason: str, enforce_permission: bool = True
 
 
 @transaction.atomic
-def reactivate_lead(*, actor, lead: Lead, reason: str) -> Lead:
+def reactivate_lead(
+    *, actor, lead: Lead, reason: str, expected_version: int | None = None
+) -> Lead:
     """Return a STOPPED lead to FOLLOWING, audited.
 
     Reactivation is an authorized human decision: a STOPPED lead is never
@@ -304,6 +456,7 @@ def reactivate_lead(*, actor, lead: Lead, reason: str) -> Lead:
     """
     from crm.core.permissions import can_review_stopped
 
+    lock_lead(lead, expected_version)
     if not can_review_stopped(actor, lead):
         raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
     if lead.lifecycle_status != "STOPPED":
@@ -313,8 +466,9 @@ def reactivate_lead(*, actor, lead: Lead, reason: str) -> Lead:
     lead.lifecycle_status = "FOLLOWING"
     lead.stopped_reason = ""
     lead.stopped_at = None
+    lead.version = (lead.version or 0) + 1
     lead.save(
-        update_fields=["lifecycle_status", "stopped_reason", "stopped_at", "updated_at"]
+        update_fields=["lifecycle_status", "stopped_reason", "stopped_at", "version", "updated_at"]
     )
 
     LeadAuditEvent.objects.create(
@@ -323,6 +477,50 @@ def reactivate_lead(*, actor, lead: Lead, reason: str) -> Lead:
         actor=actor if isinstance(actor, User) else None,
         reason=reason,
         payload={"from": previous, "to": "FOLLOWING"},
+    )
+    return lead
+
+
+@transaction.atomic
+def set_lifecycle(
+    *,
+    actor,
+    lead: Lead,
+    status: str,
+    reason: str = "",
+    expected_version: int | None = None,
+) -> Lead:
+    """Set a user-editable lifecycle status, audited with a recorded reason.
+
+    STOPPED is neither a legal target (it carries a stop reason and ends the
+    cycle: use stop_lead) nor a legal source: leaving STOPPED is an authorized
+    review decision, so it must go through reactivate_lead, which re-checks
+    can_review_stopped. Otherwise a plain editor could un-stop a lead through
+    the generic status dropdown. `reason` defaults to "manual status change".
+    """
+    from crm.core.permissions import can_edit_lead
+    from crm.domain.enums import LEAD_LIFECYCLE_STATUSES
+
+    lock_lead(lead, expected_version)
+    if not can_edit_lead(actor, lead):
+        raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
+    if status not in LEAD_LIFECYCLE_STATUSES or status == "STOPPED":
+        raise ValueError("INVALID_LIFECYCLE_STATUS")
+    if lead.lifecycle_status == "STOPPED":
+        raise LeadStoppedError("LEAD_STOPPED_USE_REACTIVATE")
+
+    previous = lead.lifecycle_status
+    if previous == status:
+        return lead
+    lead.lifecycle_status = status
+    lead.version = (lead.version or 0) + 1
+    lead.save(update_fields=["lifecycle_status", "version", "updated_at"])
+    LeadAuditEvent.objects.create(
+        lead=lead,
+        action="STATUS_CHANGE",
+        actor=actor if isinstance(actor, User) else None,
+        reason=(reason or "").strip() or "manual status change",
+        payload={"from": previous, "to": status},
     )
     return lead
 
@@ -338,6 +536,9 @@ def reconcile_lead_access(*, actor=None, user: User) -> int:
     """
     affected = 0
     for lead in Lead.objects.select_related("team").filter(caretaker=user):
+        lock_lead(lead)
+        if lead.caretaker_id != user.pk:
+            continue  # reassigned by someone else while this was queued
         _apply_caretaker(
             actor=actor,
             lead=lead,

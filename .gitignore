@@ -24,3 +24,7 @@ desktop.ini
 
 # Editor settings
 .vscode/
+
+# Client data files (customer PII): never commit
+sample_upload_Nov2026/
+v2-filtered-provisional-*/

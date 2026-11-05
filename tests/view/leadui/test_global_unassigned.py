@@ -85,7 +85,7 @@ def test_a_card_shows_status_customer_order_and_source(client, editor, teams):
     body = get(client, editor).content.decode()
     assert '<article class="work-card">' in body
     # The prototype regex /ASSIGNED/ also matches "UNASSIGNED", so this chip is green there too.
-    assert '<span class="chip ok">GLOBAL_UNASSIGNED</span>' in body
+    assert '<span class="chip ok">ยังไม่มีผู้ดูแล</span>' in body
     assert "<h3>ลูกค้าใหม่</h3>" in body
     assert "<p>Order: 7000010</p>" in body
     assert "<small>fixture:1</small>" in body

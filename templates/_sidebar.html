@@ -2,14 +2,20 @@
   <p class="crm-sidebar__brand-title">Sales CRM</p>
   <p class="crm-sidebar__brand-subtitle">Telesales workspace</p>
 
+  <nav aria-label="เมนูหลัก">
   {% for group in nav_groups %}
     <div class="crm-sidebar__group-label">{{ group.label }}</div>
     {% for item in group.items %}
       {% if item.allowed %}
-        <a class="crm-sidebar__item{% if item.active %} crm-sidebar__item--active{% endif %}"
-           href="{% url item.url_name %}">{{ item.label }}</a>
         {% if item.children %}
-          <div class="crm-sidebar__sub">
+          <div class="crm-sidebar__row">
+            <a class="crm-sidebar__item{% if item.active %} crm-sidebar__item--active{% endif %}"
+               href="{% url item.url_name %}">{{ item.label }}</a>
+            <button type="button" class="crm-sidebar__sub-toggle" data-sub-toggle="{{ item.url_name }}"
+                    aria-controls="crm-sub-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" aria-expanded="true"
+                    aria-label="ซ่อนเมนูย่อย"><span aria-hidden="true">▾</span></button>
+          </div>
+          <div class="crm-sidebar__sub" id="crm-sub-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
             {% for child in item.children %}
               {% url child.url_name as child_url %}
               {% if child_url %}
@@ -18,12 +24,16 @@
               {% endif %}
             {% endfor %}
           </div>
+        {% else %}
+          <a class="crm-sidebar__item{% if item.active %} crm-sidebar__item--active{% endif %}"
+             href="{% url item.url_name %}">{{ item.label }}</a>
         {% endif %}
       {% else %}
         <span class="crm-sidebar__item crm-sidebar__item--disabled">{{ item.label }}</span>
       {% endif %}
     {% endfor %}
   {% endfor %}
+  </nav>
 
   <div class="crm-sidebar__group-label">&nbsp;</div>
   <button type="button" id="crm-theme-toggle" class="crm-sidebar__item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">🌙 โหมดมืด</button>
@@ -32,6 +42,29 @@
     <button type="submit" class="crm-sidebar__item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">ออกจากระบบ</button>
   </form>
 </aside>
+<script>
+  // Sub-menu arrow. Inline right after the markup so a remembered state applies
+  // before first paint. The page you are on always shows its sub-menu on load.
+  (function () {
+    document.querySelectorAll("[data-sub-toggle]").forEach(function (btn) {
+      var sub = document.getElementById(btn.getAttribute("aria-controls"));
+      var key = "crm-sidebar-sub:" + btn.getAttribute("data-sub-toggle");
+      function show(open) {
+        sub.hidden = !open;
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.setAttribute("aria-label", open ? "ซ่อนเมนูย่อย" : "แสดงเมนูย่อย");
+      }
+      var stored = null;
+      try { stored = localStorage.getItem(key); } catch (e) {}
+      show(stored !== "closed" || !!sub.querySelector(".crm-sidebar__subitem--active"));
+      btn.addEventListener("click", function () {
+        var open = sub.hidden;
+        show(open);
+        try { localStorage.setItem(key, open ? "open" : "closed"); } catch (e) {}
+      });
+    });
+  })();
+</script>
 <script>
   (function () {
     var btn = document.getElementById("crm-theme-toggle");

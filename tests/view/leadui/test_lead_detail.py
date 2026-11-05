@@ -67,7 +67,7 @@ def lead(telesale):
 def test_titles_headings_and_dl_labels_verbatim(client, editor, lead):
     body = page(client, editor, lead).content.decode()
     assert "<h1>รายละเอียด Lead</h1>" in body
-    assert "<p>Notes / Contact Attempts / Appointments เขียนผ่าน server mutation</p>" in body
+    assert "<p>โน้ต การติดต่อ และนัดหมายของ Lead นี้</p>" in body
     for heading in ("เพิ่มโน้ต", "การติดต่อล่าสุด", "นัดหมาย"):
         assert f"<h2>{heading}</h2>" in body, heading
     assert "<h3>โน้ตล่าสุด</h3>" in body
@@ -83,7 +83,7 @@ def test_heading_block_shows_name_team_caretaker_and_lifecycle_chip(client, edit
     assert '<div class="lead-heading">' in body
     assert "<h2>ลูกค้าทดสอบ 003</h2>" in body
     assert "<p>CRM Team · สมศรี</p>" in body
-    assert '<span class="chip neutral">FOLLOWING</span>' in body
+    assert '<span class="chip neutral">กำลังติดตาม</span>' in body
 
 
 def test_an_unassigned_lead_says_so(client, editor):
@@ -216,10 +216,15 @@ def test_the_tomorrow_button_creates_an_appointment_about_24_hours_ahead(client,
 
 
 def test_the_reassign_dialog_lists_active_users_only(client, editor, lead):
-    make_user(email="active@example.com", role=ROLE_TELESELL, staff_code="S5", staff_name="คนใช้งานอยู่")
-    make_user(
-        email="gone@example.com", role=ROLE_TELESELL, staff_code="S6", staff_name="คนลาออก", is_active=False
-    )
+    from crm.teams.models import TeamAssignment
+
+    for u in (
+        make_user(email="active@example.com", role=ROLE_TELESELL, staff_code="S5", staff_name="คนใช้งานอยู่"),
+        make_user(
+            email="gone@example.com", role=ROLE_TELESELL, staff_code="S6", staff_name="คนลาออก", is_active=False
+        ),
+    ):
+        TeamAssignment.objects.create(user=u, team_code=lead.team.code, effective_from=timezone.now() - timedelta(days=1))
     body = page(client, editor, lead).content.decode()
     assert "<dialog" in body and reverse("leads:reassign", args=[lead.id]) in body
     assert "คนใช้งานอยู่" in body and "คนลาออก" not in body
@@ -250,11 +255,11 @@ def test_close_cycle_ends_the_cycle_releases_the_lock_and_returns_with_a_toast(c
     assert cycle.lock_active is False and lead.current_cycle_id is None
 
 
-def test_close_cycle_is_403_for_a_user_who_cannot_edit(client, lead):
+def test_close_cycle_is_404_for_a_user_outside_the_lead_scope(client, lead):
     open_cycle(actor=make_user(email="x@example.com", role=ROLE_EDITOR), lead=lead)
     viewer = make_user(email="v2@example.com", role=ROLE_VIEWER, staff_code="V2")
     login(client, viewer)
-    assert client.post(reverse("leads:close_cycle", args=[lead.id])).status_code == 403
+    assert client.post(reverse("leads:close_cycle", args=[lead.id])).status_code == 404
     assert FollowupCycle.objects.get(lead=lead).status == "ACTIVE"
 
 

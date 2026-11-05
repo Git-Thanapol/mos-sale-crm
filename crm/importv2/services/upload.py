@@ -34,7 +34,30 @@ MIN_HEADER_MATCH = 0.6
 #: Source kinds the engine can stage, preview and commit. The others have a
 #: profile (so they are recognised and validated) but need cross-file joins the
 #: engine does not do yet; they are refused at Preview, never half-imported.
-SUPPORTED_SOURCE_KINDS = ("CRM_CUSTOMERS",)
+SUPPORTED_SOURCE_KINDS = ("CRM_CUSTOMERS", "INOUT_MANAGE_MAIN", "LITE_DETAIL_ORDER")
+
+#: Of those, LITE_DETAIL_ORDER is supported only from profile version 2 (the
+#: November 2026 43-column export, which carries per-line amounts). Version 1
+#: has neither amounts nor a phone and stays refused. Lite files have no phone
+#: at all: Preview joins each order to the customer already holding that order
+#: number (e.g. from an InoutManageMain import) and excludes the rest.
+LITE_MIN_VERSION = 2
+
+_SOURCE_NAMES = {
+    "CRM_CUSTOMERS": "CRM Customers",
+    "INOUT_MANAGE_MAIN": "InoutManageMain",
+    "LITE_DETAIL_ORDER": "LiteDetailOrder",
+    "TELE_SALES_REPORT": "Tele Sales Report",
+    "CUTOVER_ORDER_SHEET": "Cutover Order Sheet",
+}
+
+
+def is_supported(profile: dict) -> bool:
+    if profile["sourceKind"] not in SUPPORTED_SOURCE_KINDS:
+        return False
+    if profile["sourceKind"] == "LITE_DETAIL_ORDER":
+        return profile["version"] >= LITE_MIN_VERSION
+    return True
 
 _PROFILES_PATH = Path(__file__).resolve().parents[1] / "profiles.json"
 
@@ -89,6 +112,9 @@ def _read_xlsx(raw: bytes) -> dict:
     except Exception as error:  # a zip that is not a workbook
         raise UploadError("UNSUPPORTED_FILE", "the file is not a readable .xlsx workbook") from error
     sheet = workbook.worksheets[0]
+    # Some exporters (the November 2026 InoutManageMain / LiteDetailOrder files)
+    # declare <dimension ref="A1"/>; read-only mode trusts it and yields one cell.
+    sheet.reset_dimensions()
     rows: list[list] = []
     for index, values in enumerate(sheet.iter_rows(values_only=True)):
         if index > MAX_ROWS + 1:
@@ -159,7 +185,7 @@ def validation_for(profile: dict, table: dict) -> dict:
     result = validate_profile_against_sample(
         profile, {"headers": table["headers"], "rows": table["rows"][:SAMPLE_ROWS]}
     )
-    if profile["sourceKind"] not in SUPPORTED_SOURCE_KINDS:
+    if not is_supported(profile):
         result["issues"].append(
             {
                 "severity": "BLOCK",
@@ -172,8 +198,12 @@ def validation_for(profile: dict, table: dict) -> dict:
     return result
 
 
-def create_batch(*, actor, file_name: str, raw: bytes) -> ImportBatch:
-    """Stage a batch from an upload. EDITOR only; writes no business data."""
+def create_batch(*, actor, file_name: str, raw: bytes, expected_source_kind: str | None = None) -> ImportBatch:
+    """Stage a batch from an upload. EDITOR only; writes no business data.
+
+    `expected_source_kind` is set when the upload came through a slot meant for
+    one kind of file: another kind is refused, with no batch.
+    """
     if not can_import_v2(actor):
         raise PermissionDenied("เฉพาะ EDITOR เท่านั้นที่นำเข้าข้อมูลได้")
     table = read_table(raw, file_name)
@@ -183,6 +213,13 @@ def create_batch(*, actor, file_name: str, raw: bytes) -> ImportBatch:
             "UNKNOWN_FORMAT",
             "the columns do not match any known export format (crm-customers, litedetailorder, "
             "inoutmanagemain, tele-sales-report, cutover-order-sheet)",
+        )
+    if expected_source_kind and profile["sourceKind"] != expected_source_kind:
+        raise UploadError(
+            "WRONG_SLOT",
+            f"ไฟล์นี้เป็น {_SOURCE_NAMES.get(profile['sourceKind'], profile['sourceKind'])} "
+            f"แต่ช่องนี้รับ {_SOURCE_NAMES.get(expected_source_kind, expected_source_kind)} "
+            "กรุณาอัปโหลดในช่องที่ตรงกับไฟล์",
         )
     safe_name = re.sub(r"[^\w.\- ()฀-๿]", "_", Path(file_name).name)[:255] or "upload"
     return ImportBatch.objects.create(
@@ -195,4 +232,8 @@ def create_batch(*, actor, file_name: str, raw: bytes) -> ImportBatch:
         row_count=len(table["rows"]),
         validation=validation_for(profile, table),
         uploaded_by=actor,
+        transition_history=[
+            {"from": None, "to": "PREVIEW", "at": round(__import__("time").time() * 1000),
+             "actor": actor.email or str(actor.pk), "reason": "upload"}
+        ],
     )

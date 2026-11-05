@@ -15,9 +15,12 @@
 .v2 .page-title { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; margin-bottom: 18px; }
 .v2 .page-title h1 { font-size: 25px; margin: 0 0 4px; }
 .v2 .page-title p { margin: 0; color: #6b7280; }
-.v2 .toolbar { background: white; padding: 13px; border: 1px solid #dce2e1; border-radius: 10px; display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
-.v2 .toolbar input { min-width: 300px; }
-.v2 .hint { color: #7b848a; font-size: 12px; margin-left: auto; }
+.v2 .toolbar { background: white; padding: 13px; border: 1px solid #dce2e1; border-radius: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.v2 .toolbar input[type="search"] { min-width: 300px; }
+.v2 .toolbar input[type="number"] { width: 110px; min-height: 43px; }
+.v2 .toolbar label { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: #4b5563; white-space: nowrap; }
+.v2 .toolbar label.quick-filter { font-size: 14px; color: #1f2937; }
+.v2 .hint { color: #6b7280; font-size: 12px; margin-left: auto; }
 .v2 input, .v2 select, .v2 textarea { border: 1px solid #cbd5d1; border-radius: 6px; padding: 9px 10px; background: white; color: #1f2937; }
 .v2 textarea { min-height: 90px; width: 100%; resize: vertical; }
 .v2 .table-shell { overflow: auto; background: white; border: 1px solid #dce2e1; border-radius: 10px; }
@@ -25,7 +28,7 @@
 .v2 th { text-align: left; color: #66736f; font-size: 12px; letter-spacing: .02em; background: #f8faf9; }
 .v2 th, .v2 td { padding: 12px 14px; border-bottom: 1px solid #edf0ef; vertical-align: middle; }
 .v2 tr:last-child td { border-bottom: 0; }
-.v2 td small { display: block; color: #77827f; margin-top: 4px; }
+.v2 td small { display: block; color: #6b7280; margin-top: 4px; }
 .v2 .link { padding: 0; background: none; color: #185f53; text-align: left; }
 .v2 .metric { font-size: 21px; font-weight: 750; }
 .v2 .chip { display: inline-block; border-radius: 999px; padding: 4px 8px; margin: 2px 4px 2px 0; font-size: 11px; font-weight: 750; background: #e8eceb; color: #46524f; }
@@ -53,7 +56,7 @@
 .v2 .lead-heading h2 { margin-top: 0; }
 .v2 .lead-heading p { color: #6b7280; }
 .v2 .note { padding: 10px 0; border-bottom: 1px solid #edf0ef; }
-.v2 .note small { display: block; color: #7b848a; }
+.v2 .note small { display: block; color: #6b7280; }
 .v2 .history { margin-top: 14px; }
 .v2 .history-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 10px 0; border-bottom: 1px solid #edf0ef; align-items: center; }
 .v2 .stepper { display: grid; grid-template-columns: repeat(6, 1fr); background: white; border: 1px solid #dce2e1; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
@@ -81,7 +84,7 @@
 .v2 .decision-list { display: grid; gap: 10px; }
 .v2 .decision-card { background: white; border: 1px solid #dce2e1; border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
 .v2 .decision-card header { display: flex; gap: 6px; align-items: center; }
-.v2 .decision-card header small { margin-left: auto; color: #9ca3af; }
+.v2 .decision-card header small { margin-left: auto; color: #6b7280; }
 .v2 .evidence { display: grid; gap: 6px; }
 .v2 .evidence > div:first-child { display: flex; gap: 10px; align-items: baseline; }
 .v2 .evidence small { color: #6b7280; }
@@ -107,3 +110,34 @@
 
 /* Host adaptation: the prototype's list-button is a <button>; here it is a link row. */
 .v2 a.list-button { text-decoration: none; padding: 9px 14px; border-radius: 7px; font-weight: 650; }
+
+/* Import page: the two upload slots and the single "next step" panel. */
+.v2 .upload-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.v2 .upload-slot { background: white; border: 1px solid #dce2e1; border-radius: 10px; padding: 16px; display: grid; gap: 6px; align-content: start; scroll-margin-top: 16px; }
+.v2 .upload-slot.selected { border: 2px solid #176b5b; }
+.v2 .upload-slot h2 { display: flex; align-items: center; gap: 8px; font-size: 16px; margin: 0; }
+.v2 .upload-slot p { margin: 0; color: #6b7280; font-size: 13px; }
+.v2 .upload-slot form { margin-top: 6px; }
+.v2 .upload-slot label { display: grid; gap: 4px; font-size: 13px; }
+.v2 .slot-number { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: #176b5b; color: white; font-size: 13px; }
+.v2 .upload-slot p.slot-file { color: #1f2937; background: #f5f8f7; border-radius: 6px; padding: 6px 8px; word-break: break-all; }
+.v2 .stepper.five { grid-template-columns: repeat(5, 1fr); border: 0; padding: 0; }
+.v2 .step.done { color: #176b5b; }
+.v2 .step.done span { background: #cfe9e2; color: #176b5b; }
+.v2 .step.now { color: #176b5b; }
+.v2 .step.now span { background: #176b5b; color: white; }
+.v2 .next-step { margin-bottom: 14px; }
+.v2 .next-step h2 { margin: 12px 0 4px; }
+.v2 .next-step > p { margin: 0; color: #4b5563; }
+.v2 .next-step p.next-step-file { font-size: 12px; color: #6b7280; }
+.v2 .next-step .actions { align-items: center; }
+.v2 a.next-step-link, .v2 .next-step-more summary, .v2 .other-upload summary { color: #176b5b; font-size: 13px; cursor: pointer; }
+.v2 .next-step-more { margin-top: 12px; }
+.v2 .other-upload { margin-top: 14px; }
+.v2 .other-upload form { margin-top: 8px; }
+.v2 .other-upload label { display: grid; gap: 4px; font-size: 13px; }
+
+@media (max-width: 900px) {
+  .v2 .upload-slots { grid-template-columns: 1fr; }
+  .v2 .stepper.five { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+}

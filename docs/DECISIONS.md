@@ -118,19 +118,30 @@ merge, row evaluation, mapping, status map, migration decisions) live in
 prototype (`scripts/export_crmv2_*.mts`, `tests/fixtures/crmv2/`). Never
 hand-edit those fixtures; regenerate them.
 
-Import scope. The engine (`crm/importv2`) runs end to end for `CRM_CUSTOMERS`,
-the CRM's own 26-column line-level export. LITE_DETAIL_ORDER, INOUT_MANAGE_MAIN,
-TELE_SALES_REPORT and CUTOVER_ORDER_SHEET are recognised and validated but
-Preview refuses them (`SOURCE_NOT_SUPPORTED`), because they need data from other
-files joined first. It never half-imports.
+Import scope. The engine (`crm/importv2`) runs end to end for `CRM_CUSTOMERS`
+(the CRM's own 26-column line-level export), `INOUT_MANAGE_MAIN` (order level:
+phone, customer, address, total, no lines) and `LITE_DETAIL_ORDER` from profile
+version 2 (the Nov 2026 43-column export: lines and amounts, NO phone). Lite is
+joined to the customer already holding the same internal order number (import
+Inout first, though the page does not enforce the order: files may be uploaded
+late or again); an order with no such holder is excluded and reported
+(`NO_CUSTOMER_SOURCE`, a warning), never given an invented customer, and is picked
+up when Lite is uploaded again. Inout also joins by order number first and falls
+back to its phone, so a re-upload does not re-ask settled identities. Lite v1
+(30 columns), TELE_SALES_REPORT and CUTOVER_ORDER_SHEET are recognised and
+validated but Preview refuses them (`SOURCE_NOT_SUPPORTED`). `litedetailorder@2`
+was added to `profiles.json` by hand from the client's sample (the other
+profiles are prototype-generated). The client's exporter writes
+`<dimension ref="A1"/>`, so the reader resets sheet dimensions.
 
 Import rulings: file rows are grouped by order id and line amounts summed;
 identity candidates come from the phone index only; a staff or team name resolves
 only when exactly one active user/team matches; an order with a bad row is
 INVALID as a whole and blocks Confirm; imports never open follow-up cycles; a
 NEW_CUSTOMER resolution against an exact phone match creates a split
-`phone_key` (`<key>#<order id>`) because `crm_customer.phone_key` is still
-unique; an order with no known team and no lead goes to Global Unassigned
+`phone_key` (`<key>#<order id>`). `crm_customer.phone_key` is no longer unique
+(customers.0006, client request Nov 2026): callers take the oldest customer for
+a key (`get_or_create_by_phone_key`); an order with no known team and no lead goes to Global Unassigned
 (D019/D024). Commit writes in transactions of 100, journals every change
 (including lead, ownership segment, audit and cycle rows by diffing them) and
 replays by operation key. Rollback undoes exactly the journal, in reverse, and

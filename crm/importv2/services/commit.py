@@ -9,10 +9,14 @@ returns the stored result and writes nothing.
 Commit rulings (docs/DECISIONS.md, "CRM V2 import"):
  - imports never open follow-up cycles: a cycle opens when someone works a lead;
  - a customer whose identity was resolved NEW_CUSTOMER despite an exact phone
-   match is created with a split phone_key (`<key>#<order id>`), because
-   crm_customer.phone_key is still unique;
+   match is created with a split phone_key (`<key>#<order id>`) so it can
+   never be found by the plain phone lookup (phone_key is no longer unique,
+   but the split keeps the unmerged customer out of auto-match);
  - an order whose customer has no lead and whose row names no known team goes to
-   Global Unassigned (D019/D024), never to a fake team.
+   Global Unassigned (D019/D024), never to a fake team;
+ - an order's date is stored as a calendar day (Order.order_date is a DateField and
+   the upload reader reduces spreadsheet date cells to DD/MM/YYYY): any time of
+   day in the source is not kept, there is no datetime column to hold it.
 """
 
 from __future__ import annotations
@@ -35,7 +39,7 @@ from crm.importv2.models import ImportBatch, ImportConflict, ImportOperation, Im
 from crm.importv2.services import adapters
 from crm.importv2.services.locks import batch_running
 from crm.importv2.services.journal import Journal, LeadTracker, snapshot, stored_snapshot
-from crm.importv2.services.preview import recompute_preview_hash
+from crm.importv2.services.preview import _lead_for, recompute_preview_hash
 from crm.importv2.services.state import transition
 from crm.importv2.services.upload import get_profile
 from crm.intake.services import upsert_intake
@@ -53,6 +57,24 @@ IMPORT_SOURCE_ID = "import"
 
 class StalePreviewError(Exception):
     code = "STALE_PREVIEW"
+
+
+class StaleResolutionError(Exception):
+    """A person's ownership/reactivation decision was made against a lead state
+    that has since changed. Nothing was written."""
+
+    code = "STALE_RESOLUTION"
+
+    def __init__(self, rows: list[int]) -> None:
+        super().__init__(f"resolutions on row(s) {rows} no longer match the live lead")
+        self.rows = rows
+
+
+class QuotaExceededError(Exception):
+    """Raise from a write path when an external/system quota stops the commit:
+    the batch parks in PAUSED_QUOTA and can be retried."""
+
+    code = "QUOTA_EXCEEDED"
 
 
 def _require_admin(actor) -> None:
@@ -95,7 +117,7 @@ def confirm_batch(*, actor, batch: ImportBatch, preview_hash: str, operation_key
 
 
 def _confirm_locked(*, actor, batch: ImportBatch, preview_hash: str, operation_key: str) -> dict:
-    profile = get_profile(batch.mapping_profile_id)
+    profile = get_profile(batch.mapping_profile_id, batch.mapping_profile_version)
     open_blocking = batch.conflicts.filter(severity="BLOCKING", status="OPEN").count()
     stored_hash = batch.preview_hash
     staged_hash = recompute_preview_hash(batch)
@@ -319,6 +341,21 @@ def _apply_lead_resolutions(*, actor, customer, closer, resolution, order, team)
             reassign_caretaker(actor=actor, lead=lead, caretaker=closer, reason=f"import order {order.order_no}")
 
 
+def stale_resolutions(plans, resolutions) -> list[int]:
+    """Rows whose ownership/reactivation resolution was made against a lead
+    state that is no longer the live one."""
+    stale = []
+    for plan in plans:
+        chosen = resolutions.get(plan.row_index, {})
+        if not (chosen.get("OWNERSHIP") or chosen.get("REACTIVATION")):
+            continue
+        lead = _lead_for(plan.customer, _team(plan.facts))
+        live = adapters.lead_snapshot(lead) if lead else None
+        if live != plan.facts.get("leadState"):
+            stale.append(plan.row_index)
+    return stale
+
+
 def _apply_group(*, actor, batch, plan, directory, journal, resolutions) -> str:
     facts = plan.facts
     resolution = resolutions.get(plan.row_index, {})
@@ -330,13 +367,18 @@ def _apply_group(*, actor, batch, plan, directory, journal, resolutions) -> str:
         if plan.identity_kind == "HUMAN_REVIEW":
             choice = resolution.get("IDENTITY")
             if choice == "AUTO_MATCH":
-                customer = Customer.objects.get(pk=int(facts["identity"]["candidateCustomerId"]))
+                candidate = facts["identity"].get("candidateCustomerId")
+                if not candidate:  # several customers qualified: no single target to match
+                    raise ValueError(f"AMBIGUOUS_IDENTITY: row {plan.row_index} has no single candidate")
+                customer = Customer.objects.get(pk=int(candidate))
             elif choice == "NEW_CUSTOMER":
                 customer = _create_customer(facts=facts, closer=closer, journal=journal, split=True)
             else:
                 raise ValueError(f"UNRESOLVED_IDENTITY: row {plan.row_index}")
         else:
-            customer = _create_customer(facts=facts, closer=closer, journal=journal, split=False)
+            customer = _create_customer(
+                facts=facts, closer=closer, journal=journal, split=bool(facts.get("separateCustomer"))
+            )
 
     order = Order.objects.filter(customer=customer, order_no=facts["orderId"]).first()
     tracker = LeadTracker(journal, customer)
@@ -374,6 +416,11 @@ def commit_batch(*, actor, batch: ImportBatch, operation_key: str, chunk_size: i
 
 
 def _commit_locked(*, actor, batch: ImportBatch, operation_key: str, chunk_size: int) -> dict:
+    if batch.status in ("FAILED_RETRYABLE", "PAUSED_QUOTA"):
+        # Retry after a transient failure: the machine allows it and re-checks
+        # the confirmation and open conflicts. A stale preview fails again below.
+        open_blocking = batch.conflicts.filter(severity="BLOCKING", status="OPEN").count()
+        transition(batch, "COMMITTING", actor=actor, reason="retry commit", blocking_conflicts_open=open_blocking)
     if batch.status != "COMMITTING":
         raise ValueError(f"ILLEGAL_STATE: a batch in {batch.status} cannot be committed")
     chunk_size = max(1, min(int(chunk_size), MAX_CHUNK_SIZE))
@@ -385,7 +432,14 @@ def _commit_locked(*, actor, batch: ImportBatch, operation_key: str, chunk_size:
     directory = adapters.Directory()
     resolutions = _resolutions(batch)
     journal = Journal(batch, attempt=batch.attempt_count)
-    plans = list(batch.plans.exclude(classification__in=["INVALID"]).order_by("row_index").select_related("customer"))
+    plans = list(
+        batch.plans.exclude(classification__in=["INVALID"]).order_by("row_index").select_related("customer")
+    )
+    plans = [p for p in plans if not (p.facts or {}).get("excluded")]  # archived by a migration decision
+    stale = stale_resolutions(plans, resolutions)
+    if stale:
+        transition(batch, "FAILED_RETRYABLE", actor=actor, reason=f"STALE_RESOLUTION rows={stale[:20]}")
+        raise StaleResolutionError(stale)
     totals = {"created": 0, "updated": 0, "unchanged": 0, "chunks": 0}
     try:
         for start in range(0, len(plans), chunk_size):
@@ -399,7 +453,12 @@ def _commit_locked(*, actor, batch: ImportBatch, operation_key: str, chunk_size:
     except Exception as error:
         # Earlier chunks are committed and journalled; the batch can be retried
         # or rolled back. Nothing from the failing chunk survived.
-        transition(batch, "FAILED_RETRYABLE", actor=actor, reason=f"{type(error).__name__}: {error}"[:200])
+        # Only the exception class and a stable code are stored: the message can
+        # carry customer data (PII) and transition_history is long-lived.
+        code = getattr(error, "code", "") if isinstance(getattr(error, "code", ""), str) else ""
+        safe = f"COMMIT_ERROR {type(error).__name__}" + (f" [{code}]" if code else "")
+        target = "PAUSED_QUOTA" if isinstance(error, QuotaExceededError) else "FAILED_RETRYABLE"
+        transition(batch, target, actor=actor, reason=safe)
         raise
 
     with transaction.atomic():

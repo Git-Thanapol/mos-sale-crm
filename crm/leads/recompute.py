@@ -32,6 +32,16 @@ logger = logging.getLogger(__name__)
 def _ordered_at(order: Order) -> datetime | None:
     """The business time of the order.
 
+    DATE-ONLY DECISION (audit item 4): Order.order_date is a DateField, so the
+    true time of day is unknown and is NOT invented. Anchoring at Bangkok
+    midnight gives a deterministic, conservative comparison against a baseline
+    or segment-start instant: an order dated the same Bangkok day as a baseline
+    that falls after midnight (e.g. HX63 19:31 Bangkok, or a mid-day
+    reassignment) is treated as BEFORE it and not counted, because we cannot
+    prove it happened after. Orders on later days count. A baseline that is
+    itself a Bangkok day start (the backfill's) includes that whole day. Revisit
+    only if Order gains a real datetime.
+
     11_DO_NOT_CHANGE_CHECKLIST: orderedAt remains the business-time authority,
     so import time and created_at must never be substituted. order_date is a
     DateField, so it is anchored at Bangkok midnight to become an instant.
@@ -42,16 +52,34 @@ def _ordered_at(order: Order) -> datetime | None:
 
 
 def _baseline_for(lead: Lead, hx63_baseline: datetime | None) -> datetime:
+    """Counting start instant.
+
+    D023 must survive every later recompute, so the durable
+    `Lead.migrated_baseline_at` is consulted, not just the transient argument.
+    A migrated lead's open segment is the BACKFILL segment opened at cutover
+    (later than the HX63 snapshot), so for it the snapshot baseline wins:
+    orders between the snapshot and the cutover still count. Once a real
+    ownership change opens a newer segment, that segment's start wins when it is
+    later (a reassignment resets the counter), i.e. max(baseline, segment start).
+    """
     if hx63_baseline is not None:
         return hx63_baseline
     open_segment = (
         OwnershipSegment.objects.filter(lead=lead, ended_at__isnull=True)
         .order_by("-started_at")
-        .values_list("started_at", flat=True)
+        .values_list("started_at", "reason")
         .first()
     )
+    migrated = lead.migrated_baseline_at
     if open_segment is not None:
-        return open_segment
+        started_at, reason = open_segment
+        if migrated is not None:
+            if reason == "BACKFILL":
+                return migrated
+            return max(migrated, started_at)
+        return started_at
+    if migrated is not None:
+        return migrated
     return lead.ownership_started_at or lead.created_at
 
 
@@ -104,7 +132,7 @@ def recompute_lead_missed_channel(
         orders.append(
             MissedChannelOrder(
                 order_id=str(pk),
-                ordered_at=datetime.combine(order_date, time.min, tzinfo=BANGKOK_TZ),
+                ordered_at=datetime.combine(order_date, time.min, tzinfo=BANGKOK_TZ),  # see _ordered_at: date-only
                 closer_user_id=closer_ids.get((staff_code or "").strip()),
                 order_status=machine_status,
             )

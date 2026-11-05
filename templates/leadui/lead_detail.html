@@ -2,7 +2,7 @@
 {% load v2 %}
 {% block title %}รายละเอียด Lead · Sales CRM{% endblock %}
 {% block v2_content %}
-  {% include "leadui/_page_title.html" with title="รายละเอียด Lead" subtitle="Notes / Contact Attempts / Appointments เขียนผ่าน server mutation" %}
+  {% include "leadui/_page_title.html" with title="รายละเอียด Lead" subtitle="โน้ต การติดต่อ และนัดหมายของ Lead นี้" %}
   <div class="detail-layout">
     <section class="detail-card">
       <div class="lead-heading">
@@ -48,6 +48,7 @@
         {% if can_reassign and lead.lifecycle_status != "STOPPED" %}
           <form method="post" action="{% url 'leads:stop' lead.id %}">
             {% csrf_token %}
+            <input type="hidden" name="version" value="{{ lead.version }}">
             <input type="hidden" name="reason" value="MANUAL_STOP">
             <input type="hidden" name="next" value="{{ next }}">
             <button type="submit" class="danger-button">STOP</button>
@@ -56,6 +57,7 @@
         {% if can_reassign and lead.lifecycle_status == "STOPPED" %}
           <form method="post" action="{% url 'leads:reactivate' lead.id %}">
             {% csrf_token %}
+            <input type="hidden" name="version" value="{{ lead.version }}">
             <input type="hidden" name="reason" value="reactivated in STOPPED Review">
             <input type="hidden" name="next" value="{{ next }}">
             <button type="submit">Reactivate</button>
@@ -67,12 +69,13 @@
           <h2>ยืนยันการเปลี่ยน caretaker?</h2>
           <form method="post" action="{% url 'leads:reassign' lead.id %}">
             {% csrf_token %}
+            <input type="hidden" name="version" value="{{ lead.version }}">
             <input type="hidden" name="next" value="{{ next }}">
             <select name="caretaker">
               <option value="">— ไม่มีผู้ดูแล (ส่งกลับทีม) —</option>
               {% for person in caretakers %}<option value="{{ person.id }}"{% if lead.caretaker_id == person.id %} selected{% endif %}>{{ person.staff_name|default:person.email }}</option>{% endfor %}
             </select>
-            <input type="text" name="reason" placeholder="เหตุผล">
+            <input type="text" name="reason" placeholder="เหตุผล" aria-label="เหตุผลที่เปลี่ยนผู้ดูแล" required>
             <div class="actions">
               <button type="submit">ยืนยัน</button>
               <button type="button" class="secondary" data-v2-close>ยกเลิก</button>
@@ -87,7 +90,7 @@
         <form method="post" action="{% url 'leads:add_note' lead.id %}">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ next }}">
-          <textarea name="body" required maxlength="2000" placeholder="โน้ตอยู่กับ Lead / Follow-up Cycle"></textarea>
+          <textarea name="body" required maxlength="2000" aria-label="โน้ต" placeholder="โน้ตอยู่กับ Lead / Follow-up Cycle"></textarea>
           <button type="submit">บันทึกโน้ต</button>
         </form>
       {% endif %}

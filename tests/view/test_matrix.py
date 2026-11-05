@@ -54,7 +54,8 @@ def test_daily_matrix_attributes_sales_to_current_team_member():
     )
     OrderLine.objects.create(order=order, sku="S1", product_name="P", quantity=1, amount=12000)
 
-    matrix = daily_matrix(2026, 7)
+    today = timezone.localtime(order.created_at)
+    matrix = daily_matrix(today.year, today.month)
     day_row = next(r for r in matrix.rows if r["date"] == timezone.localtime(order.created_at).date())
     cell = day_row["crm_cells"][crm_user.id]
     assert cell["amount"] == 12000

@@ -3,6 +3,8 @@
 Run via: docker compose exec -T web python -m pytest tests/view/leadui/test_nav.py
 """
 
+import re
+
 import pytest
 from django.test import RequestFactory
 
@@ -113,3 +115,17 @@ def test_sidebar_renders_without_the_routes_mounted_yet_and_keeps_parent_link(cl
     body = client.get("/").content.decode()
     assert 'class="crm-sidebar__item' in body
     assert "ติดตามลูกค้า" in body
+
+
+def test_a_parent_with_children_gets_an_arrow_controlling_its_sub_menu(client):
+    editor = make_user(email="e6@example.com", role=ROLE_EDITOR, staff_code="E6")
+    editor.set_password("test-pass-12345")
+    editor.save()
+    assert client.login(email=editor.email, password="test-pass-12345")
+    body = client.get("/").content.decode()
+    # Exactly the one parent with children has an arrow, and it points at a real sub-menu.
+    assert body.count("data-sub-toggle=") == 1
+    target = re.search(r'aria-controls="(crm-sub-\d+-\d+)"', body).group(1)
+    assert f'<div class="crm-sidebar__sub" id="{target}">' in body
+    # The whole-sidebar collapse this replaced is gone.
+    assert "crm-sidebar-toggle" not in body and "data-sidebar" not in body

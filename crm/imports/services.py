@@ -250,9 +250,11 @@ def import_row(record: dict, row_number: int, batch_id, uploaded_by: str) -> dic
 
     result = dict(EMPTY_COUNTS, valid=1)
     key = phone_key(phone1, phone2, staging.pk)
-    customer, created = Customer.objects.get_or_create(
-        phone_key=key,
-        defaults={
+    from crm.customers.services import get_or_create_by_phone_key
+
+    customer, created = get_or_create_by_phone_key(
+        key,
+        {
             "phone1": phone1,
             "phone2": phone2,
             "customer_name": customer_name,

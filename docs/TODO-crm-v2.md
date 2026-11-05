@@ -10,10 +10,6 @@ pre-existing ones (`test_import_excel`, `test_matrix`, `test_online_orders`;
       with an owner and 216,309 without. `--resolve-to TEAM_CODE` avoids a
       216k-row hand-resolve queue. Needs a decision on which team receives the
       unowned customers.
-- [ ] **`crm_customer.phone_key` is still UNIQUE.** Two different people sharing one
-      phone auto-merge. A NEW_CUSTOMER import decision against an exact phone
-      match works around it with a split key (`<key>#<order id>`). Decide whether
-      to relax the constraint and move identity fully to `customer_uid`.
 - [ ] **Imports never open follow-up cycles** (a cycle opens when someone works the
       lead). Confirm that is what the business wants for imported orders.
 - [ ] **ROLLBACK_FAILED has no exit** (faithful to the prototype state machine), and
@@ -22,11 +18,9 @@ pre-existing ones (`test_import_excel`, `test_matrix`, `test_online_orders`;
       human-reconciled batch needs a way back.
 - [ ] **TEAM_LEAD sees import history only for batches holding a conflict visible to
       them** (the prototype shows no scoping). Confirm.
-- [ ] **Import sources.** Only `CRM_CUSTOMERS` (the CRM's own 26-column export) is
-      imported. `LITE_DETAIL_ORDER`, `INOUT_MANAGE_MAIN`, `TELE_SALES_REPORT` and
-      `CUTOVER_ORDER_SHEET` are recognised and validated but refused at Preview
-      (`SOURCE_NOT_SUPPORTED`): they need cross-file joins. Decide which are
-      needed, in what order, and supply real sample files.
+- [ ] **Import sources.** CRM_CUSTOMERS, INOUT_MANAGE_MAIN and LITE_DETAIL_ORDER@2 import (Nov 2026).
+      `TELE_SALES_REPORT`, `CUTOVER_ORDER_SHEET` and Lite v1 are still refused at Preview. Inout
+      carries no channel or lines, so Lite supplies them; confirm that is the intended division.
 - [ ] **Order status vocabulary.** The live data holds only `สำเร็จ` and blank, so
       `crm/leads/order_status.py` maps only those. The prototype's status table
       (cancelled, COD-returned, ...) is ported in `crm/domain/status_map.py` but not
@@ -38,8 +32,9 @@ pre-existing ones (`test_import_excel`, `test_matrix`, `test_online_orders`;
 
 ## To do before or at merge
 
-- [ ] Run migrations on every environment: `importv2` 0001-0004, `leads` 0003-0004,
-      `orders` 0003. All are additive (new tables, nullable or defaulted columns).
+- [ ] Run migrations on every environment: `importv2` 0001-0004, `leads` 0003-0005,
+      `orders` 0003, `customers` 0006. All are additive except `customers` 0006, which
+      drops the UNIQUE constraint on `phone_key` (client request, Nov 2026).
 - [ ] Decide what `seed_leadui_demo` data (if any) stays on shared environments;
       remove with `manage.py seed_leadui_demo --clean`. It refuses to run unless
       `DEBUG` is on.
