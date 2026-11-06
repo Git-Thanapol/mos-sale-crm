@@ -4,12 +4,18 @@
 {% block v2_content %}
   {% include "leadui/_page_title.html" with title="Global Unassigned" subtitle="Customer มีอยู่แล้ว แต่ยังไม่รู้ Team — ยังไม่มี Lead" %}
   <div class="callout">D019: เลือก Team จริงเท่านั้น ระบบจึงสร้าง Lead; ไม่ใช้ Team ปลอมและไม่สร้าง Lead ที่ teamId ว่าง</div>
+  <form class="toolbar" method="get">
+    <input type="search" name="phone" inputmode="tel" aria-label="ค้นหาด้วยเบอร์โทร" placeholder="ค้นหาด้วยเบอร์โทร" value="{{ phone }}">
+    <button type="submit">ค้นหา</button>
+    {% if phone %}<a class="link" href="{% url 'leadui:global_unassigned' %}">ล้างการค้นหา</a>{% endif %}
+  </form>
   {% if items %}
     <div class="card-grid">
       {% for item in items %}
         <article class="work-card">
           {% v2_chip item.status %}
           <h3>{{ item.customer.customer_name|default:item.customer.phone1|default:"(ไม่มีชื่อ)" }}</h3>
+          <p>เบอร์โทร: {{ item.customer.phone1|default:"ไม่มีเบอร์" }}{% if item.customer.phone2 %} / {{ item.customer.phone2 }}{% endif %}</p>
           <p>Order: {{ item.source_order_id|default:"—" }}</p>
           <small>{{ item.source_ref }}</small>
           <div class="actions">
@@ -25,6 +31,8 @@
         </article>
       {% endfor %}
     </div>
+  {% elif phone %}
+    {% include "leadui/_state.html" with kind="empty" message="ไม่พบเบอร์นี้ในคิว" %}
   {% else %}
     {% include "leadui/_state.html" with kind="empty" %}
   {% endif %}

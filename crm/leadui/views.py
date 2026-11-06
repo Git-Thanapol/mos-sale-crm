@@ -27,6 +27,7 @@ from crm.core.permissions import (
     can_review_any_lead,
     can_use_lead_workspace,
 )
+from crm.domain.bangkok import BANGKOK_TZ
 from crm.domain.last_order_age import REALLOCATION_REVIEW_DEFAULT_DAYS
 from crm.followcycles.models import FollowupCycle
 from crm.leads.models import Lead, LeadAuditEvent
@@ -212,14 +213,16 @@ def _not_built(request, *args, **kwargs):
 def global_unassigned(request):
     """D019 intake queue. The Team buttons post to leads:resolve_intake, which
     re-checks authorization and is the only thing that creates a Lead."""
+    phone = (request.GET.get("phone") or "").strip()
     page = global_unassigned_queue(
-        request.user, after_cursor=(request.GET.get("cursor") or None), limit=PAGE_SIZE
+        request.user, after_cursor=(request.GET.get("cursor") or None), limit=PAGE_SIZE, phone=phone
     )
     return render(
         request,
         "leadui/global_unassigned.html",
         {
             "items": page.items,
+            "phone": phone,
             # Closed set: a typed team code is a typo on an action that creates a Lead.
             "teams": list(Team.objects.filter(active=True).order_by("code")),
             "next": request.get_full_path(),
@@ -240,6 +243,7 @@ def lead_detail(request, lead_id: int):
         raise Http404
     can_edit = can_edit_lead(request.user, lead)
     can_reassign = can_reassign_caretaker(request.user, lead)
+    today = timezone.now().astimezone(BANGKOK_TZ).date()
     caretakers = []
     if can_reassign:
         # Only people the server would accept as this lead caretaker: active,
@@ -257,7 +261,8 @@ def lead_detail(request, lead_id: int):
             "notes": list(lead.notes.order_by("-updated_at", "-id")[:10]),
             "attempts": list(lead.contact_attempts.order_by("-attempted_at", "-id")[:10]),
             "appointments": list(lead.appointments.order_by("-scheduled_at", "-id")[:10]),
-            "tomorrow": (timezone.now() + timedelta(hours=24)).isoformat(),
+            "today": today.isoformat(),
+            "tomorrow": (today + timedelta(days=1)).isoformat(),
             "next": request.get_full_path(),
         },
     )

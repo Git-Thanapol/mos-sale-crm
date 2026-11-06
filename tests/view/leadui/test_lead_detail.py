@@ -10,6 +10,7 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 
+from crm.domain.bangkok import BANGKOK_TZ
 from crm.followcycles.models import Appointment, ContactAttempt, FollowupCycle, Note
 from crm.followcycles.services import add_note, log_contact_attempt, open_cycle, set_appointment
 from crm.leads.models import Lead
@@ -94,7 +95,8 @@ def test_an_unassigned_lead_says_so(client, editor):
 
 def test_a_telesale_caretaker_sees_work_buttons_but_not_reassign_or_stop(client, telesale, lead):
     body = page(client, telesale, lead).content.decode()
-    assert "บันทึกติดต่อไม่ได้" in body and "นัดพรุ่งนี้" in body
+    assert "บันทึกติดต่อไม่ได้" in body and 'data-v2-open="appointment-dialog"' in body
+    assert "นัดพรุ่งนี้" not in body
     assert 'name="body"' in body
     assert "เปลี่ยน caretaker" not in body
     assert ">STOP<" not in body and "Reactivate" not in body
@@ -103,7 +105,7 @@ def test_a_telesale_caretaker_sees_work_buttons_but_not_reassign_or_stop(client,
 def test_an_editor_sees_every_button_when_a_cycle_is_active(client, editor, lead):
     open_cycle(actor=editor, lead=lead)
     body = page(client, editor, lead).content.decode()
-    for text in ("บันทึกติดต่อไม่ได้", "นัดพรุ่งนี้", "เปลี่ยน caretaker", "ปิดรอบติดตาม"):
+    for text in ("บันทึกติดต่อไม่ได้", ">นัดหมาย</button>", "เปลี่ยน caretaker", "ปิดรอบติดตาม"):
         assert text in body, text
     assert '<button type="submit" class="danger-button">STOP</button>' in body
     assert "Reactivate" not in body
@@ -201,18 +203,54 @@ def test_the_attempt_button_posts_no_answer_with_the_prototype_note(client, edit
     assert ContactAttempt.objects.filter(lead=lead, result="NO_ANSWER").exists()
 
 
-def test_the_tomorrow_button_creates_an_appointment_about_24_hours_ahead(client, editor, lead):
-    body = page(client, editor, lead).content.decode()
-    form = re.search(
+def appointment_form(body, lead):
+    return re.search(
         r'<form[^>]*action="%s"[^>]*>(.*?)</form>' % re.escape(reverse("leads:set_appointment", args=[lead.id])),
         body,
         re.S,
     ).group(1)
-    value = re.search(r'name="scheduled_at" value="([^"]+)"', form).group(1)
-    client.post(reverse("leads:set_appointment", args=[lead.id]), {"scheduled_at": value, "next": url(lead)})
-    appointment = Appointment.objects.get(lead=lead)
-    delta = appointment.scheduled_at - timezone.now()
-    assert timedelta(hours=23, minutes=50) < delta < timedelta(hours=24, minutes=10)
+
+
+def test_the_appointment_dialog_defaults_to_the_next_bangkok_day(client, editor, lead):
+    body = page(client, editor, lead).content.decode()
+    form = appointment_form(body, lead)
+    today = timezone.now().astimezone(BANGKOK_TZ).date()
+    assert '<dialog id="appointment-dialog">' in body
+    assert f'type="date" name="scheduled_date" value="{today + timedelta(days=1)}" min="{today}" required' in form
+    # Nothing is booked just by opening the page or the dialog.
+    assert not Appointment.objects.filter(lead=lead).exists()
+
+
+def test_saving_the_dialog_books_the_chosen_day_with_a_toast(client, editor, lead):
+    login(client, editor)
+    chosen = timezone.now().astimezone(BANGKOK_TZ).date() + timedelta(days=10)
+    response = client.post(
+        reverse("leads:set_appointment", args=[lead.id]),
+        {"scheduled_date": chosen.isoformat(), "next": url(lead)},
+        follow=True,
+    )
+    assert '<div class="toast">บันทึกนัดติดตามแล้ว</div>' in response.content.decode()
+    local = Appointment.objects.get(lead=lead).scheduled_at.astimezone(BANGKOK_TZ)
+    assert local.date() == chosen and local.hour == 9
+    lead.refresh_from_db()
+    assert lead.next_follow_at.astimezone(BANGKOK_TZ).date() == chosen
+
+
+def test_today_is_an_allowed_appointment_day(client, editor, lead):
+    login(client, editor)
+    today = timezone.now().astimezone(BANGKOK_TZ).date()
+    client.post(reverse("leads:set_appointment", args=[lead.id]), {"scheduled_date": today.isoformat()})
+    assert Appointment.objects.get(lead=lead).scheduled_at.astimezone(BANGKOK_TZ).date() == today
+
+
+@pytest.mark.parametrize("value", ["2020-01-01", "not-a-date", "2026-02-31"])
+def test_a_past_or_invalid_appointment_day_books_nothing(client, editor, lead, value):
+    login(client, editor)
+    response = client.post(
+        reverse("leads:set_appointment", args=[lead.id]), {"scheduled_date": value, "next": url(lead)}, follow=True
+    )
+    assert "วันที่นัดหมายไม่ถูกต้อง" in response.content.decode()
+    assert not Appointment.objects.filter(lead=lead).exists()
 
 
 def test_the_reassign_dialog_lists_active_users_only(client, editor, lead):

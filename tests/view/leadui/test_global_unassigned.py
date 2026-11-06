@@ -91,6 +91,51 @@ def test_a_card_shows_status_customer_order_and_source(client, editor, teams):
     assert "<small>fixture:1</small>" in body
 
 
+def customer_with(name, phone1, phone2=""):
+    return make_customer(customer_name=name, phone_key=phone1 or name, phone1=phone1, phone2=phone2)
+
+
+def test_a_card_shows_both_phone_numbers(client, editor, teams):
+    intake(customer=customer_with("สองเบอร์", "0811111111", "0822222222"))
+    assert "<p>เบอร์โทร: 0811111111 / 0822222222</p>" in get(client, editor).content.decode()
+
+
+def test_a_card_without_a_phone_says_so(client, editor, teams):
+    intake(customer=customer_with("ไม่มีเบอร์เลย", ""))
+    assert "<p>เบอร์โทร: ไม่มีเบอร์</p>" in get(client, editor).content.decode()
+
+
+@pytest.mark.parametrize(
+    "typed",
+    ["0811111111", "081-111-1111", "+66811111111", "1111", "0822222222"],
+)
+def test_phone_search_finds_either_phone_in_any_spelling_or_part(client, editor, teams, typed):
+    intake(customer=customer_with("ตรงเบอร์", "0811111111", "0822222222"), order_id="A")
+    intake(customer=customer_with("คนอื่น", "0899999999"), order_id="B")
+    body = get(client, editor, phone=typed).content.decode()
+    assert "ตรงเบอร์" in body and "คนอื่น" not in body
+    assert f'value="{typed}"' in body
+
+
+@pytest.mark.parametrize("typed", ["0800000000", "ไม่ใช่เบอร์"])
+def test_phone_search_with_no_match_says_so(client, editor, teams, typed):
+    intake(customer=customer_with("ตรงเบอร์", "0811111111"))
+    body = get(client, editor, phone=typed).content.decode()
+    assert "work-card" not in body and "ไม่พบเบอร์นี้ในคิว" in body
+
+
+def test_phone_search_is_kept_across_pages(client, editor, teams):
+    customer = customer_with("หลายออเดอร์", "0811111111")
+    for i in range(27):
+        intake(customer=customer, order_id=f"SO-{i:03d}")
+    intake(customer=customer_with("คนอื่น", "0899999999"), order_id="B")
+    first = get(client, editor, phone="0811111111").content.decode()
+    nxt = re.search(r'href="([^"]*)">หน้าถัดไป', first).group(1).replace("&amp;", "&")
+    assert "phone=0811111111" in nxt
+    second = client.get(reverse(URL) + nxt).content.decode()
+    assert second.count('<article class="work-card">') == 2 and "คนอื่น" not in second
+
+
 def test_a_missing_order_id_shows_a_dash(client, editor, teams):
     intake(order_id="")
     assert "<p>Order: —</p>" in get(client, editor).content.decode()

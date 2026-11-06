@@ -27,13 +27,7 @@
             <input type="hidden" name="next" value="{{ next }}">
             <button type="submit">บันทึกติดต่อไม่ได้</button>
           </form>
-          <form method="post" action="{% url 'leads:set_appointment' lead.id %}">
-            {% csrf_token %}
-            <input type="hidden" name="scheduled_at" value="{{ tomorrow }}">
-            <input type="hidden" name="note" value="นัดหมายจากหน้าจอ">
-            <input type="hidden" name="next" value="{{ next }}">
-            <button type="submit" class="secondary">นัดพรุ่งนี้</button>
-          </form>
+          <button type="button" class="secondary" data-v2-open="appointment-dialog">นัดหมาย</button>
         {% endif %}
         {% if can_reassign %}
           <button type="button" class="secondary" data-v2-open="reassign-dialog">เปลี่ยน caretaker</button>
@@ -64,6 +58,23 @@
           </form>
         {% endif %}
       </div>
+      {% if can_edit %}
+        <dialog id="appointment-dialog">
+          <h2>นัดหมาย</h2>
+          <form method="post" action="{% url 'leads:set_appointment' lead.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="note" value="นัดหมายจากหน้าจอ">
+            <input type="hidden" name="next" value="{{ next }}">
+            <label>วันที่นัดหมาย
+              <input type="date" name="scheduled_date" value="{{ tomorrow }}" min="{{ today }}" required>
+            </label>
+            <div class="actions">
+              <button type="submit">บันทึกนัดหมาย</button>
+              <button type="button" class="secondary" data-v2-close>ยกเลิก</button>
+            </div>
+          </form>
+        </dialog>
+      {% endif %}
       {% if can_reassign %}
         <dialog id="reassign-dialog">
           <h2>ยืนยันการเปลี่ยน caretaker?</h2>

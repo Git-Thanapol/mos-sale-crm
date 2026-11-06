@@ -32,6 +32,7 @@ from crm.core.pagination import (
     encode_cursor,
 )
 from crm.domain.bangkok import day_start, epoch_day
+from crm.domain.phone import normalize_phone
 from crm.domain.last_order_age import (
     REALLOCATION_REVIEW_DEFAULT_DAYS,
     last_order_age_cutoffs,
@@ -461,14 +462,23 @@ def reallocation_review_queue(
 
 
 def global_unassigned_queue(
-    user, *, after_cursor: str | None = None, limit: int = DEFAULT_LIMIT
+    user, *, after_cursor: str | None = None, limit: int = DEFAULT_LIMIT, phone: str = ""
 ) -> KeysetPage:
     """D019 pre-Lead intake still awaiting a Team decision.
 
     Keyed on (created_at, id): intake has no last_order_at, and oldest-first is
-    the order the work should be picked up in.
+    the order the work should be picked up in. `phone` narrows it to customers
+    whose phone1 or phone2 contains the typed number (whole or part of it).
     """
     qs = IntakeItem.objects.select_related("customer").filter(status="GLOBAL_UNASSIGNED")
+    if phone.strip():
+        national = normalize_phone(phone)["national"]
+        # Typed text with no digits matches nobody rather than the whole queue.
+        qs = (
+            qs.filter(Q(customer__phone1__contains=national) | Q(customer__phone2__contains=national))
+            if national
+            else qs.none()
+        )
     # Typed decode: wrong length / wrong types / unparseable date means "first
     # page" (never an unpack error or a 500), as for every other cursor here.
     parts = decode_cursor_parts(after_cursor, ("datetime?", "int"))

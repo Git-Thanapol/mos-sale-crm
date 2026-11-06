@@ -11,6 +11,8 @@ Rendering the follow-up page is Task 15; these are the writes.
 
 from __future__ import annotations
 
+from datetime import datetime, time
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -20,6 +22,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
@@ -30,6 +33,7 @@ from crm.core.permissions import (
     can_resolve_intake,
     can_review_stopped,
 )
+from crm.domain.bangkok import BANGKOK_TZ
 from crm.domain.enums import STOP_REASONS
 from crm.followcycles.models import Appointment, FollowupCycle
 from crm.followcycles.services import (
@@ -225,6 +229,21 @@ def log_attempt(request, lead_id: int):
     return redirect(_back(request))
 
 
+def _appointment_moment(text: str) -> datetime | None:
+    """A picked calendar day as 09:00 Bangkok, or None if invalid or in the past.
+
+    The work queue ranks appointments by Bangkok day, so the time only has to
+    fall inside the chosen day.
+    """
+    try:
+        day = parse_date(text.strip())
+    except ValueError:
+        return None
+    if day is None or day < timezone.now().astimezone(BANGKOK_TZ).date():
+        return None
+    return datetime.combine(day, time(9), tzinfo=BANGKOK_TZ)
+
+
 @login_required
 @require_POST
 @handle_conflicts
@@ -233,16 +252,22 @@ def set_appointment_view(request, lead_id: int):
     if not can_edit_lead(request.user, lead):
         raise PermissionDenied(MSG_LEAD_OUT_OF_SCOPE)
 
-    raw = (request.POST.get("scheduled_at") or "").strip()
-    parsed = None
-    if raw:
-        from django.utils.dateparse import parse_datetime
+    if "scheduled_date" in request.POST:
+        parsed = _appointment_moment(request.POST["scheduled_date"])
+        if parsed is None:
+            messages.error(request, "วันที่นัดหมายไม่ถูกต้อง — เลือกวันนี้หรือวันถัดไป")
+            return redirect(_back(request))
+    else:
+        raw = (request.POST.get("scheduled_at") or "").strip()
+        parsed = None
+        if raw:
+            from django.utils.dateparse import parse_datetime
 
-        parsed = parse_datetime(raw)
-    if parsed is None:
-        return HttpResponseBadRequest("scheduled_at required")
-    if timezone.is_naive(parsed):
-        parsed = timezone.make_aware(parsed)
+            parsed = parse_datetime(raw)
+        if parsed is None:
+            return HttpResponseBadRequest("scheduled_at required")
+        if timezone.is_naive(parsed):
+            parsed = timezone.make_aware(parsed)
 
     try:
         set_appointment(
