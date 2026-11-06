@@ -3,6 +3,7 @@ from io import BytesIO
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from django.utils import timezone
 from openpyxl import Workbook
 
 from crm.accounts.models import User
@@ -414,3 +415,57 @@ def test_options_empty_query_still_capped(client, viewer):
     resp = client.get(reverse("catalog:options"))
     assert resp.status_code == 200
     assert len(resp.json()) == 20
+
+
+# --- page layout ---
+
+
+def _rendered(client):
+    return client.get(reverse("catalog:list")).content.decode()
+
+
+def test_editor_row_is_read_only_with_an_edit_dialog_posting_to_save(client, editor):
+    product = Product.objects.create(sku="SK1", product_name="สินค้าหนึ่ง", product_group="ทั่วไป")
+    body = _rendered(client)
+    assert f'data-v2-open="product-edit-{product.id}"' in body
+    assert f'<dialog id="product-edit-{product.id}"' in body
+    assert reverse("catalog:save_row", args=[product.id]) in body
+    assert '<div class="crm-table__cell product-table__sku">SK1</div>' in body
+    assert '<span class="crm-badge product-badge--active">เปิดใช้งาน</span>' in body
+
+
+def test_create_and_import_live_in_dialogs(client, editor):
+    body = _rendered(client)
+    assert '<dialog id="product-create-dialog"' in body and reverse("catalog:create") in body
+    assert '<dialog id="product-import-dialog"' in body and reverse("catalog:import") in body
+
+
+def test_bulk_bar_and_row_selection_share_one_form(client, editor):
+    Product.objects.create(sku="SK1", product_name="สินค้าหนึ่ง", product_group="ทั่วไป")
+    body = _rendered(client)
+    assert 'id="product-bulk-form"' in body and 'form="product-bulk-form"' in body
+    for action in ("activate", "deactivate", "archive", "check_readiness"):
+        assert f'name="action" value="{action}"' in body
+
+
+def test_archived_product_has_no_edit_dialog(client, editor):
+    product = Product.objects.create(
+        sku="SK1", product_name="เก็บแล้ว", product_group="ทั่วไป", is_active=False, archived_at=timezone.now()
+    )
+    body = client.get(reverse("catalog:list"), {"status": "สินค้าที่เก็บถาวร"}).content.decode()
+    assert "เก็บแล้ว" in body and '<span class="crm-badge crm-badge--gray">เก็บถาวร</span>' in body
+    assert f"product-edit-{product.id}" not in body
+    assert 'name="action" value="restore"' in body
+
+
+def test_viewer_sees_the_list_without_any_edit_controls(client, viewer):
+    Product.objects.create(sku="SK1", product_name="สินค้าหนึ่ง", product_group="ทั่วไป")
+    body = _rendered(client)
+    assert "สินค้าหนึ่ง" in body
+    for control in ("<dialog", "product-bulk-form", "product-create-dialog", "data-product-select"):
+        assert control not in body
+
+
+def test_search_with_no_match_says_so(client, editor):
+    body = client.get(reverse("catalog:list"), {"search": "ไม่มีจริง"}).content.decode()
+    assert "ไม่พบสินค้าที่ตรงกับ" in body and "product-bulk-form" not in body
