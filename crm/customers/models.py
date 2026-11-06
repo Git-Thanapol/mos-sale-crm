@@ -79,6 +79,10 @@ class Customer(models.Model):
                 F("id").desc(),
                 name="ix_customer_recent_nl",
             ),
+            # The import preview looks customers up by phone1 OR phone2 OR
+            # phone_key once per order: without these it scans the whole table.
+            models.Index(fields=["phone1"], name="ix_customer_phone1"),
+            models.Index(fields=["phone2"], name="ix_customer_phone2"),
         ]
 
     def __str__(self) -> str:
