@@ -12,3 +12,7 @@ node_modules/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+init_import/
+v2-filtered-provisional-*/
+sample_upload_Nov2026/
+test-import/

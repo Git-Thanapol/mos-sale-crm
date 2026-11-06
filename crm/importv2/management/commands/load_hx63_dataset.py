@@ -17,6 +17,10 @@ Rules (from the dataset hand-over):
 
 Idempotent: re-running skips orders this batch already wrote. The batch id is
 derived from the SHA-256 of canonical.jsonl, so --rollback removes exactly it.
+
+The file is read in two streaming passes (validate, then write CHUNK at a time):
+holding all ~425k plans in memory gets this process OOM-killed on the 4 GB
+production host.
 """
 
 from __future__ import annotations
@@ -176,42 +180,53 @@ class Command(BaseCommand):
         if options["rollback"]:
             return self._rollback(batch_id)
 
-        plans, seen, bad = [], set(), defaultdict(list)
+        seen, bad = set(), defaultdict(list)
         for number, record in _iter_records(canonical):
             plan, problems = to_plan(record)
             if plan and plan["order_id"] in seen:
                 plan, problems = None, ["duplicate order id"]
             if plan:
                 seen.add(plan["order_id"])
-                plans.append(plan)
             else:
                 for problem in problems:
                     bad[problem].append(number)
-        self.stdout.write(f"validated: {len(plans)} ok, {sum(len(v) for v in bad.values())} problems")
+        self.stdout.write(f"validated: {len(seen)} ok, {sum(len(v) for v in bad.values())} problems")
         for problem, rows in bad.items():
             self.stdout.write(self.style.ERROR(f"  {problem}: {len(rows)} (first lines {rows[:5]})"))
         if bad:
             raise CommandError("validation failed; nothing written")
-        if len(plans) != expected:
-            raise CommandError(f"{len(plans)} valid orders != manifest {expected}")
+        if len(seen) != expected:
+            raise CommandError(f"{len(seen)} valid orders != manifest {expected}")
 
         done = set(Order.objects.filter(import_batch_id=batch_id).values_list("order_no", flat=True))
         taken = set()
-        order_ids = [p["order_id"] for p in plans]
+        order_ids = list(seen)
         for start in range(0, len(order_ids), 10000):
             part = order_ids[start : start + 10000]
             taken.update(Order.objects.exclude(import_batch_id=batch_id).filter(order_no__in=part).values_list("order_no", flat=True))
-        todo = [p for p in plans if p["order_id"] not in done and p["order_id"] not in taken]
+        total = len(seen - done - taken)
         self.stdout.write(
-            f"already loaded by this batch: {len(done)}; present from other sources (skipped): {len(taken)}; to write: {len(todo)}"
+            f"already loaded by this batch: {len(done)}; present from other sources (skipped): {len(taken)}; to write: {total}"
         )
         if options["dry_run"]:
             self.stdout.write(self.style.SUCCESS("dry run: nothing written"))
             return
 
-        for start in range(0, len(todo), CHUNK):
-            self._write_chunk(todo[start : start + CHUNK], batch_id)
-            self.stdout.write(f"  wrote {min(start + CHUNK, len(todo))}/{len(todo)}")
+        chunk, written = [], 0
+        for _number, record in _iter_records(canonical):
+            plan, _problems = to_plan(record)
+            if plan["order_id"] in done or plan["order_id"] in taken:
+                continue
+            chunk.append(plan)
+            if len(chunk) >= CHUNK:
+                self._write_chunk(chunk, batch_id)
+                written += len(chunk)
+                chunk = []
+                self.stdout.write(f"  wrote {written}/{total}")
+        if chunk:
+            self._write_chunk(chunk, batch_id)
+            written += len(chunk)
+            self.stdout.write(f"  wrote {written}/{total}")
 
         loaded = Order.objects.filter(import_batch_id=batch_id).count()
         self.stdout.write(f"orders with batch {batch_id}: {loaded} (expected {expected - len(taken)}, manifest {expected})")
